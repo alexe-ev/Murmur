@@ -15,6 +15,7 @@ The goal is to make voice recording feel as natural and instant as typing a note
 
 ## Key Features (Planned)
 
+- **Focus-and-paste recording** (core UX): user presses a global hotkey (e.g. Shift+P) to start recording, clicks into any text input anywhere on the system while speaking, then presses the hotkey again to stop — Murmur transcribes (and translates if enabled) and pastes the result directly into that focused input field. Zero extra steps.
 - One-click or hotkey-triggered voice recording
 - Automatic transcription of recorded audio (via Whisper or similar)
 - **Voice translation**: user can select a target language before recording; they speak in any language (e.g. English) and the transcription output is delivered in the chosen target language (e.g. Spanish) — speech-to-translated-text in one step
@@ -42,3 +43,5 @@ Early stage — the project is in the initial design and planning phase.
 - Keep the UX minimal and low-friction — users should be able to record in one or two keystrokes
 - Local-first is a strong preference: avoid requiring internet connectivity for core recording functionality
 - When in doubt about architecture decisions, favor simplicity over extensibility at this stage
+- The focus-and-paste feature requires a **global hotkey** (registered system-wide, not just when Murmur is focused) and **Accessibility API access** (to programmatically paste into whichever input field the user clicked into); this is a core permission to request on first launch
+- Paste should be done via simulating Cmd+V or writing to the clipboard, targeting the currently focused element
