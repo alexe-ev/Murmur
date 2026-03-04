@@ -17,6 +17,7 @@ The goal is to make voice recording feel as natural and instant as typing a note
 
 - One-click or hotkey-triggered voice recording
 - Automatic transcription of recorded audio (via Whisper or similar)
+- **Voice translation**: user can select a target language before recording; they speak in any language (e.g. English) and the transcription output is delivered in the chosen target language (e.g. Spanish) — speech-to-translated-text in one step
 - Simple, clean UI with minimal setup required
 - Local-first: recordings and transcriptions stay on the user's machine
 - Menu bar integration for quick access
@@ -28,6 +29,7 @@ The technology choices are still being evaluated. Likely candidates:
 
 - **Framework**: Electron, Tauri, or native macOS (Swift/AppKit)
 - **Transcription**: OpenAI Whisper (local or API)
+- **Translation**: OpenAI Whisper API supports transcription-with-translation natively; for local-only mode, a translation layer (e.g. LibreTranslate or a local LLM) would be needed
 - **Audio**: system microphone access via native APIs
 
 ## Project Status
