@@ -21,6 +21,10 @@ All todo files must follow these rules exactly.
 
 <Short description of what this epic covers and what it delivers>
 
+### Dependencies
+- **Depends on**: <Other Epic> — <reason> | None
+- **Intersects with**: <Other Epic or module> — <what is shared> | None
+
 ### Tasks
 - [ ] TASK-01 — <Task Title>
 - [ ] TASK-02 — <Task Title>
@@ -41,6 +45,8 @@ Each task is written as a second-level section under its Epic.
 
 **Epic**: <Epic Title>
 **Status**: `pending` | `in progress` | `done`
+**Depends on**: TASK-XX | None
+**Intersects with**: <Task or Epic name> — <what is shared> | None
 
 #### Description
 A short paragraph explaining the context and purpose of this task.
@@ -63,6 +69,67 @@ Manual or automated checks to verify this task works correctly:
 - [ ] Test case 2
 - [ ] Test case 3
 ```
+
+---
+
+## Dependencies & Intersections
+
+When writing an epic or a task, you must explicitly map out dependencies and
+intersections — places where tasks or epics touch shared code, state, or behavior.
+These are the highest-risk areas for bugs and must be reflected in DoD and test checklists.
+
+### Where to document dependencies
+
+**At the epic level** — add a `Dependencies` section to the epic header:
+
+```
+## Epic: <Epic Title>
+
+<Short description>
+
+### Dependencies
+- **Depends on**: <Other Epic or external system> — reason why
+- **Intersects with**: <Other Epic or Task> — what is shared (e.g. audio pipeline, clipboard state)
+- **None** (write explicitly if there are no dependencies)
+
+### Tasks
+- [ ] TASK-01 — ...
+```
+
+**At the task level** — add a `Dependencies` field to every task:
+
+```
+### TASK-XX — <Task Title>
+
+**Epic**: <Epic Title>
+**Status**: `pending`
+**Depends on**: TASK-XX | None
+**Intersects with**: <Other task or epic> | None
+```
+
+### What counts as a dependency or intersection
+
+- **Depends on**: this task cannot start or will likely break if another task is not done first
+- **Intersects with**: this task touches the same file, module, API, state, or user-facing behavior
+  as another task or epic — they don't block each other but changes in one can affect the other
+
+### How dependencies affect DoD and Test Checklists
+
+- If a task **depends on** another → its DoD must include: `[ ] TASK-XX is done and stable`
+- If a task **intersects with** another → its Test Checklist must include a cross-check:
+  `[ ] Verify <intersecting feature> still works correctly after changes in this task`
+- The epic `[TEST]` task must include an intersection check for every flagged pair:
+  `[ ] No regressions at the intersection of TASK-XX and TASK-YY`
+
+### When writing a new epic
+
+Before writing any tasks, scan existing epics and note:
+1. Which existing epics does this one depend on?
+2. Which modules or features does this epic touch that other epics also touch?
+3. Are there tasks within this epic that must run in a specific order?
+
+Document all findings in the epic's `Dependencies` section and carry them forward
+into the affected tasks' DoD and test checklists.
 
 ---
 
@@ -210,3 +277,7 @@ The Bug Log is also linked from `todo/roadmap.md` for quick access.
 8. Every bug found (anywhere) must be logged in `todo/bugs.md`
 9. A bug found in a `[TEST]` task triggers a `[RETEST]` task for the full epic
 10. `todo/bugs.md` is the pre-release verification checklist — never delete entries from it
+11. Every epic must have a `Dependencies` section — write `None` explicitly if there are none
+12. Every task must have `Depends on` and `Intersects with` fields
+13. Dependencies and intersections must be reflected in DoD and Test Checklists of affected tasks
+14. The epic `[TEST]` task must include a regression check for every intersection flagged in the epic
