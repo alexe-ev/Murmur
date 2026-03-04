@@ -14,6 +14,16 @@ Open this first, find the next task, then read the full context before touching 
 
 ---
 
+## Quick Links
+
+| Document | Purpose |
+|---|---|
+| `todo/roadmap.md` | This file — task navigation and status overview |
+| `todo/bugs.md` | Global bug log — all found bugs, fixes, and pre-release re-verification |
+| `todo/RULES.md` | Full conventions for epics, tasks, bugs, and agent workflow |
+
+---
+
 ## Current Focus
 
 > _(No active tasks yet — epics and tasks will be added here as planning progresses)_
