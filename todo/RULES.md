@@ -25,6 +25,10 @@ All todo files must follow these rules exactly.
 - **Depends on**: <Other Epic> — <reason> | None
 - **Intersects with**: <Other Epic or module> — <what is shared> | None
 
+### Affected Files
+- `src/path/to/file.ts` — created | modified | deleted
+- `src/path/to/other.ts` — created | modified | deleted
+
 ### Tasks
 - [ ] TASK-01 — <Task Title>
 - [ ] TASK-02 — <Task Title>
@@ -48,6 +52,11 @@ Each task is written as a second-level section under its Epic.
 **Depends on**: TASK-XX | None
 **Intersects with**: <Task or Epic name> — <what is shared> | None
 
+#### Affected Files
+| File | Change |
+|---|---|
+| `src/path/to/file.ts` | created \| modified \| deleted |
+
 #### Description
 A short paragraph explaining the context and purpose of this task.
 
@@ -69,6 +78,55 @@ Manual or automated checks to verify this task works correctly:
 - [ ] Test case 2
 - [ ] Test case 3
 ```
+
+---
+
+## Affected Files
+
+Every epic and every task must list the files it will touch. This keeps the agent
+focused — it should only open or modify files explicitly listed here.
+
+### At the epic level
+
+The epic's `Affected Files` is the **union** of all its tasks' affected files.
+It gives a full picture of the epic's footprint across the codebase.
+
+```
+### Affected Files
+- `src/audio/recorder.ts` — created
+- `src/audio/types.ts` — modified
+- `src/ui/RecordButton.tsx` — modified
+- `src/utils/permissions.ts` — deleted
+```
+
+### At the task level
+
+Each task lists only the files **that task** will touch — not the full epic scope.
+
+```
+#### Affected Files
+| File | Change |
+|---|---|
+| `src/audio/recorder.ts` | created |
+| `src/audio/types.ts` | modified |
+```
+
+### Change types
+
+| Type | Meaning |
+|---|---|
+| `created` | File does not exist yet and will be created by this task |
+| `modified` | File exists and will be changed |
+| `deleted` | File will be removed entirely |
+
+### Rules for Affected Files
+
+- The agent **must not touch any file not listed** in the task's Affected Files
+- If during implementation a new file needs to be added or removed, **update the list first**
+  before making the change — this keeps the task spec accurate
+- At the epic level, if a task adds a new file, the epic's Affected Files must also be updated
+- Files shared between tasks within the same epic are a natural intersection point —
+  flag them in the relevant tasks' `Intersects with` fields
 
 ---
 
@@ -281,3 +339,5 @@ The Bug Log is also linked from `todo/roadmap.md` for quick access.
 12. Every task must have `Depends on` and `Intersects with` fields
 13. Dependencies and intersections must be reflected in DoD and Test Checklists of affected tasks
 14. The epic `[TEST]` task must include a regression check for every intersection flagged in the epic
+15. Every epic and task must have an `Affected Files` list — the agent must not touch unlisted files
+16. If a new file is needed during implementation, update `Affected Files` in the task (and epic) first
