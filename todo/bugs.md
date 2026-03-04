@@ -18,9 +18,9 @@ Copy the template below, assign the next `BUG-XX` number, and fill it in.
 ```
 ## BUG-XX — <Short Bug Title>
 
-**Found in**: <Epic Name> / <TASK-ID>
+**Found in**: <Epic Name> / <EN-TASK-ID>
 **Found during**: `regular task` | `[TEST] task`
-**Status**: `fixed`
+**Status**: `pending` | `in progress` | `done`
 
 ### Description
 What the bug was and how it manifested.
@@ -40,6 +40,8 @@ What was done to fix it.
 | ID | Title | Epic | Task | Found during | Status |
 |---|---|---|---|---|---|
 | — | _(no bugs logged yet)_ | — | — | — | — |
+
+**Status values**: `pending` — found, not yet fixed · `in progress` — being fixed · `done` — fixed and verified
 
 ---
 

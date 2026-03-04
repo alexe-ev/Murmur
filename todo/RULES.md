@@ -14,10 +14,31 @@ All todo files must follow these rules exactly.
 
 ---
 
+## Task Numbering Convention
+
+Tasks are numbered **per-epic**, with the epic number embedded in the task ID.
+
+**Format**: `E<epic_number>-TASK-<task_number>`
+
+Examples:
+- Epic 1, Task 1 → `E1-TASK-01`
+- Epic 1, Task 3 → `E1-TASK-03`
+- Epic 2, Task 1 → `E2-TASK-01`
+- Epic 2, [TEST] task → `E2-TASK-05` (last in that epic)
+
+**Rules:**
+- Epic numbers are assigned globally and sequentially as epics are created (E1, E2, E3...)
+- Task numbers within an epic start at `01` and increment sequentially
+- The `[TEST]` task always gets the last number in the epic (e.g. if there are 3 regular tasks, `[TEST]` is `TASK-04`)
+- The `[RETEST]` task, if created, always follows immediately after `[TEST]` (e.g. `TASK-05`)
+- Never reuse or reassign a task ID — if a task is removed, its ID is retired
+
+---
+
 ## Epic Structure
 
 ```
-## Epic: <Epic Title>
+## Epic N: <Epic Title>
 
 <Short description of what this epic covers and what it delivers>
 
@@ -30,10 +51,10 @@ All todo files must follow these rules exactly.
 - `src/path/to/other.ts` — created | modified | deleted
 
 ### Tasks
-- [ ] TASK-01 — <Task Title>
-- [ ] TASK-02 — <Task Title>
-- [ ] TASK-03 — <Task Title>
-- [ ] TASK-04 — [TEST] <Epic Title> — Integration & Testing
+- [ ] EN-TASK-01 — <Task Title>
+- [ ] EN-TASK-02 — <Task Title>
+- [ ] EN-TASK-03 — <Task Title>
+- [ ] EN-TASK-04 — [TEST] <Epic Title> — Integration & Testing
 ```
 
 ---
@@ -45,11 +66,11 @@ Each task is written as a second-level section under its Epic.
 ```
 ---
 
-### TASK-XX — <Task Title>
+### EN-TASK-XX — <Task Title>
 
 **Epic**: <Epic Title>
 **Status**: `pending` | `in progress` | `done`
-**Depends on**: TASK-XX | None
+**Depends on**: EN-TASK-XX | None
 **Intersects with**: <Task or Epic name> — <what is shared> | None
 
 #### Affected Files
@@ -157,11 +178,11 @@ These are the highest-risk areas for bugs and must be reflected in DoD and test 
 **At the task level** — add a `Dependencies` field to every task:
 
 ```
-### TASK-XX — <Task Title>
+### EN-TASK-XX — <Task Title>
 
 **Epic**: <Epic Title>
 **Status**: `pending`
-**Depends on**: TASK-XX | None
+**Depends on**: EN-TASK-XX | None
 **Intersects with**: <Other task or epic> | None
 ```
 
@@ -173,11 +194,11 @@ These are the highest-risk areas for bugs and must be reflected in DoD and test 
 
 ### How dependencies affect DoD and Test Checklists
 
-- If a task **depends on** another → its DoD must include: `[ ] TASK-XX is done and stable`
+- If a task **depends on** another → its DoD must include: `[ ] EN-TASK-XX is done and stable`
 - If a task **intersects with** another → its Test Checklist must include a cross-check:
   `[ ] Verify <intersecting feature> still works correctly after changes in this task`
 - The epic `[TEST]` task must include an intersection check for every flagged pair:
-  `[ ] No regressions at the intersection of TASK-XX and TASK-YY`
+  `[ ] No regressions at the intersection of EN-TASK-XX and EN-TASK-YY`
 
 ### When writing a new epic
 
@@ -199,10 +220,18 @@ Its job is to verify the entire Epic end-to-end, not just individual pieces.
 ```
 ---
 
-### TASK-XX — [TEST] <Epic Title> — Integration & Testing
+### EN-TASK-XX — [TEST] <Epic Title> — Integration & Testing
 
 **Epic**: <Epic Title>
 **Status**: `pending` | `in progress` | `done`
+**Depends on**: EN-TASK-01, EN-TASK-02, EN-TASK-03 (all other tasks in this epic)
+**Intersects with**: None
+
+#### Affected Files
+| File | Change |
+|---|---|
+| `todo/<epic-file>.md` | modified (status updates) |
+| `todo/roadmap.md` | modified (status updates) |
 
 #### Description
 End-to-end testing task for the <Epic Title> epic. Validates that all tasks
@@ -220,10 +249,60 @@ in this epic work correctly together as a whole.
 
 #### Test Checklist
 A comprehensive checklist covering every task in the epic:
-- [ ] TASK-01: <brief description of what to verify>
-- [ ] TASK-02: <brief description of what to verify>
-- [ ] TASK-03: <brief description of what to verify>
+- [ ] EN-TASK-01: <brief description of what to verify>
+- [ ] EN-TASK-02: <brief description of what to verify>
+- [ ] EN-TASK-03: <brief description of what to verify>
 - [ ] Full flow works end-to-end as described in the epic
+- [ ] No regressions at intersections flagged across the epic
+```
+
+---
+
+## Retest Task (Created When a Bug is Found in [TEST])
+
+A `[RETEST]` task is created only when a bug is found during an epic's `[TEST]` task.
+Its structure is identical to the `[TEST]` task — it re-runs the full epic validation
+after the bug has been fixed.
+
+```
+---
+
+### EN-TASK-XX — [RETEST] <Epic Title> — Re-run After Bug Fix
+
+**Epic**: <Epic Title>
+**Status**: `pending` | `in progress` | `done`
+**Depends on**: EN-TASK-XX ([TEST] task, where the bug was found and fixed)
+**Intersects with**: None
+
+#### Affected Files
+| File | Change |
+|---|---|
+| `todo/<epic-file>.md` | modified (status updates) |
+| `todo/roadmap.md` | modified (status updates) |
+
+#### Description
+Re-test task for the <Epic Title> epic. Created because a bug was found and fixed
+during the [TEST] task. Validates that the fix is correct and that the full epic
+still works end-to-end with no regressions.
+
+#### Work
+- Confirm the bug fix is in place (see Bug Log entry BUG-XX)
+- Re-run the full test checklist from the [TEST] task
+- Manually verify the user-facing behavior described in the epic
+
+#### Definition of Done (DoD)
+- [ ] BUG-XX is marked `done` in `todo/bugs.md`
+- [ ] All test cases below pass
+- [ ] No new regressions introduced
+
+#### Test Checklist
+(Same checklist as the [TEST] task — copy it in full)
+- [ ] EN-TASK-01: <brief description of what to verify>
+- [ ] EN-TASK-02: <brief description of what to verify>
+- [ ] EN-TASK-03: <brief description of what to verify>
+- [ ] Full flow works end-to-end as described in the epic
+- [ ] No regressions at intersections flagged across the epic
+- [ ] BUG-XX: <brief description of the fixed bug — confirm it no longer reproduces>
 ```
 
 ---
@@ -304,9 +383,9 @@ was found, a short description, and the fix applied.
 ```
 ## BUG-XX — <Short Bug Title>
 
-**Found in**: <Epic Name> / <TASK-ID>
-**Found during**: regular task | [TEST] task
-**Status**: `fixed`
+**Found in**: <Epic Name> / <EN-TASK-ID>
+**Found during**: `regular task` | `[TEST] task`
+**Status**: `pending` | `in progress` | `done`
 
 ### Description
 What the bug was and how it manifested.
