@@ -92,7 +92,7 @@ Murmur.app
 - Registered using a **CGEvent tap** (low-level) or the **Carbon `RegisterEventHotKey`** API
 - Must be registered system-wide (not just when Murmur is frontmost)
 - User can configure the hotkey in Settings; stored in `UserDefaults`
-- Default hotkey: TBD (needs conflict analysis against common macOS shortcuts)
+- Default hotkey: **Option + Space** (keyCode 49, modifier `optionKey`)
 
 ---
 
@@ -106,19 +106,22 @@ Murmur.app
 
 ## 7. Transcription & Translation
 
-### Local (default)
+### Local (default for transcription)
 
 - Uses **WhisperKit** — a Swift package that runs Whisper models natively via Core ML
 - Model is downloaded once and stored in `~/Library/Application Support/Murmur/`
-- Recommended default model: `whisper-base` or `whisper-small` (balance of speed and accuracy)
-- Translation: WhisperKit supports Whisper's built-in translation task (speak any language → English output). For non-English target languages, a second-pass translation step would be needed.
+- **Default model**: `whisper-base` — good balance of speed (~1s on M1) and accuracy
+- **User-selectable**: `tiny` (fastest, ~0.5s, lower accuracy) / `base` (default) / `small` (~2-3s, best accuracy)
+- Local mode supports **transcription only** — output language = spoken language
+- Translation in local mode: WhisperKit can translate any language → English via Whisper's built-in translation task; non-English target languages are **not supported locally** (use API)
 
-### API (optional)
+### API (required for translation to non-English; optional for transcription)
 
 - Calls **OpenAI Whisper API** (`/v1/audio/transcriptions` or `/v1/audio/translations`)
-- The `/translations` endpoint natively outputs English from any input language
-- For other target languages via API: chain with OpenAI Chat Completions for translation
+- The `/translations` endpoint outputs English from any input language
+- For non-English target languages: chain Whisper transcription with an OpenAI Chat Completions call for translation
 - API key stored securely in **macOS Keychain**
+- **v1 rule**: if translation mode is enabled with a non-English target language, API backend is required; the app will prompt the user to enter an API key if one is not set
 
 ---
 
@@ -151,19 +154,23 @@ All user preferences stored in `UserDefaults`:
 
 | Key | Type | Default |
 |---|---|---|
-| `hotkeyKeyCode` | Int | TBD |
-| `hotkeyModifiers` | Int | TBD |
+| `hotkeyKeyCode` | Int | 49 (Space) |
+| `hotkeyModifiers` | Int | optionKey (0x00080000) |
 | `translationEnabled` | Bool | false |
 | `targetLanguage` | String | "en" |
 | `whisperBackend` | String | "local" |
+| `whisperModel` | String | "base" |
 | `launchAtLogin` | Bool | false |
 
 OpenAI API key stored in **Keychain** (never in UserDefaults).
 
 ---
 
-## 11. Open Architecture Questions
+## 11. Architecture Decisions Log
 
-- **Translation to non-English languages locally**: WhisperKit's translation task only outputs English. A local LLM or LibreTranslate instance would be needed for local non-English translation — worth evaluating complexity vs. just requiring API for that feature.
-- **Model size vs. speed tradeoff**: `whisper-tiny` is fastest but less accurate; `whisper-small` is a good default. Allow user to choose?
-- **Streaming transcription**: not in scope for v1 but could improve perceived speed — worth evaluking for v2.
+| Question | Decision |
+|---|---|
+| Default hotkey | Option + Space (keyCode 49, optionKey modifier) |
+| Local translation to non-English | **Not supported in v1** — API required for non-English target languages |
+| Default Whisper model | **`whisper-base`** — ~1s on M1, good accuracy; user can select `tiny`/`base`/`small` in Settings |
+| Streaming transcription | Not in scope for v1; evaluate for v2 |

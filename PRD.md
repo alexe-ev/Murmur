@@ -43,6 +43,8 @@ Typing is slow. Dictation tools either require switching context (open an app, r
 - Speaker diarization or multi-speaker support
 - Audio file import or editing
 - Cloud sync or account system
+- History or log of past recordings and transcriptions
+- Local translation to non-English languages (requires API in v1)
 
 ---
 
@@ -65,7 +67,7 @@ The entire flow from hotkey to pasted text should feel near-instant (target: und
 
 ### 7.1 Focus-and-Paste Recording (Core)
 
-- A **global hotkey** (user-configurable, default TBD) starts and stops recording from anywhere on the system
+- A **global hotkey** (user-configurable, default **Option + Space**) starts and stops recording from anywhere on the system
 - While recording, the user can click into any text input — browser fields, native app inputs, terminals, chat apps, etc.
 - On stop, the transcribed/translated text is pasted into the currently focused input via the system clipboard (simulating Cmd+V)
 - A subtle floating indicator shows that recording is active
@@ -82,6 +84,7 @@ The entire flow from hotkey to pasted text should feel near-instant (target: und
 - When enabled: user speaks in any language, output is delivered in the target language
 - Example: speak English, paste Spanish
 - Toggle should be easily accessible — one click from the menu bar
+- **v1: translation requires internet** — implemented via OpenAI Whisper API (`/v1/audio/translations`); no local translation to non-English in v1
 
 ### 7.4 Menu Bar Integration
 
@@ -91,10 +94,11 @@ The entire flow from hotkey to pasted text should feel near-instant (target: und
 
 ### 7.5 Settings
 
-- Configure global hotkey
+- Configure global hotkey (default: Option + Space)
 - Select transcription mode (transcribe only vs. translate)
 - Select target language for translation
 - Choose Whisper backend: local model vs. OpenAI API (requires API key)
+- Choose local Whisper model size: `tiny` / `base` (default) / `small`
 - Toggle: launch at login
 
 ---
@@ -128,9 +132,15 @@ Both Microphone and Accessibility permissions will be requested on first launch 
 
 ---
 
-## 11. Open Questions
+## 11. Decisions Log
 
-- What is the default hotkey? (needs to avoid conflicts with common apps)
-- Should translation require an internet connection in v1, or invest in a local translation layer?
-- Should there be a history/log of past recordings and transcriptions?
+| Question | Decision |
+|---|---|
+| Default hotkey | **Option + Space** |
+| Translation in v1: local vs. API | **API only** — OpenAI Whisper `/translations` endpoint; no local non-English translation |
+| History/log of recordings | **No** — not in v1 |
+| Local Whisper model size | **`whisper-base` by default**; user can choose `tiny` / `base` / `small` in Settings |
+
+## 12. Open Questions
+
 - How should Murmur handle background noise or silence-only recordings?
