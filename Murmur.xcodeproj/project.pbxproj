@@ -10,6 +10,7 @@
 		A10000000000000000000012 /* MurmurApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000013 /* MurmurApp.swift */; };
 		A10000000000000000000014 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000015 /* AppDelegate.swift */; };
 		A10000000000000000000016 /* SettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000017 /* SettingsModel.swift */; };
+		A10000000000000000000018 /* PermissionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000019 /* PermissionsManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +20,7 @@
 		A10000000000000000000013 /* MurmurApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/App/MurmurApp.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000015 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/App/AppDelegate.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000017 /* SettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/Settings/SettingsModel.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000019 /* PermissionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/Core/PermissionsManager.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +55,7 @@
 			children = (
 				A10000000000000000000013 /* MurmurApp.swift */,
 				A10000000000000000000015 /* AppDelegate.swift */,
+				A10000000000000000000019 /* PermissionsManager.swift */,
 				A10000000000000000000017 /* SettingsModel.swift */,
 				A10000000000000000000002 /* Info.plist */,
 				A10000000000000000000003 /* Murmur.entitlements */,
@@ -131,6 +134,7 @@
 				A10000000000000000000012 /* MurmurApp.swift in Sources */,
 				A10000000000000000000014 /* AppDelegate.swift in Sources */,
 				A10000000000000000000016 /* SettingsModel.swift in Sources */,
+				A10000000000000000000018 /* PermissionsManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

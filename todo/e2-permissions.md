@@ -14,13 +14,14 @@ clearly and that the app checks permission state on every foreground event.
 
 ### Affected Files
 - `Murmur/Core/PermissionsManager.swift` — created
+- `Murmur.xcodeproj/project.pbxproj` — modified
 - `Murmur/UI/OnboardingView.swift` — created
 - `Murmur/App/AppDelegate.swift` — modified
 - `todo/e2-permissions.md` — modified (status updates)
 - `todo/roadmap.md` — modified (status updates)
 
 ### Tasks
-- [ ] E2-TASK-01 — Implement PermissionsManager
+- [x] E2-TASK-01 — Implement PermissionsManager
 - [ ] E2-TASK-02 — Build OnboardingView
 - [ ] E2-TASK-03 — Integrate onboarding into launch flow
 - [ ] E2-TASK-04 — [TEST] Permissions & Onboarding — Integration & Testing
@@ -30,7 +31,7 @@ clearly and that the app checks permission state on every foreground event.
 ### E2-TASK-01 — Implement PermissionsManager
 
 **Epic**: Permissions & Onboarding
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E1-TASK-01
 **Intersects with**: E4 (AudioRecorder calls `PermissionsManager.microphoneGranted` before recording), E7 (PasteController calls `PermissionsManager.accessibilityGranted` before pasting)
 
@@ -38,6 +39,7 @@ clearly and that the app checks permission state on every foreground event.
 | File | Change |
 |---|---|
 | `Murmur/Core/PermissionsManager.swift` | created |
+| `Murmur.xcodeproj/project.pbxproj` | modified |
 
 #### Description
 Centralised service for checking and requesting the two permissions Murmur needs.
@@ -57,12 +59,12 @@ Published properties allow the UI and other managers to react when status change
 - Add a periodic timer (every 2 s) that re-checks `AXIsProcessTrusted()` while the onboarding window is open, so the UI updates as soon as the user grants Accessibility in System Settings
 
 #### Definition of Done (DoD)
-- [ ] `microphoneStatus` reflects the true system state
+- [x] `microphoneStatus` reflects the true system state
 - [ ] `requestMicrophone()` triggers the native macOS permission dialog
-- [ ] `accessibilityGranted` reflects `AXIsProcessTrusted()` result
+- [x] `accessibilityGranted` reflects `AXIsProcessTrusted()` result
 - [ ] `openAccessibilitySettings()` opens the correct System Settings pane
-- [ ] `allGranted` is `true` only when both permissions are granted
-- [ ] Polling timer refreshes Accessibility status while active
+- [x] `allGranted` is `true` only when both permissions are granted
+- [x] Polling timer refreshes Accessibility status while active
 
 #### Test Checklist
 - [ ] Fresh app (permissions not granted): `microphoneGranted` = `false`, `accessibilityGranted` = `false`
