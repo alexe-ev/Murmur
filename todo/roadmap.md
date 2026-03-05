@@ -27,7 +27,7 @@ Open this first, find the next task, then read the full context before touching 
 ## Current Focus
 
 > **E1 — Project Skeleton & App Foundation** is the active epic.
-> Start with **E1-TASK-01** (Create Xcode project).
+> Next up: **E1-TASK-05** ([TEST] Project Skeleton & App Foundation — Integration & Testing).
 >
 > Before picking up any task: read `CLAUDE.md`, `ARCHITECTURE.md`, `PRD.md`, this file,
 > and the full epic file for the task you are about to start. See `RULES.md §Agent Workflow`.
@@ -38,7 +38,7 @@ Open this first, find the next task, then read the full context before touching 
 
 | # | Epic | File | Status | Progress |
 |---|---|---|---|---|
-| E1 | Project Skeleton & App Foundation | `todo/e1-foundation.md` | `pending` | 0 / 5 |
+| E1 | Project Skeleton & App Foundation | `todo/e1-foundation.md` | `in progress` | 4 / 5 |
 | E2 | Permissions & Onboarding | `todo/e2-permissions.md` | `pending` | 0 / 4 |
 | E3 | Global Hotkey | `todo/e3-hotkey.md` | `pending` | 0 / 4 |
 | E4 | Audio Recording | `todo/e4-audio.md` | `pending` | 0 / 4 |
@@ -57,15 +57,15 @@ Open this first, find the next task, then read the full context before touching 
 ### Epic E1 — Project Skeleton & App Foundation
 
 **File**: `todo/e1-foundation.md`
-**Status**: `pending`
+**Status**: `in progress`
 **Depends on**: None
 
 | Task | Title | Status |
 |---|---|---|
-| E1-TASK-01 | Create Xcode project | `in progress` |
-| E1-TASK-02 | Implement MurmurApp + AppDelegate skeleton | `pending` |
-| E1-TASK-03 | Implement SettingsModel (UserDefaults wrapper) | `pending` |
-| E1-TASK-04 | LaunchAtLogin via SMAppService | `pending` |
+| E1-TASK-01 | Create Xcode project | `done` |
+| E1-TASK-02 | Implement MurmurApp + AppDelegate skeleton | `done` |
+| E1-TASK-03 | Implement SettingsModel (UserDefaults wrapper) | `done` |
+| E1-TASK-04 | LaunchAtLogin via SMAppService | `done` |
 | E1-TASK-05 | [TEST] Project Skeleton & App Foundation — Integration & Testing | `pending` |
 
 ---
