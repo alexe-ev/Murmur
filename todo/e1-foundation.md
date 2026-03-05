@@ -22,10 +22,10 @@ support. Delivers a runnable macOS menu bar–only app with no Dock icon.
 - `todo/roadmap.md` — modified (status updates)
 
 ### Tasks
-- [ ] E1-TASK-01 — Create Xcode project
-- [ ] E1-TASK-02 — Implement MurmurApp + AppDelegate skeleton
-- [ ] E1-TASK-03 — Implement SettingsModel (UserDefaults wrapper)
-- [ ] E1-TASK-04 — LaunchAtLogin via SMAppService
+- [x] E1-TASK-01 — Create Xcode project
+- [x] E1-TASK-02 — Implement MurmurApp + AppDelegate skeleton
+- [x] E1-TASK-03 — Implement SettingsModel (UserDefaults wrapper)
+- [x] E1-TASK-04 — LaunchAtLogin via SMAppService
 - [ ] E1-TASK-05 — [TEST] Project Skeleton & App Foundation — Integration & Testing
 
 ---
@@ -33,7 +33,7 @@ support. Delivers a runnable macOS menu bar–only app with no Dock icon.
 ### E1-TASK-01 — Create Xcode project
 
 **Epic**: Project Skeleton & App Foundation
-**Status**: `in progress`
+**Status**: `done`
 **Depends on**: None
 **Intersects with**: None
 
@@ -73,7 +73,7 @@ menu bar–only app (no Dock icon) and target macOS 13+.
 ### E1-TASK-02 — Implement MurmurApp + AppDelegate skeleton
 
 **Epic**: Project Skeleton & App Foundation
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E1-TASK-01
 **Intersects with**: E2 (AppDelegate will be extended to show OnboardingView), E5 (AppDelegate will own MenuBarController)
 
@@ -97,9 +97,9 @@ managers; for now it is a minimal skeleton.
 - Add stub properties for managers that will be added in later epics (marked `// TODO:`)
 
 #### Definition of Done (DoD)
-- [ ] App compiles with `MurmurApp` as `@main`
-- [ ] `AppDelegate.applicationDidFinishLaunching` is called on launch
-- [ ] `NSApp.activationPolicy` is `.accessory`
+- [x] App compiles with `MurmurApp` as `@main`
+- [x] `AppDelegate.applicationDidFinishLaunching` is called on launch
+- [x] `NSApp.activationPolicy` is `.accessory`
 - [ ] No Dock icon appears when the app launches
 
 #### Test Checklist
@@ -112,7 +112,7 @@ managers; for now it is a minimal skeleton.
 ### E1-TASK-03 — Implement SettingsModel (UserDefaults wrapper)
 
 **Epic**: Project Skeleton & App Foundation
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E1-TASK-01
 **Intersects with**: E3 (hotkeyKeyCode, hotkeyModifiers), E6 (whisperBackend, whisperModel), E8 (translationEnabled, targetLanguage), E9 (targetLanguage, translationEnabled)
 
@@ -143,11 +143,11 @@ Central model for all user preferences. Wraps `UserDefaults` with typed properti
 - Write a `reset()` method that restores all defaults (useful for testing)
 
 #### Definition of Done (DoD)
-- [ ] All 7 keys listed above are present with correct types and defaults
-- [ ] Properties are observable (SwiftUI or Combine)
-- [ ] Singleton is accessible via `SettingsModel.shared`
-- [ ] Values persist across app restarts (UserDefaults)
-- [ ] `reset()` restores all defaults
+- [x] All 7 keys listed above are present with correct types and defaults
+- [x] Properties are observable (SwiftUI or Combine)
+- [x] Singleton is accessible via `SettingsModel.shared`
+- [x] Values persist across app restarts (UserDefaults)
+- [x] `reset()` restores all defaults
 
 #### Test Checklist
 - [ ] Set `whisperModel` to `"small"`, quit and relaunch — value survives restart
@@ -159,7 +159,7 @@ Central model for all user preferences. Wraps `UserDefaults` with typed properti
 ### E1-TASK-04 — LaunchAtLogin via SMAppService
 
 **Epic**: Project Skeleton & App Foundation
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E1-TASK-03
 **Intersects with**: E8 (SettingsView toggle for launchAtLogin)
 
@@ -182,10 +182,10 @@ is stored in `SettingsModel.launchAtLogin` and applied both on settings change a
 - Handle `SMAppService` errors gracefully (log, do not crash)
 
 #### Definition of Done (DoD)
-- [ ] `SMAppService.mainApp.register()` is called when `launchAtLogin` is `true`
-- [ ] `SMAppService.mainApp.unregister()` is called when `launchAtLogin` is `false`
-- [ ] App survives login-item registration without crashing
-- [ ] `SettingsModel.launchAtLogin` is read and applied at launch
+- [x] `SMAppService.mainApp.register()` is called when `launchAtLogin` is `true`
+- [x] `SMAppService.mainApp.unregister()` is called when `launchAtLogin` is `false`
+- [x] App survives login-item registration without crashing
+- [x] `SettingsModel.launchAtLogin` is read and applied at launch
 
 #### Test Checklist
 - [ ] Toggle `launchAtLogin` to `true` → app appears in System Settings → General → Login Items
