@@ -22,7 +22,7 @@ String entirely on-device.
 - `todo/roadmap.md` — modified (status updates)
 
 ### Tasks
-- [ ] E6-TASK-01 — Define TranscriptionService protocol
+- [x] E6-TASK-01 — Define TranscriptionService protocol
 - [ ] E6-TASK-02 — Add WhisperKit Swift Package dependency
 - [ ] E6-TASK-03 — Implement LocalWhisperService
 - [ ] E6-TASK-04 — Implement ModelManager (download, store, select)
@@ -33,7 +33,7 @@ String entirely on-device.
 ### E6-TASK-01 — Define TranscriptionService protocol
 
 **Epic**: Local Transcription (WhisperKit)
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E1-TASK-01
 **Intersects with**: E8 (OpenAIWhisperService conforms to this protocol)
 
@@ -65,14 +65,14 @@ calling code.
 - Add a `var isAvailable: Bool { get }` requirement — `LocalWhisperService` returns `true` when model is loaded; `OpenAIWhisperService` returns `true` when API key is set
 
 #### Definition of Done (DoD)
-- [ ] Protocol compiles with the signature above
-- [ ] `TranscriptionError` enum covers all cases listed
-- [ ] `isAvailable` is a protocol requirement
-- [ ] No concrete logic in this file — protocol only
+- [x] Protocol compiles with the signature above
+- [x] `TranscriptionError` enum covers all cases listed
+- [x] `isAvailable` is a protocol requirement
+- [x] No concrete logic in this file — protocol only
 
 #### Test Checklist
-- [ ] A mock conformance `MockTranscriptionService: TranscriptionService` compiles without errors
-- [ ] `TranscriptionError` cases can all be thrown and caught
+- [x] A mock conformance `MockTranscriptionService: TranscriptionService` compiles without errors
+- [x] `TranscriptionError` cases can all be thrown and caught
 
 ---
 
