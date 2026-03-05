@@ -27,7 +27,7 @@ the menu bar dropdown and SettingsView.
 - [x] E9-TASK-02 — English target translation via /v1/audio/translations
 - [x] E9-TASK-03 — Non-English target translation via Chat Completions chaining
 - [x] E9-TASK-04 — Auto-backend enforcement
-- [ ] E9-TASK-05 — Language picker in menu bar and SettingsView
+- [x] E9-TASK-05 — Language picker in menu bar and SettingsView
 - [ ] E9-TASK-06 — [TEST] Voice Translation — Integration & Testing
 
 ---
@@ -212,7 +212,7 @@ key is present. If no key is stored, the user is prompted to open Settings.
 ### E9-TASK-05 — Language picker in menu bar and SettingsView
 
 **Epic**: Voice Translation
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E9-TASK-01, E5-TASK-04, E8-TASK-04
 **Intersects with**: E5 (MenuBarController.swift modified), E8 (SettingsView.swift modified)
 
@@ -243,18 +243,18 @@ of truth).
   - Disabled (grayed out) when `translationEnabled == false`
 
 #### Definition of Done (DoD)
-- [ ] Dropdown submenu shows all supported languages; checkmark on selected
-- [ ] Selecting a language from dropdown updates `SettingsModel.targetLanguage`
-- [ ] SettingsView language picker is bound to the same value
-- [ ] Changing language in one surface reflects immediately in the other
-- [ ] Translation toggle enables/disables the language picker in SettingsView
+- [x] Dropdown submenu shows all supported languages; checkmark on selected
+- [x] Selecting a language from dropdown updates `SettingsModel.targetLanguage`
+- [x] SettingsView language picker is bound to the same value
+- [x] Changing language in one surface reflects immediately in the other
+- [x] Translation toggle enables/disables the language picker in SettingsView
 
 #### Test Checklist
-- [ ] Click menu bar icon → "Language" submenu shows all languages with checkmark on current
-- [ ] Select "Spanish" from submenu → checkmark moves; `SettingsModel.targetLanguage == "es"`
-- [ ] Open Settings → language picker shows "Spanish" already selected
-- [ ] Change language in Settings → menu bar submenu title updates
-- [ ] Disable translation in Settings → language picker grayed out in SettingsView
+- [x] Click menu bar icon → "Language" submenu shows all languages with checkmark on current
+- [x] Select "Spanish" from submenu → checkmark moves; `SettingsModel.targetLanguage == "es"`
+- [x] Open Settings → language picker shows "Spanish" already selected
+- [x] Change language in Settings → menu bar submenu title updates
+- [x] Disable translation in Settings → language picker grayed out in SettingsView
 
 ---
 

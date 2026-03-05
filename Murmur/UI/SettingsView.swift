@@ -98,12 +98,13 @@ struct SettingsView: View {
     private var translationSection: some View {
         Section("Translation") {
             Toggle("Enable Translation", isOn: $settings.translationEnabled)
-                .disabled(!hasSavedAPIKey)
 
-            Picker("Language", selection: .constant("en")) {
-                Text("Coming soon (wired in E9)").tag("en")
+            Picker("Target Language", selection: $settings.targetLanguage) {
+                ForEach(TranslationConfig.supportedLanguages, id: \.code) { language in
+                    Text(language.name).tag(language.code)
+                }
             }
-            .disabled(true)
+            .disabled(!settings.translationEnabled)
         }
     }
 

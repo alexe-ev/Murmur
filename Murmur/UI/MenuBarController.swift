@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 import SwiftUI
 
 enum MenuBarState {
@@ -13,11 +14,19 @@ final class MenuBarController: NSObject {
     private var indicatorPanel: NSPanel?
     private let menu = NSMenu()
     private var toggleRecordingItem: NSMenuItem?
+    private let settingsModel = SettingsModel.shared
+    private let translationConfig = TranslationConfig.shared
+    private var languageItem: NSMenuItem?
+    private var translationOnIndicatorItem: NSMenuItem?
+    private var languageSubmenu: NSMenu?
+    private var cancellables = Set<AnyCancellable>()
 
     override init() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         super.init()
         configureStatusItem()
+        observeTranslationSettings()
+        rebuildLanguageSubmenu()
         setState(.idle)
     }
 
@@ -29,13 +38,12 @@ final class MenuBarController: NSObject {
 
         menu.addItem(.separator())
 
-        let languageItem = NSMenuItem(title: "Language: English ▸", action: nil, keyEquivalent: "")
-        let languageSubmenu = NSMenu(title: "Language")
-        let comingSoonItem = NSMenuItem(title: "Coming soon", action: nil, keyEquivalent: "")
-        comingSoonItem.isEnabled = false
-        languageSubmenu.addItem(comingSoonItem)
-        languageItem.submenu = languageSubmenu
-        menu.addItem(languageItem)
+        let languageMenuItem = NSMenuItem(title: "Language: English", action: nil, keyEquivalent: "")
+        let submenu = NSMenu(title: "Language")
+        languageMenuItem.submenu = submenu
+        menu.addItem(languageMenuItem)
+        languageItem = languageMenuItem
+        languageSubmenu = submenu
 
         menu.addItem(.separator())
 
@@ -52,6 +60,53 @@ final class MenuBarController: NSObject {
         statusItem.menu = menu
     }
 
+    private func observeTranslationSettings() {
+        translationConfig.$targetLanguage
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                self?.rebuildLanguageSubmenu()
+            }
+            .store(in: &cancellables)
+
+        translationConfig.$isEnabled
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                self?.rebuildLanguageSubmenu()
+            }
+            .store(in: &cancellables)
+    }
+
+    private func rebuildLanguageSubmenu() {
+        let currentCode = settingsModel.targetLanguage
+        let currentLanguageName = TranslationConfig.supportedLanguages.first(where: { $0.code == currentCode })?.name ?? "English"
+        languageItem?.title = "Language: \(currentLanguageName)"
+
+        guard let languageSubmenu else { return }
+        languageSubmenu.removeAllItems()
+
+        let indicatorItem = NSMenuItem(title: "Translation On", action: nil, keyEquivalent: "")
+        indicatorItem.isEnabled = false
+        indicatorItem.isHidden = !settingsModel.translationEnabled
+        languageSubmenu.addItem(indicatorItem)
+        translationOnIndicatorItem = indicatorItem
+
+        languageSubmenu.addItem(.separator())
+
+        for language in TranslationConfig.supportedLanguages {
+            let item = NSMenuItem(title: language.name, action: #selector(selectLanguage(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = language.code
+            item.state = (language.code == currentCode) ? .on : .off
+            languageSubmenu.addItem(item)
+        }
+    }
+
+    @objc
+    private func selectLanguage(_ sender: NSMenuItem) {
+        guard let languageCode = sender.representedObject as? String else { return }
+        settingsModel.targetLanguage = languageCode
+    }
+
     func setState(_ state: MenuBarState) {
         if Thread.isMainThread {
             applyState(state)
@@ -64,6 +119,7 @@ final class MenuBarController: NSObject {
 
     func updateMenuItems(isRecording: Bool) {
         toggleRecordingItem?.title = isRecording ? "Stop Recording" : "Start Recording"
+        translationOnIndicatorItem?.isHidden = !settingsModel.translationEnabled
     }
 
     func showIndicator() {
