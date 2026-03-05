@@ -23,7 +23,7 @@ clearly and that the app checks permission state on every foreground event.
 ### Tasks
 - [x] E2-TASK-01 — Implement PermissionsManager
 - [x] E2-TASK-02 — Build OnboardingView
-- [ ] E2-TASK-03 — Integrate onboarding into launch flow
+- [x] E2-TASK-03 — Integrate onboarding into launch flow
 - [ ] E2-TASK-04 — [TEST] Permissions & Onboarding — Integration & Testing
 
 ---
@@ -122,7 +122,7 @@ The screen dismisses automatically once `PermissionsManager.shared.allGranted` b
 ### E2-TASK-03 — Integrate onboarding into launch flow
 
 **Epic**: Permissions & Onboarding
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E2-TASK-01, E2-TASK-02
 **Intersects with**: E5 (MenuBarController is set up in AppDelegate — ensure onboarding doesn't conflict with menu bar init), E1 (AppDelegate is modified here)
 
@@ -145,11 +145,11 @@ if any permission is missing, and re-checked whenever the app comes to the foreg
   (MenuBarController setup, HotkeyManager registration, etc.)
 
 #### Definition of Done (DoD)
-- [ ] Onboarding window appears on first launch when permissions are missing
-- [ ] Onboarding window cannot be closed while permissions are incomplete
-- [ ] `applicationDidBecomeActive` triggers an Accessibility re-check
-- [ ] Onboarding window closes automatically when all permissions granted
-- [ ] Normal app flow (menu bar setup) continues after onboarding is dismissed
+- [x] Onboarding window appears on first launch when permissions are missing
+- [x] Onboarding window cannot be closed while permissions are incomplete
+- [x] `applicationDidBecomeActive` triggers an Accessibility re-check
+- [x] Onboarding window closes automatically when all permissions granted
+- [x] Normal app flow (menu bar setup) continues after onboarding is dismissed
 
 #### Test Checklist
 - [ ] Fresh launch (no permissions): onboarding window appears immediately
