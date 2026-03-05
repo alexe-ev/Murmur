@@ -19,13 +19,21 @@ final class PasteController {
     private let settingsModel: SettingsModel
 
     init(
-        permissionsManager: PermissionsManager = .shared,
+        permissionsManager: PermissionsManager,
         pasteboard: NSPasteboard = .general,
-        settingsModel: SettingsModel = .shared
+        settingsModel: SettingsModel
     ) {
         self.permissionsManager = permissionsManager
         self.pasteboard = pasteboard
         self.settingsModel = settingsModel
+    }
+
+    convenience init(pasteboard: NSPasteboard = .general) {
+        self.init(
+            permissionsManager: .shared,
+            pasteboard: pasteboard,
+            settingsModel: .shared
+        )
     }
 
     func paste(_ text: String) throws {

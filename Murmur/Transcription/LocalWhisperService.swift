@@ -8,9 +8,14 @@ final class LocalWhisperService: TranscriptionService {
     private let modelManager: ModelManager
     private let fileManager: FileManager
 
-    init(modelManager: ModelManager = .shared, fileManager: FileManager = .default) {
+    init(modelManager: ModelManager, fileManager: FileManager = .default) {
         self.modelManager = modelManager
         self.fileManager = fileManager
+    }
+
+    @MainActor
+    convenience init(fileManager: FileManager = .default) {
+        self.init(modelManager: .shared, fileManager: fileManager)
     }
 
     var isAvailable: Bool {
