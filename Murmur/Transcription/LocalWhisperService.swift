@@ -81,6 +81,7 @@ final class LocalWhisperService: TranscriptionService {
         let segmentText = results
             .flatMap { $0.segments }
             .map(\.text)
+            .map(sanitizeTranscriptionText)
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
             .joined(separator: " ")
@@ -91,9 +92,24 @@ final class LocalWhisperService: TranscriptionService {
 
         return results
             .map(\.text)
+            .map(sanitizeTranscriptionText)
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
             .joined(separator: " ")
+    }
+
+    private func sanitizeTranscriptionText(_ text: String) -> String {
+        let tokenStripped = text.replacingOccurrences(
+            of: #"<\|[^|]+?\|>"#,
+            with: " ",
+            options: .regularExpression
+        )
+
+        return tokenStripped.replacingOccurrences(
+            of: #"\s+"#,
+            with: " ",
+            options: .regularExpression
+        )
     }
 #endif
 }

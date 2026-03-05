@@ -105,6 +105,10 @@ struct SettingsView: View {
                 }
             }
             .disabled(!settings.translationEnabled)
+
+            Text("Target language is applied only when translation is enabled.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
     }
 

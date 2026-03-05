@@ -38,7 +38,7 @@ final class MenuBarController: NSObject {
 
         menu.addItem(.separator())
 
-        let languageMenuItem = NSMenuItem(title: "Language: English", action: nil, keyEquivalent: "")
+        let languageMenuItem = NSMenuItem(title: "Target Language: English", action: nil, keyEquivalent: "")
         let submenu = NSMenu(title: "Language")
         languageMenuItem.submenu = submenu
         menu.addItem(languageMenuItem)
@@ -78,14 +78,15 @@ final class MenuBarController: NSObject {
 
     private func rebuildLanguageSubmenu() {
         let currentLanguage = settingsModel.targetLanguage
-        languageItem?.title = "Language: \(currentLanguage.displayName)"
+        languageItem?.title = "Target Language: \(currentLanguage.displayName)"
 
         guard let languageSubmenu else { return }
         languageSubmenu.removeAllItems()
 
-        let indicatorItem = NSMenuItem(title: "Translation On", action: nil, keyEquivalent: "")
+        let indicatorTitle = settingsModel.translationEnabled ? "Translation On" : "Translation Off"
+        let indicatorItem = NSMenuItem(title: indicatorTitle, action: nil, keyEquivalent: "")
         indicatorItem.isEnabled = false
-        indicatorItem.isHidden = !settingsModel.translationEnabled
+        indicatorItem.isHidden = false
         languageSubmenu.addItem(indicatorItem)
         translationOnIndicatorItem = indicatorItem
 
@@ -123,7 +124,8 @@ final class MenuBarController: NSObject {
 
     func updateMenuItems(isRecording: Bool) {
         toggleRecordingItem?.title = isRecording ? "Stop Recording" : "Start Recording"
-        translationOnIndicatorItem?.isHidden = !settingsModel.translationEnabled
+        translationOnIndicatorItem?.title = settingsModel.translationEnabled ? "Translation On" : "Translation Off"
+        translationOnIndicatorItem?.isHidden = false
     }
 
     func showIndicator() {
