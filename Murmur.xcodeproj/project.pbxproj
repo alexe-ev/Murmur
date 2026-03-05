@@ -26,6 +26,8 @@
 		A10000000000000000000034 /* OpenAIWhisperService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000035 /* OpenAIWhisperService.swift */; };
 		A10000000000000000000036 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000037 /* SettingsView.swift */; };
 		A10000000000000000000038 /* TranslationConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000039 /* TranslationConfig.swift */; };
+		A1000000000000000000003A /* RecordingFlowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000003B /* RecordingFlowCoordinator.swift */; };
+		A1000000000000000000003C /* TranscriptionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000003D /* TranscriptionCoordinator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +52,8 @@
 		A10000000000000000000035 /* OpenAIWhisperService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/Transcription/OpenAIWhisperService.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000037 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/UI/SettingsView.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000039 /* TranslationConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/Translation/TranslationConfig.swift; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000003B /* RecordingFlowCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/App/RecordingFlowCoordinator.swift; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000003D /* TranscriptionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/App/TranscriptionCoordinator.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +89,8 @@
 			children = (
 				A10000000000000000000013 /* MurmurApp.swift */,
 				A10000000000000000000015 /* AppDelegate.swift */,
+				A1000000000000000000003B /* RecordingFlowCoordinator.swift */,
+				A1000000000000000000003D /* TranscriptionCoordinator.swift */,
 				A10000000000000000000019 /* PermissionsManager.swift */,
 				A1000000000000000000001D /* HotkeyManager.swift */,
 				A1000000000000000000001F /* AudioRecorder.swift */,
@@ -184,6 +190,8 @@
 			files = (
 				A10000000000000000000012 /* MurmurApp.swift in Sources */,
 				A10000000000000000000014 /* AppDelegate.swift in Sources */,
+				A1000000000000000000003A /* RecordingFlowCoordinator.swift in Sources */,
+				A1000000000000000000003C /* TranscriptionCoordinator.swift in Sources */,
 				A10000000000000000000016 /* SettingsModel.swift in Sources */,
 				A10000000000000000000018 /* PermissionsManager.swift in Sources */,
 				A1000000000000000000001A /* OnboardingView.swift in Sources */,

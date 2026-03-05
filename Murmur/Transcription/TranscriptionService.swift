@@ -1,5 +1,10 @@
 import Foundation
 
+struct TranscriptionRequest {
+    let targetLanguage: String?
+    let isTranslationEnabled: Bool
+}
+
 protocol TranscriptionService: AnyObject {
     /// Indicates whether the transcription backend is currently available.
     var isAvailable: Bool { get }
@@ -7,9 +12,9 @@ protocol TranscriptionService: AnyObject {
     /// Transcribe audio at the given URL.
     /// - Parameters:
     ///   - audioURL: Path to a 16kHz mono WAV file.
-    ///   - targetLanguage: BCP-47 language code for the desired output language, or nil for auto-detect.
+    ///   - request: Explicit runtime context for transcription/translation behavior.
     /// - Returns: The transcribed (and optionally translated) text.
-    func transcribe(audioURL: URL, targetLanguage: String?) async throws -> String
+    func transcribe(audioURL: URL, request: TranscriptionRequest) async throws -> String
 }
 
 enum TranscriptionError: Error {

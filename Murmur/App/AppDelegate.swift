@@ -1,6 +1,5 @@
 import AppKit
 import Carbon.HIToolbox
-import Combine
 import ServiceManagement
 import SwiftUI
 import UserNotifications
@@ -12,18 +11,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let permissionsManager = PermissionsManager.shared
     var menuBarController: MenuBarController?
     private let hotkeyManager = HotkeyManager()
-    private let audioRecorder = AudioRecorder()
-    private let pasteController = PasteController()
-    var transcriptionService: TranscriptionService = LocalWhisperService()
 
     private let settingsModel = SettingsModel.shared
     private let translationConfig = TranslationConfig.shared
     private let notificationCenter = UNUserNotificationCenter.current()
-    private var cancellables = Set<AnyCancellable>()
+    private lazy var transcriptionCoordinator = TranscriptionCoordinator(
+        settingsModel: settingsModel,
+        translationConfig: translationConfig
+    )
+    private var recordingFlowCoordinator: RecordingFlowCoordinator?
     private var onboardingWindow: NSWindow?
     private var settingsWindow: NSWindow?
     private var didEnterMainFlow = false
-    private var isRecordingFlowActive = false
     private var isMissingAPIKeyAlertPresented = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -34,9 +33,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         settingsModel.launchAtLoginDidChange = { [weak self] enabled in
             self?.applyLaunchAtLogin(enabled)
         }
-        observeBackendChanges()
-        observeTranslationConfigChanges()
-        enforceBackendForCurrentConfig()
+        transcriptionCoordinator.onMissingAPIKey = { [weak self] in
+            self?.promptForMissingAPIKey()
+        }
+        transcriptionCoordinator.start()
         applyLaunchAtLogin(settingsModel.launchAtLogin)
         requestNotificationAuthorization()
 
@@ -62,72 +62,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } catch {
             print("Failed to update launch at login state (enabled: \(enabled)): \(error)")
         }
-    }
-
-    func applyTranscriptionBackend() {
-        switch settingsModel.whisperBackend {
-        case .api:
-            transcriptionService = OpenAIWhisperService()
-            if !KeychainManager.hasValidAPIKey() {
-                print("OpenAI API backend selected, but API key is missing in Keychain.")
-            }
-        case .local:
-            transcriptionService = LocalWhisperService()
-            Task {
-                do {
-                    try await ModelManager.shared.loadModel()
-                } catch is CancellationError {
-                    return
-                } catch {
-                    print("Failed to load local Whisper model: \(error.localizedDescription)")
-                }
-            }
-        }
-    }
-
-    private func observeBackendChanges() {
-        settingsModel.$whisperBackend
-            .removeDuplicates()
-            .dropFirst()
-            .sink { [weak self] _ in
-                self?.enforceBackendForCurrentConfig()
-            }
-            .store(in: &cancellables)
-    }
-
-    private func observeTranslationConfigChanges() {
-        translationConfig.$isEnabled
-            .removeDuplicates()
-            .dropFirst()
-            .sink { [weak self] _ in
-                self?.enforceBackendForCurrentConfig()
-            }
-            .store(in: &cancellables)
-
-        translationConfig.$targetLanguage
-            .removeDuplicates()
-            .dropFirst()
-            .sink { [weak self] _ in
-                self?.enforceBackendForCurrentConfig()
-            }
-            .store(in: &cancellables)
-    }
-
-    func enforceBackendForCurrentConfig() {
-        if translationConfig.requiresAPI {
-            if settingsModel.whisperBackend == .api {
-                applyTranscriptionBackend()
-            } else {
-                transcriptionService = OpenAIWhisperService()
-            }
-
-            if !KeychainManager.hasValidAPIKey() {
-                promptForMissingAPIKey()
-            }
-            return
-        }
-
-        applyTranscriptionBackend()
     }
 
     private func presentOnboardingWindow() {
@@ -171,6 +105,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard !didEnterMainFlow else { return }
         didEnterMainFlow = true
         menuBarController = MenuBarController()
+        configureRecordingFlowCoordinator()
 
         hotkeyManager.onToggleRequest = { [weak self] in
             self?.toggleRecordingFromHotkey()
@@ -193,82 +128,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         hotkeyManager.register(keyCode: keyCode, modifiers: modifiers)
     }
 
-    private func startRecordingFlow() {
-        guard !isRecordingFlowActive else { return }
-
-        isRecordingFlowActive = true
-        menuBarController?.setState(.recording)
-        menuBarController?.showIndicator()
-        menuBarController?.updateMenuItems(isRecording: true)
-
-        do {
-            try audioRecorder.startRecording()
-            print("startRecordingFlow")
-        } catch {
-            isRecordingFlowActive = false
-            menuBarController?.setState(.idle)
-            menuBarController?.hideIndicator()
-            menuBarController?.updateMenuItems(isRecording: false)
-            showErrorNotification(error)
-        }
-    }
-
-    private func stopRecordingFlow() {
-        guard isRecordingFlowActive else { return }
-
-        isRecordingFlowActive = false
-        menuBarController?.setState(.processing)
-        menuBarController?.hideIndicator()
-        menuBarController?.updateMenuItems(isRecording: false)
-
-        guard let audioURL = audioRecorder.stopRecording() else {
-            menuBarController?.setState(.idle)
-            showErrorNotification(TranscriptionError.audioFileNotFound)
-            return
-        }
-
-        Task { [weak self] in
-            guard let self else { return }
-            defer { cleanupTemporaryAudioFile(at: audioURL) }
-
-            do {
-                enforceBackendForCurrentConfig()
-
-                if translationConfig.requiresAPI && !KeychainManager.hasValidAPIKey() {
-                    menuBarController?.setState(.idle)
-                    return
-                }
-
-                let targetLanguage = translationConfig.isEnabled ? translationConfig.targetLanguage.rawValue : nil
-                let text = try await transcriptionService.transcribe(audioURL: audioURL, targetLanguage: targetLanguage)
-                try pasteController.paste(text)
-                menuBarController?.setState(.idle)
-                print("stopRecordingFlow")
-            } catch {
-                showErrorNotification(error)
-                menuBarController?.setState(.idle)
+    private func configureRecordingFlowCoordinator() {
+        recordingFlowCoordinator = RecordingFlowCoordinator(
+            audioRecorder: AudioRecorder(),
+            pasteController: PasteController(),
+            menuBarProvider: { [weak self] in
+                self?.menuBarController
+            },
+            transcriptionHandler: { [weak self] audioURL in
+                guard let self else { return nil }
+                return try await self.transcriptionCoordinator.transcribe(audioURL: audioURL)
+            },
+            errorHandler: { [weak self] error in
+                self?.showErrorNotification(error)
             }
-        }
-    }
-
-    private func cleanupTemporaryAudioFile(at audioURL: URL) {
-        guard FileManager.default.fileExists(atPath: audioURL.path) else {
-            return
-        }
-
-        do {
-            try FileManager.default.removeItem(at: audioURL)
-        } catch {
-            print("Failed to remove temporary audio file at \(audioURL.path): \(error.localizedDescription)")
-        }
+        )
     }
 
     private func toggleRecordingFromHotkey() {
-        if isRecordingFlowActive {
-            stopRecordingFlow()
-        } else {
-            startRecordingFlow()
-        }
+        recordingFlowCoordinator?.toggleRecording()
     }
 
     @objc
