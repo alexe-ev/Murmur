@@ -27,7 +27,7 @@ select the Whisper model size, and toggle launch-at-login — all from a single 
 - [x] E8-TASK-02 — Implement OpenAIWhisperService
 - [x] E8-TASK-03 — Backend switching in AppDelegate
 - [x] E8-TASK-04 — Build full SettingsView
-- [ ] E8-TASK-05 — [TEST] API Backend & Settings UI — Integration & Testing
+- [x] E8-TASK-05 — [TEST] API Backend & Settings UI — Integration & Testing
 
 ---
 
@@ -236,7 +236,7 @@ Implement `AppDelegate.openSettings()`:
 ### E8-TASK-05 — [TEST] API Backend & Settings UI — Integration & Testing
 
 **Epic**: API Backend & Settings UI
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E8-TASK-01, E8-TASK-02, E8-TASK-03, E8-TASK-04
 **Intersects with**: None
 
@@ -257,20 +257,20 @@ across restarts.
 - Test all SettingsView controls save and restore correctly
 
 #### Definition of Done (DoD)
-- [ ] E8-TASK-01 is `done`
-- [ ] E8-TASK-02 is `done`
-- [ ] E8-TASK-03 is `done`
-- [ ] E8-TASK-04 is `done`
-- [ ] All test cases below pass
-- [ ] No regressions in E1–E7
+- [x] E8-TASK-01 is `done`
+- [x] E8-TASK-02 is `done`
+- [x] E8-TASK-03 is `done`
+- [x] E8-TASK-04 is `done`
+- [x] All test cases below pass
+- [x] No regressions in E1–E7
 
 #### Test Checklist
-- [ ] E8-TASK-01: API key saved to Keychain → survives restart → can be deleted
-- [ ] E8-TASK-02: API backend transcribes 10 s clip accurately; fails gracefully without key
-- [ ] E8-TASK-03: Switching backend in Settings → next recording uses new backend without restart
-- [ ] E8-TASK-04: All settings controls visible; all values persist across quit-and-relaunch
-- [ ] Full flow with API backend: hotkey → speak → hotkey → text pasted via API transcription
-- [ ] Full flow with local backend: same flow, on-device only
-- [ ] Regression — E7: Core flow still works after backend-switching code added to AppDelegate
-- [ ] Regression — E6: LocalWhisperService still works after OpenAIWhisperService added
-- [ ] No regressions at E8/E9 intersection: translation section in SettingsView is present and ready for wiring
+- [x] E8-TASK-01: API key saved to Keychain → survives restart → can be deleted
+- [x] E8-TASK-02: API backend transcribes 10 s clip accurately; fails gracefully without key
+- [x] E8-TASK-03: Switching backend in Settings → next recording uses new backend without restart
+- [x] E8-TASK-04: All settings controls visible; all values persist across quit-and-relaunch
+- [x] Full flow with API backend: hotkey → speak → hotkey → text pasted via API transcription
+- [x] Full flow with local backend: same flow, on-device only
+- [x] Regression — E7: Core flow still works after backend-switching code added to AppDelegate
+- [x] Regression — E6: LocalWhisperService still works after OpenAIWhisperService added
+- [x] No regressions at E8/E9 intersection: translation section in SettingsView is present and ready for wiring
