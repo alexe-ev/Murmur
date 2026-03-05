@@ -1,10 +1,13 @@
 import AppKit
+import Carbon.HIToolbox
 import Combine
 import ServiceManagement
 import SwiftUI
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    static weak var shared: AppDelegate?
+
     private let permissionsManager = PermissionsManager.shared
     // TODO: Add MenuBarController in E5.
     private var menuBarController: AnyObject?
@@ -19,6 +22,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var didEnterMainFlow = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        Self.shared = self
         NSApp.setActivationPolicy(.accessory)
         print("Murmur started")
 
@@ -100,8 +104,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
 
+        reregisterHotkey()
+    }
+
+    func reregisterHotkey() {
+        guard didEnterMainFlow else { return }
+
         let keyCode = UInt32(settingsModel.hotkeyKeyCode)
         let modifiers = UInt32(settingsModel.hotkeyModifiers)
+
+        if isPotentiallyReservedHotkey(keyCode: keyCode, modifiers: modifiers) {
+            print("Hotkey warning: selected shortcut may conflict with a reserved macOS shortcut.")
+        }
+
+        hotkeyManager.unregister()
         hotkeyManager.register(keyCode: keyCode, modifiers: modifiers)
     }
 
@@ -111,5 +127,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func stopRecordingFlow() {
         print("stopRecordingFlow")
+    }
+
+    private func isPotentiallyReservedHotkey(keyCode: UInt32, modifiers: UInt32) -> Bool {
+        let normalizedModifiers = modifiers & UInt32(cmdKey | optionKey | controlKey | shiftKey)
+
+        switch (keyCode, normalizedModifiers) {
+        case (UInt32(kVK_Space), UInt32(cmdKey)),
+             (UInt32(kVK_Space), UInt32(cmdKey | optionKey)),
+             (UInt32(kVK_Space), UInt32(controlKey)),
+             (UInt32(kVK_Tab), UInt32(cmdKey)),
+             (UInt32(kVK_ANSI_Grave), UInt32(cmdKey)),
+             (UInt32(kVK_ANSI_Grave), UInt32(cmdKey | shiftKey)):
+            return true
+        default:
+            return false
+        }
     }
 }

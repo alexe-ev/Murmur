@@ -22,7 +22,7 @@ persisted in `SettingsModel`, and re-registered automatically when changed.
 ### Tasks
 - [x] E3-TASK-01 — Implement HotkeyManager core
 - [x] E3-TASK-02 — Wire toggle callback to AppDelegate
-- [ ] E3-TASK-03 — Configurable hotkey (persist and re-register on change)
+- [x] E3-TASK-03 — Configurable hotkey (persist and re-register on change)
 - [ ] E3-TASK-04 — [TEST] Global Hotkey — Integration & Testing
 
 ---
@@ -116,7 +116,7 @@ be filled in by E4 (audio) and E7 (core flow).
 ### E3-TASK-03 — Configurable hotkey (persist and re-register on change)
 
 **Epic**: Global Hotkey
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E3-TASK-01, E3-TASK-02
 **Intersects with**: E8 (SettingsView hotkey capture field reads/writes these values)
 
@@ -140,10 +140,10 @@ When the user changes the hotkey in Settings (E8), `SettingsModel` properties up
 - Validate that the new hotkey is not a reserved system shortcut (log a warning if suspicious)
 
 #### Definition of Done (DoD)
-- [ ] Changing `hotkeyKeyCode` in SettingsModel triggers re-registration
-- [ ] Changing `hotkeyModifiers` in SettingsModel triggers re-registration
-- [ ] Old hotkey stops working after re-registration
-- [ ] New hotkey works immediately after re-registration
+- [x] Changing `hotkeyKeyCode` in SettingsModel triggers re-registration
+- [x] Changing `hotkeyModifiers` in SettingsModel triggers re-registration
+- [x] Old hotkey stops working after re-registration
+- [x] New hotkey works immediately after re-registration
 
 #### Test Checklist
 - [ ] Change `hotkeyKeyCode` to keyCode 5 (G) with optionKey modifier → Option+G fires the toggle
