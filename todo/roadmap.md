@@ -81,7 +81,7 @@ Open this first, find the next task, then read the full context before touching 
 | E2-TASK-01 | Implement PermissionsManager | `done` |
 | E2-TASK-02 | Build OnboardingView | `done` |
 | E2-TASK-03 | Integrate onboarding into launch flow | `done` |
-| E2-TASK-04 | [TEST] Permissions & Onboarding — Integration & Testing | `pending` |
+| E2-TASK-04 | [TEST] Permissions & Onboarding — Integration & Testing | `in progress` |
 
 ---
 
