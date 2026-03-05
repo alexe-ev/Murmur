@@ -122,10 +122,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func startRecordingFlow() {
+        menuBarController?.setState(.recording)
         print("startRecordingFlow")
     }
 
     private func stopRecordingFlow() {
+        menuBarController?.setState(.processing)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.menuBarController?.setState(.idle)
+        }
         print("stopRecordingFlow")
     }
 
