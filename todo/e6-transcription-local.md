@@ -19,14 +19,17 @@ String entirely on-device.
 - `Murmur/Transcription/LocalWhisperService.swift` — created
 - `Murmur/Transcription/ModelManager.swift` — created
 - `.github/workflows/macos-build.yml` — modified
+- `ARCHITECTURE.md` — modified
+- `todo/e7-paste-flow.md` — modified (dependency alignment after task reorder)
+- `todo/e8-api-settings.md` — modified (dependency alignment after task reorder)
 - `todo/e6-transcription-local.md` — modified (status updates)
 - `todo/roadmap.md` — modified (status updates)
 
 ### Tasks
 - [x] E6-TASK-01 — Define TranscriptionService protocol
 - [x] E6-TASK-02 — Add WhisperKit Swift Package dependency
-- [ ] E6-TASK-03 — Implement LocalWhisperService
-- [ ] E6-TASK-04 — Implement ModelManager (download, store, select)
+- [x] E6-TASK-03 — Implement ModelManager (download, store, select)
+- [ ] E6-TASK-04 — Implement LocalWhisperService
 - [ ] E6-TASK-05 — [TEST] Local Transcription — Integration & Testing
 
 ---
@@ -82,7 +85,7 @@ calling code.
 **Epic**: Local Transcription (WhisperKit)
 **Status**: `done`
 **Depends on**: E1-TASK-01
-**Intersects with**: E6-TASK-03 (LocalWhisperService imports WhisperKit)
+**Intersects with**: E6-TASK-03 (ModelManager imports WhisperKit)
 
 #### Affected Files
 | File | Change |
@@ -112,11 +115,63 @@ via Core ML and is the primary transcription engine for Murmur's local mode.
 
 ---
 
-### E6-TASK-03 — Implement LocalWhisperService
+### E6-TASK-03 — Implement ModelManager (download, store, select)
+
+**Epic**: Local Transcription (WhisperKit)
+**Status**: `done`
+**Depends on**: E6-TASK-02, E1-TASK-03
+**Intersects with**: E6-TASK-04 (LocalWhisperService calls ModelManager), E8 (model selection picker in SettingsView writes to SettingsModel.whisperModel which triggers ModelManager)
+
+#### Affected Files
+| File | Change |
+|---|---|
+| `Murmur/Transcription/ModelManager.swift` | created |
+| `Murmur.xcodeproj/project.pbxproj` | modified |
+| `ARCHITECTURE.md` | modified |
+| `todo/e6-transcription-local.md` | modified |
+| `todo/roadmap.md` | modified |
+| `todo/e7-paste-flow.md` | modified |
+| `todo/e8-api-settings.md` | modified |
+
+#### Description
+Manages the WhisperKit model lifecycle: downloading on first use, storing in
+`~/Library/Application Support/Murmur/`, and loading the user-selected model size into memory.
+
+#### Work
+- Create `class ModelManager: ObservableObject` (singleton: `ModelManager.shared`)
+- `@Published var isModelLoaded: Bool = false`
+- `@Published var isDownloading: Bool = false`
+- `@Published var downloadProgress: Double = 0`
+- Storage directory: `~Library/Application Support/Murmur/models/`
+- `func loadModel() async throws`:
+  - Read `SettingsModel.shared.whisperModel` (tiny / base / small)
+  - Check if model files exist locally; if not, download via WhisperKit
+  - Initialise a `WhisperKit` instance with the model
+  - Set `isModelLoaded = true`
+- `var whisperKit: WhisperKit?` — the loaded instance, accessed by `LocalWhisperService`
+- Observe `SettingsModel.shared.whisperModel` changes → call `loadModel()` to reload
+
+#### Definition of Done (DoD)
+- [x] `loadModel()` downloads the model on first call and loads it into memory
+- [x] Model files are persisted in `~/Library/Application Support/Murmur/models/`
+- [x] Subsequent launches load the model from disk (no re-download)
+- [x] `isModelLoaded` transitions from `false` → `true` after successful load
+- [x] Changing `whisperModel` in SettingsModel triggers a model reload
+- [x] `downloadProgress` updates during download (for future UI use)
+
+#### Test Checklist
+- [x] First launch (no model cached): download occurs, progress updates, model loads
+- [x] Second launch: model loads from disk, no download
+- [x] Change model from `"base"` to `"small"` → `isModelLoaded` briefly `false`, then `true` with new model
+- [x] `whisperKit` is non-nil after `loadModel()` succeeds
+
+---
+
+### E6-TASK-04 — Implement LocalWhisperService
 
 **Epic**: Local Transcription (WhisperKit)
 **Status**: `pending`
-**Depends on**: E6-TASK-01, E6-TASK-02, E6-TASK-04
+**Depends on**: E6-TASK-01, E6-TASK-02, E6-TASK-03
 **Intersects with**: E7 (called by stopRecordingFlow), E8 (AppDelegate swaps this out for OpenAIWhisperService based on settings)
 
 #### Affected Files
@@ -156,52 +211,6 @@ model via `ModelManager` and runs inference on a WAV file, returning the transcr
 
 ---
 
-### E6-TASK-04 — Implement ModelManager (download, store, select)
-
-**Epic**: Local Transcription (WhisperKit)
-**Status**: `pending`
-**Depends on**: E6-TASK-02, E1-TASK-03
-**Intersects with**: E6-TASK-03 (LocalWhisperService calls ModelManager), E8 (model selection picker in SettingsView writes to SettingsModel.whisperModel which triggers ModelManager)
-
-#### Affected Files
-| File | Change |
-|---|---|
-| `Murmur/Transcription/ModelManager.swift` | created |
-
-#### Description
-Manages the WhisperKit model lifecycle: downloading on first use, storing in
-`~/Library/Application Support/Murmur/`, and loading the user-selected model size into memory.
-
-#### Work
-- Create `class ModelManager: ObservableObject` (singleton: `ModelManager.shared`)
-- `@Published var isModelLoaded: Bool = false`
-- `@Published var isDownloading: Bool = false`
-- `@Published var downloadProgress: Double = 0`
-- Storage directory: `~Library/Application Support/Murmur/models/`
-- `func loadModel() async throws`:
-  - Read `SettingsModel.shared.whisperModel` (tiny / base / small)
-  - Check if model files exist locally; if not, download via WhisperKit
-  - Initialise a `WhisperKit` instance with the model
-  - Set `isModelLoaded = true`
-- `var whisperKit: WhisperKit?` — the loaded instance, accessed by `LocalWhisperService`
-- Observe `SettingsModel.shared.whisperModel` changes → call `loadModel()` to reload
-
-#### Definition of Done (DoD)
-- [ ] `loadModel()` downloads the model on first call and loads it into memory
-- [ ] Model files are persisted in `~/Library/Application Support/Murmur/models/`
-- [ ] Subsequent launches load the model from disk (no re-download)
-- [ ] `isModelLoaded` transitions from `false` → `true` after successful load
-- [ ] Changing `whisperModel` in SettingsModel triggers a model reload
-- [ ] `downloadProgress` updates during download (for future UI use)
-
-#### Test Checklist
-- [ ] First launch (no model cached): download occurs, progress updates, model loads
-- [ ] Second launch: model loads from disk, no download
-- [ ] Change model from `"base"` to `"small"` → `isModelLoaded` briefly `false`, then `true` with new model
-- [ ] `whisperKit` is non-nil after `loadModel()` succeeds
-
----
-
 ### E6-TASK-05 — [TEST] Local Transcription — Integration & Testing
 
 **Epic**: Local Transcription (WhisperKit)
@@ -235,8 +244,8 @@ WAV file input to transcribed String output, model management, and protocol conf
 #### Test Checklist
 - [ ] E6-TASK-01: `TranscriptionService` protocol — mock conformance compiles; errors throwable
 - [ ] E6-TASK-02: WhisperKit package resolves; `import WhisperKit` compiles
-- [ ] E6-TASK-03: 10 s English speech → transcription returns accurate text; temp file deleted after use
-- [ ] E6-TASK-04: Model downloads on first use; loads from cache on second launch; model switch reloads correctly
+- [ ] E6-TASK-03: Model downloads on first use; loads from cache on second launch; model switch reloads correctly
+- [ ] E6-TASK-04: 10 s English speech → transcription returns accurate text; temp file deleted after use
 - [ ] Full pipeline: `AudioRecorder.stop()` URL → `LocalWhisperService.transcribe()` → non-empty String in < 3 s (whisper-base, M1)
 - [ ] Regression — E4: AudioRecorder still produces valid 16kHz WAV files after E6 integration
 - [ ] No regressions at E6/E7 intersection: `TranscriptionService` protocol is ready to be called from core flow
