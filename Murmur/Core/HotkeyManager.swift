@@ -22,8 +22,7 @@ final class HotkeyManager {
         }
     }
 
-    var onToggle: ((Bool) -> Void)?
-    private(set) var isRecording = false
+    var onToggleRequest: (@MainActor () -> Void)?
     private(set) var lastError: Error?
 
     private var eventHandlerRef: EventHandlerRef?
@@ -58,7 +57,6 @@ final class HotkeyManager {
         }
 
         lastError = nil
-        isRecording = false
     }
 
     func unregister() {
@@ -66,7 +64,6 @@ final class HotkeyManager {
 
         let status = UnregisterEventHotKey(hotKeyRef)
         self.hotKeyRef = nil
-        isRecording = false
 
         if status != noErr {
             setError(HotkeyError.unregisterFailed(status))
@@ -122,8 +119,9 @@ final class HotkeyManager {
             return noErr
         }
 
-        isRecording.toggle()
-        onToggle?(isRecording)
+        Task { @MainActor [weak self] in
+            self?.onToggleRequest?()
+        }
         return noErr
     }
 

@@ -55,6 +55,16 @@ final class KeychainManager {
         return apiKey
     }
 
+    static func hasValidAPIKey() -> Bool {
+        guard
+            let apiKey = load(),
+            !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        else {
+            return false
+        }
+        return true
+    }
+
     static func delete() throws {
         let query = baseQuery()
         let status = SecItemDelete(query as CFDictionary)

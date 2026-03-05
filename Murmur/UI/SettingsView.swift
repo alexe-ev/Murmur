@@ -135,7 +135,7 @@ struct SettingsView: View {
     }
 
     private func refreshAPIKeyState() {
-        hasSavedAPIKey = (KeychainManager.load() != nil)
+        hasSavedAPIKey = KeychainManager.hasValidAPIKey()
     }
 
     private func saveAPIKey() {
