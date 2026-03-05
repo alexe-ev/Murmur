@@ -1,8 +1,8 @@
 # Murmur — Product Requirements Document
 
-**Version**: 0.1
-**Date**: 2026-03-04
-**Status**: Draft
+**Version**: 0.2
+**Date**: 2026-03-05
+**Status**: Active (v1 hardening)
 
 ---
 
@@ -140,6 +140,7 @@ Both Microphone and Accessibility permissions will be requested on first launch 
 | Translation in v1: local vs. API | **API only** — OpenAI Whisper `/translations` endpoint; no local non-English translation |
 | History/log of recordings | **No** — not in v1 |
 | Local Whisper model size | **`whisper-base` by default**; user can choose `tiny` / `base` / `small` in Settings |
+| v1 build architecture | **Apple Silicon (arm64)** |
 
 ## 12. Open Questions
 

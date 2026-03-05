@@ -24,7 +24,7 @@ clearly and that the app checks permission state on every foreground event.
 - [x] E2-TASK-01 — Implement PermissionsManager
 - [x] E2-TASK-02 — Build OnboardingView
 - [x] E2-TASK-03 — Integrate onboarding into launch flow
-- [ ] E2-TASK-04 — [TEST] Permissions & Onboarding — Integration & Testing
+- [x] E2-TASK-04 — [TEST] Permissions & Onboarding — Integration & Testing
 
 ---
 
@@ -162,7 +162,7 @@ if any permission is missing, and re-checked whenever the app comes to the foreg
 ### E2-TASK-04 — [TEST] Permissions & Onboarding — Integration & Testing
 
 **Epic**: Permissions & Onboarding
-**Status**: `in progress`
+**Status**: `done`
 **Depends on**: E2-TASK-01, E2-TASK-02, E2-TASK-03
 **Intersects with**: None
 

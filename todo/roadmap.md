@@ -49,7 +49,7 @@ Open this first, find the next task, then read the full context before touching 
 | PR-3 | Privacy/Security hardening (`H-03`, `L-02`) | `done` |
 | PR-4 | Type-safety foundation (`M-01`) | `done` |
 | PR-5 | Decoupling and readability (`M-02`, `L-01`) | `done` |
-| PR-6 | Quality gates and process (`H-05`, `H-06`, `H-07`, `M-05`, `M-06`, `L-03`) | `pending` |
+| PR-6 | Quality gates and process (`H-05`, `H-06`, `H-07`, `M-05`, `M-06`, `L-03`) | `done` |
 
 ---
 
@@ -57,8 +57,8 @@ Open this first, find the next task, then read the full context before touching 
 
 | # | Epic | File | Status | Progress |
 |---|---|---|---|---|
-| E1 | Project Skeleton & App Foundation | `todo/e1-foundation.md` | `in progress` | 4 / 5 |
-| E2 | Permissions & Onboarding | `todo/e2-permissions.md` | `in progress` | 3 / 4 |
+| E1 | Project Skeleton & App Foundation | `todo/e1-foundation.md` | `done` | 5 / 5 |
+| E2 | Permissions & Onboarding | `todo/e2-permissions.md` | `done` | 4 / 4 |
 | E3 | Global Hotkey | `todo/e3-hotkey.md` | `done` | 4 / 4 |
 | E4 | Audio Recording | `todo/e4-audio.md` | `done` | 4 / 4 |
 | E5 | Menu Bar UI | `todo/e5-menubar.md` | `done` | 5 / 5 |
@@ -76,7 +76,7 @@ Open this first, find the next task, then read the full context before touching 
 ### Epic E1 — Project Skeleton & App Foundation
 
 **File**: `todo/e1-foundation.md`
-**Status**: `in progress`
+**Status**: `done`
 **Depends on**: None
 
 | Task | Title | Status |
@@ -85,14 +85,14 @@ Open this first, find the next task, then read the full context before touching 
 | E1-TASK-02 | Implement MurmurApp + AppDelegate skeleton | `done` |
 | E1-TASK-03 | Implement SettingsModel (UserDefaults wrapper) | `done` |
 | E1-TASK-04 | LaunchAtLogin via SMAppService | `done` |
-| E1-TASK-05 | [TEST] Project Skeleton & App Foundation — Integration & Testing | `in progress` |
+| E1-TASK-05 | [TEST] Project Skeleton & App Foundation — Integration & Testing | `done` |
 
 ---
 
 ### Epic E2 — Permissions & Onboarding
 
 **File**: `todo/e2-permissions.md`
-**Status**: `in progress`
+**Status**: `done`
 **Depends on**: E1
 
 | Task | Title | Status |
@@ -100,7 +100,7 @@ Open this first, find the next task, then read the full context before touching 
 | E2-TASK-01 | Implement PermissionsManager | `done` |
 | E2-TASK-02 | Build OnboardingView | `done` |
 | E2-TASK-03 | Integrate onboarding into launch flow | `done` |
-| E2-TASK-04 | [TEST] Permissions & Onboarding — Integration & Testing | `in progress` |
+| E2-TASK-04 | [TEST] Permissions & Onboarding — Integration & Testing | `done` |
 
 ---
 
