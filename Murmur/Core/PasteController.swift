@@ -17,6 +17,7 @@ final class PasteController {
     private let permissionsManager: PermissionsManager
     private let pasteboard: NSPasteboard
     private let settingsModel: SettingsModel
+    private let axMessagingTimeout: Float = 0.15
 
     init(
         permissionsManager: PermissionsManager,
@@ -77,6 +78,7 @@ final class PasteController {
 
     private func tryInsertTextViaAccessibility(_ text: String) -> Bool {
         let systemWideElement = AXUIElementCreateSystemWide()
+        _ = AXUIElementSetMessagingTimeout(systemWideElement, axMessagingTimeout)
         var focusedValue: CFTypeRef?
         let focusedStatus = AXUIElementCopyAttributeValue(
             systemWideElement,
@@ -93,6 +95,13 @@ final class PasteController {
         }
 
         let focusedElement = unsafeBitCast(focusedValue, to: AXUIElement.self)
+        _ = AXUIElementSetMessagingTimeout(focusedElement, axMessagingTimeout)
+
+        var focusedPid: pid_t = 0
+        if AXUIElementGetPid(focusedElement, &focusedPid) == .success, focusedPid > 0 {
+            let appElement = AXUIElementCreateApplication(focusedPid)
+            _ = AXUIElementSetMessagingTimeout(appElement, axMessagingTimeout)
+        }
 
         var selectedTextSettable = DarwinBoolean(false)
         let selectedTextSettableStatus = AXUIElementIsAttributeSettable(
@@ -111,75 +120,7 @@ final class PasteController {
             }
         }
 
-        var valueSettable = DarwinBoolean(false)
-        let valueSettableStatus = AXUIElementIsAttributeSettable(
-            focusedElement,
-            kAXValueAttribute as CFString,
-            &valueSettable
-        )
-        guard valueSettableStatus == .success, valueSettable.boolValue else {
-            return false
-        }
-
-        var currentValueRef: CFTypeRef?
-        let valueStatus = AXUIElementCopyAttributeValue(
-            focusedElement,
-            kAXValueAttribute as CFString,
-            &currentValueRef
-        )
-        guard valueStatus == .success, let currentValue = currentValueRef as? String else {
-            return false
-        }
-
-        var selectedRangeRef: CFTypeRef?
-        let selectedRangeStatus = AXUIElementCopyAttributeValue(
-            focusedElement,
-            kAXSelectedTextRangeAttribute as CFString,
-            &selectedRangeRef
-        )
-        guard
-            selectedRangeStatus == .success,
-            let selectedRangeRef,
-            CFGetTypeID(selectedRangeRef) == AXValueGetTypeID()
-        else {
-            return false
-        }
-
-        let selectedRangeAXValue = selectedRangeRef as! AXValue
-        guard AXValueGetType(selectedRangeAXValue) == .cfRange else {
-            return false
-        }
-
-        var selectedRange = CFRange()
-        guard AXValueGetValue(selectedRangeAXValue, .cfRange, &selectedRange) else {
-            return false
-        }
-
-        let currentNSString = currentValue as NSString
-        let safeLocation = max(0, min(selectedRange.location, currentNSString.length))
-        let safeLength = max(0, min(selectedRange.length, currentNSString.length - safeLocation))
-        let replacementRange = NSRange(location: safeLocation, length: safeLength)
-        let newValue = currentNSString.replacingCharacters(in: replacementRange, with: text)
-
-        let setValueStatus = AXUIElementSetAttributeValue(
-            focusedElement,
-            kAXValueAttribute as CFString,
-            newValue as CFTypeRef
-        )
-        guard setValueStatus == .success else {
-            return false
-        }
-
-        var newCursorRange = CFRange(location: safeLocation + (text as NSString).length, length: 0)
-        if let newCursorAXValue = AXValueCreate(.cfRange, &newCursorRange) {
-            _ = AXUIElementSetAttributeValue(
-                focusedElement,
-                kAXSelectedTextRangeAttribute as CFString,
-                newCursorAXValue
-            )
-        }
-
-        return true
+        return false
     }
 
     private func captureClipboardSnapshot() -> ClipboardSnapshot? {
