@@ -24,7 +24,7 @@ the only — visible surface of Murmur.
 
 ### Tasks
 - [x] E5-TASK-01 — MenuBarController skeleton (NSStatusItem + basic dropdown)
-- [ ] E5-TASK-02 — Icon state management (idle / recording / processing)
+- [x] E5-TASK-02 — Icon state management (idle / recording / processing)
 - [ ] E5-TASK-03 — Floating recording indicator (NSPanel)
 - [ ] E5-TASK-04 — Dropdown menu (wired to AppDelegate actions)
 - [ ] E5-TASK-05 — [TEST] Menu Bar UI — Integration & Testing
@@ -76,7 +76,7 @@ minimal menu (Settings, Quit).
 ### E5-TASK-02 — Icon state management (idle / recording / processing)
 
 **Epic**: Menu Bar UI
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E5-TASK-01
 **Intersects with**: E4 (AudioRecorder.statePublisher), E3 (HotkeyManager.onToggle)
 
@@ -85,6 +85,8 @@ minimal menu (Settings, Quit).
 |---|---|
 | `Murmur/UI/MenuBarController.swift` | modified |
 | `Murmur/UI/Assets.xcassets` | created |
+| `Murmur/App/AppDelegate.swift` | modified |
+| `Murmur.xcodeproj/project.pbxproj` | modified |
 
 #### Description
 Three distinct icon states communicate recording lifecycle to the user at a glance.
@@ -104,11 +106,11 @@ Icons are stored as named image assets; the menu bar button image is swapped on 
 - `AppDelegate` calls `menuBarController?.setState(...)` in `startRecordingFlow` / `stopRecordingFlow` stubs
 
 #### Definition of Done (DoD)
-- [ ] Three image assets exist and load without error
-- [ ] `setState(.recording)` changes the menu bar icon visibly
-- [ ] `setState(.processing)` shows a different icon from `.recording`
-- [ ] `setState(.idle)` returns to the default icon
-- [ ] All state changes happen on the main thread
+- [x] Three image assets exist and load without error
+- [x] `setState(.recording)` changes the menu bar icon visibly
+- [x] `setState(.processing)` shows a different icon from `.recording`
+- [x] `setState(.idle)` returns to the default icon
+- [x] All state changes happen on the main thread
 
 #### Test Checklist
 - [ ] Press hotkey → icon changes to recording state immediately (no perceptible lag)
