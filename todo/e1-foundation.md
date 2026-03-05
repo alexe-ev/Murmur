@@ -197,7 +197,7 @@ is stored in `SettingsModel.launchAtLogin` and applied both on settings change a
 ### E1-TASK-05 — [TEST] Project Skeleton & App Foundation — Integration & Testing
 
 **Epic**: Project Skeleton & App Foundation
-**Status**: `pending`
+**Status**: `in progress`
 **Depends on**: E1-TASK-01, E1-TASK-02, E1-TASK-03, E1-TASK-04
 **Intersects with**: None
 
@@ -218,10 +218,10 @@ process, settings persist, and launch-at-login toggles correctly.
 - Manually verify all test cases below
 
 #### Definition of Done (DoD)
-- [ ] E1-TASK-01 is `done`
-- [ ] E1-TASK-02 is `done`
-- [ ] E1-TASK-03 is `done`
-- [ ] E1-TASK-04 is `done`
+- [x] E1-TASK-01 is `done`
+- [x] E1-TASK-02 is `done`
+- [x] E1-TASK-03 is `done`
+- [x] E1-TASK-04 is `done`
 - [ ] All test cases below pass
 - [ ] No regressions in related areas
 
