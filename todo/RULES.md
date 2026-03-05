@@ -321,22 +321,38 @@ still works end-to-end with no regressions.
 
 These rules govern how an agent must behave when picking up and completing work.
 
+### Execution priority (must follow)
+
+When sources conflict, use this order:
+
+1. **Direct user instruction in the current thread**
+2. **Active remediation plan declared in `todo/roadmap.md` Current Focus**
+3. **Default epic/task selection from roadmap**
+
+If an active remediation plan exists, the agent must not auto-start epic tasks unless the user explicitly asks to resume epic execution.
+
 ### Before starting any task — mandatory reading
 
 1. Read `CLAUDE.md` — project context, constraints, development notes
 2. Read `ARCHITECTURE.md` — current system design
 3. Read `PRD.md` — product requirements and feature intent
-4. Read `todo/roadmap.md` — find the next pending task, understand the full picture
-5. Open the epic file the task belongs to — read the full epic and all its tasks
+4. Read `todo/roadmap.md` — determine whether work mode is epic-driven or remediation-driven
+5. If remediation mode is active: read `todo/audit-remediation-plan.md` and `todo/audit-2026-03-05.md`
+6. If epic mode is active: open the epic file the task belongs to and read the full epic and all its tasks
 
-Only after completing all five steps should the agent begin implementation.
+Only after completing all required steps should the agent begin implementation.
 
 ### Picking the next task
 
-- Open `todo/roadmap.md` and locate the **first epic** that is not `done`
-- Inside that epic, find the **first task** with status `pending`
-- That is the task to work on — do not skip tasks or work out of order
-- Never start a `[TEST]` task until every other task in that epic is `done`
+- If remediation mode is active in roadmap `Current Focus`:
+  - pick the first `pending` remediation PR block from `todo/audit-remediation-plan.md`
+  - execute only that block's scope
+  - do not auto-pick epic tasks
+- If remediation mode is not active:
+  - open `todo/roadmap.md` and locate the **first epic** that is not `done`
+  - inside that epic, find the **first task** with status `pending`
+  - that is the task to work on — do not skip tasks or work out of order
+  - never start a `[TEST]` task until every other task in that epic is `done`
 
 ### After completing a task — mandatory updates
 
@@ -420,3 +436,5 @@ The Bug Log is also linked from `todo/roadmap.md` for quick access.
 14. The epic `[TEST]` task must include a regression check for every intersection flagged in the epic
 15. Every epic and task must have an `Affected Files` list — the agent must not touch unlisted files
 16. If a new file is needed during implementation, update `Affected Files` in the task (and epic) first
+17. Instruction precedence is: user instruction > active remediation plan > default roadmap epic order
+18. When remediation mode is active, the agent must not auto-start epic tasks

@@ -11,6 +11,7 @@ Open this first, find the next task, then read the full context before touching 
 - Each epic links to its detail file
 - Statuses are kept in sync with the individual task files
 - **Next task to pick up** = the first `pending` task in the first non-`done` epic
+- Exception: when `Current Focus` declares an active remediation plan, use that plan first and do not auto-pick epic tasks
 
 ---
 
@@ -21,16 +22,34 @@ Open this first, find the next task, then read the full context before touching 
 | `todo/roadmap.md` | This file — task navigation and status overview |
 | `todo/bugs.md` | Global bug log — all found bugs, fixes, and pre-release re-verification |
 | `todo/RULES.md` | Full conventions for epics, tasks, bugs, and agent workflow |
+| `todo/audit-2026-03-05.md` | Full audit findings and prioritized risk list |
+| `todo/audit-remediation-plan.md` | Active implementation plan for fixing audit findings |
 
 ---
 
 ## Current Focus
 
-> **E9 — Voice Translation** is complete.
-> Next up: **No pending tasks** (E1-TASK-05 and E2-TASK-04 are currently `in progress`).
+> **Active mode: Audit Remediation**
+> Execute `todo/audit-remediation-plan.md` in PR order (PR-1 .. PR-6).
 >
-> Before picking up any task: read `CLAUDE.md`, `ARCHITECTURE.md`, `PRD.md`, this file,
-> and the full epic file for the task you are about to start. See `RULES.md §Agent Workflow`.
+> Do not auto-pick epic tasks while this mode is active.
+> Epic work is resumed only on explicit user instruction.
+
+---
+
+## Audit Remediation Track
+
+**Plan file**: `todo/audit-remediation-plan.md`  
+**Source findings**: `todo/audit-2026-03-05.md`
+
+| PR | Scope | Status |
+|---|---|---|
+| PR-1 | Release blockers (`C-01`, `C-02`, `C-03`) | `pending` |
+| PR-2 | Runtime stability (`H-01`, `H-02`, `M-03`) | `pending` |
+| PR-3 | Privacy/Security hardening (`H-03`, `L-02`) | `pending` |
+| PR-4 | Type-safety foundation (`M-01`) | `pending` |
+| PR-5 | Decoupling and readability (`M-02`, `L-01`) | `pending` |
+| PR-6 | Quality gates and process (`H-05`, `H-06`, `H-07`, `M-05`, `M-06`, `L-03`) | `pending` |
 
 ---
 

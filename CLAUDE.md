@@ -35,7 +35,14 @@ The technology choices are still being evaluated. Likely candidates:
 
 ## Project Status
 
-Early stage — the project is in the initial design and planning phase.
+Core v1 functionality is implemented (hotkey, recording, transcription, translation, menu bar flow).
+Current phase is stabilization and hardening based on `todo/audit-2026-03-05.md`.
+
+## Current Execution Mode
+
+- Active implementation track is defined in `todo/audit-remediation-plan.md`
+- While remediation mode is active in `todo/roadmap.md`, do not auto-pick epic tasks
+- Resume epic/task progression only when explicitly requested by the user
 
 ## Development Notes for Claude
 
