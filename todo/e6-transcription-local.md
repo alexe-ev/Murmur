@@ -23,7 +23,7 @@ String entirely on-device.
 
 ### Tasks
 - [x] E6-TASK-01 — Define TranscriptionService protocol
-- [ ] E6-TASK-02 — Add WhisperKit Swift Package dependency
+- [x] E6-TASK-02 — Add WhisperKit Swift Package dependency
 - [ ] E6-TASK-03 — Implement LocalWhisperService
 - [ ] E6-TASK-04 — Implement ModelManager (download, store, select)
 - [ ] E6-TASK-05 — [TEST] Local Transcription — Integration & Testing
@@ -79,7 +79,7 @@ calling code.
 ### E6-TASK-02 — Add WhisperKit Swift Package dependency
 
 **Epic**: Local Transcription (WhisperKit)
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E1-TASK-01
 **Intersects with**: E6-TASK-03 (LocalWhisperService imports WhisperKit)
 
@@ -100,13 +100,13 @@ via Core ML and is the primary transcription engine for Murmur's local mode.
 - Verify the package resolves and the project builds
 
 #### Definition of Done (DoD)
-- [ ] WhisperKit appears in `Package.resolved` (or Xcode package cache)
-- [ ] `import WhisperKit` compiles without errors in a test file
-- [ ] Project builds after adding the dependency
+- [x] WhisperKit appears in `Package.resolved` (or Xcode package cache)
+- [x] `import WhisperKit` compiles without errors in a test file
+- [x] Project builds after adding the dependency
 
 #### Test Checklist
-- [ ] Clean build with WhisperKit dependency resolves successfully
-- [ ] `import WhisperKit` in any Swift file → no "no such module" error
+- [x] Clean build with WhisperKit dependency resolves successfully
+- [x] `import WhisperKit` in any Swift file → no "no such module" error
 
 ---
 

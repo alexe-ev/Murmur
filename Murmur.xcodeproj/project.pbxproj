@@ -17,6 +17,7 @@
 		A10000000000000000000020 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000021 /* MenuBarController.swift */; };
 		A10000000000000000000022 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000023 /* Assets.xcassets */; };
 		A10000000000000000000024 /* RecordingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000025 /* RecordingIndicatorView.swift */; };
+		A10000000000000000000026 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000027 /* WhisperKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A10000000000000000000026 /* WhisperKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,6 +99,9 @@
 			dependencies = (
 			);
 			name = Murmur;
+			packageProductDependencies = (
+				A10000000000000000000027 /* WhisperKit */,
+			);
 			productName = Murmur;
 			productReference = A10000000000000000000001 /* Murmur.app */;
 			productType = "com.apple.product-type.application";
@@ -125,6 +130,9 @@
 				Base,
 			);
 			mainGroup = A10000000000000000000005;
+			packageReferences = (
+				A10000000000000000000028 /* XCRemoteSwiftPackageReference "WhisperKit" */,
+			);
 			productRefGroup = A10000000000000000000007 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -163,6 +171,17 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A10000000000000000000028 /* XCRemoteSwiftPackageReference "WhisperKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/argmaxinc/WhisperKit";
+			requirement = {
+				kind = exactVersion;
+				version = 0.16.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCBuildConfiguration section */
 		A1000000000000000000000E /* Debug */ = {
@@ -269,6 +288,14 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A10000000000000000000027 /* WhisperKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A10000000000000000000028 /* XCRemoteSwiftPackageReference "WhisperKit" */;
+			productName = WhisperKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A1000000000000000000000C /* Project object */;
 }
