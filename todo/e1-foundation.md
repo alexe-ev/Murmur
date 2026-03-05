@@ -26,7 +26,7 @@ support. Delivers a runnable macOS menu bar–only app with no Dock icon.
 - [x] E1-TASK-02 — Implement MurmurApp + AppDelegate skeleton
 - [x] E1-TASK-03 — Implement SettingsModel (UserDefaults wrapper)
 - [x] E1-TASK-04 — LaunchAtLogin via SMAppService
-- [ ] E1-TASK-05 — [TEST] Project Skeleton & App Foundation — Integration & Testing
+- [x] E1-TASK-05 — [TEST] Project Skeleton & App Foundation — Integration & Testing
 
 ---
 
@@ -197,7 +197,7 @@ is stored in `SettingsModel.launchAtLogin` and applied both on settings change a
 ### E1-TASK-05 — [TEST] Project Skeleton & App Foundation — Integration & Testing
 
 **Epic**: Project Skeleton & App Foundation
-**Status**: `in progress`
+**Status**: `done`
 **Depends on**: E1-TASK-01, E1-TASK-02, E1-TASK-03, E1-TASK-04
 **Intersects with**: None
 

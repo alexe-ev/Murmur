@@ -2,6 +2,42 @@
 
 This file tracks checks intentionally deferred to manual QA after automated checks.
 
+## E1 — Project Skeleton & App Foundation
+
+### Scope
+- Task: `E1-TASK-05` ([TEST] Project Skeleton & App Foundation — Integration & Testing)
+- Related tasks: `E1-TASK-01`, `E1-TASK-02`, `E1-TASK-03`, `E1-TASK-04`
+
+### Manual Checklist
+- [ ] Verify app runs as menu bar-only process (no Dock icon, no Cmd+Tab presence).
+- [ ] Verify fresh install defaults are applied for all persisted settings.
+- [ ] Verify launch-at-login toggle adds/removes the app in macOS Login Items UI.
+- [ ] Verify launch-at-login behavior persists after relaunch.
+
+### Notes
+- Automated gate:
+  - `./scripts/smoke-regression.sh`
+  - Result: `PASS` (build + unit smoke tests).
+
+## E2 — Permissions & Onboarding
+
+### Scope
+- Task: `E2-TASK-04` ([TEST] Permissions & Onboarding — Integration & Testing)
+- Related tasks: `E2-TASK-01`, `E2-TASK-02`, `E2-TASK-03`
+
+### Manual Checklist
+- [ ] Fresh launch without permissions shows onboarding immediately.
+- [ ] Microphone grant button opens native dialog and updates status badge.
+- [ ] Accessibility button opens correct System Settings pane.
+- [ ] Onboarding cannot be dismissed early while required permissions are missing.
+- [ ] Onboarding auto-dismisses after both permissions granted and app enters normal flow.
+- [ ] Relaunch with granted permissions skips onboarding.
+
+### Notes
+- Automated gate:
+  - `./scripts/smoke-regression.sh`
+  - Result: `PASS` (build + unit smoke tests).
+
 ## E3 — Global Hotkey
 
 ### Scope

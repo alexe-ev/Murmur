@@ -37,6 +37,7 @@ The technology choices are still being evaluated. Likely candidates:
 
 Core v1 functionality is implemented (hotkey, recording, transcription, translation, menu bar flow).
 Current phase is stabilization and hardening based on `todo/audit-2026-03-05.md`.
+Active baseline: Swift language mode 5.0 on Xcode 16+ toolchain, with arm64-only builds.
 
 ## Current Execution Mode
 

@@ -256,6 +256,12 @@ A comprehensive checklist covering every task in the epic:
 - [ ] No regressions at intersections flagged across the epic
 ```
 
+### Bug logging requirement for `[TEST]` / `[RETEST]`
+
+- Every `[TEST]` or `[RETEST]` task must review `todo/bugs.md`.
+- If a new bug is found during testing, add a new `BUG-XX` entry immediately in the same PR.
+- If no new bug is found, record this explicitly in the task notes/checklist to keep bug tracking auditable.
+
 ---
 
 ## Retest Task (Created When a Bug is Found in [TEST])

@@ -1,8 +1,8 @@
 # Murmur — Architecture
 
-**Version**: 0.1
-**Date**: 2026-03-04
-**Status**: Draft
+**Version**: 0.2
+**Date**: 2026-03-05
+**Status**: Active (v1 hardening)
 
 ---
 
@@ -41,7 +41,9 @@ The architecture is intentionally minimal. There is no server, no database, no a
 
 ```
 Murmur.app
-├── AppDelegate                  # App entry point, core flow coordinator, permission checks
+├── AppDelegate                  # App entry point, startup/window orchestration
+├── RecordingFlowCoordinator     # Recording lifecycle coordinator (start/stop/process/cleanup)
+├── TranscriptionCoordinator     # Backend policy + request orchestration for transcription
 ├── MenuBarController            # NSStatusItem, icon state management, dropdown menu
 ├── HotkeyManager                # Global hotkey registration and event handling (Carbon)
 ├── AudioRecorder                # AVFoundation microphone capture, 16kHz mono WAV, temp file
@@ -62,7 +64,9 @@ Murmur/
 └── Murmur/
     ├── App/
     │   ├── MurmurApp.swift             # @main, NSApplicationDelegateAdaptor
-    │   ├── AppDelegate.swift           # Entry point, coordinator, startRecordingFlow / stopRecordingFlow
+    │   ├── AppDelegate.swift           # Entry point, startup flow + windows/hotkey orchestration
+    │   ├── RecordingFlowCoordinator.swift # Recording flow coordinator (record/process/paste/cleanup)
+    │   ├── TranscriptionCoordinator.swift # Backend enforcement + explicit request assembly
     │   └── Info.plist                  # LSUIElement=YES (hides from Dock)
     ├── Core/
     │   ├── HotkeyManager.swift         # Carbon RegisterEventHotKey, system-wide toggle, onToggle callback
@@ -70,7 +74,7 @@ Murmur/
     │   ├── PasteController.swift       # NSPasteboard + CGEvent Cmd+V simulation
     │   └── PermissionsManager.swift    # Microphone + Accessibility check/request, polling
     ├── Transcription/
-    │   ├── TranscriptionService.swift  # Protocol: transcribe(audioURL:targetLanguage:) async throws -> String
+    │   ├── TranscriptionService.swift  # Protocol: transcribe(audioURL:request:) async throws -> String
     │   ├── LocalWhisperService.swift   # WhisperKit on-device implementation
     │   ├── OpenAIWhisperService.swift  # OpenAI API implementation (/transcriptions + /translations + chat)
     │   └── ModelManager.swift          # WhisperKit model download, ~/Library/Application Support/Murmur/
@@ -108,7 +112,7 @@ Murmur/
   AudioRecorder.stopRecording()      ← returns audio buffer (m4a/wav)
         │
         ▼
-  TranscriptionService.transcribe(audio, targetLanguage?)
+  TranscriptionService.transcribe(audio, request)
         │         │
         │         ├─ LocalWhisper (WhisperKit, on-device)
         │         └─ OpenAIWhisper (API call, requires network)
@@ -210,5 +214,6 @@ OpenAI API key stored in **Keychain** (never in UserDefaults).
 | Default hotkey | Option + Space (keyCode 49, optionKey modifier) |
 | Local translation to non-English | **Not supported in v1** — API required for non-English target languages |
 | Default Whisper model | **`whisper-base`** — ~1s on M1, good accuracy; user can select `tiny`/`base`/`small` in Settings |
-| WhisperKit toolchain baseline | **Swift 6 / Xcode 16+ required** (WhisperKit 0.16.0 and transitive packages use Swift tools 6.x). CI is pinned to Xcode 16.2 on macOS 15 to keep package resolution stable. |
+| App toolchain baseline | **Swift 5 language mode + Xcode 16+ toolchain**. The app target stays on Swift language mode 5.0, while Xcode 16+ is required for current package graph/tooling compatibility. |
+| Target architectures | **arm64 only** for local development and CI to avoid x86_64 slice ambiguity with transitive ML dependencies. |
 | Streaming transcription | Not in scope for v1; evaluate for v2 |
