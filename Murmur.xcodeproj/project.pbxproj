@@ -16,6 +16,7 @@
 		A1000000000000000000001E /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001F /* AudioRecorder.swift */; };
 		A10000000000000000000020 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000021 /* MenuBarController.swift */; };
 		A10000000000000000000022 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000023 /* Assets.xcassets */; };
+		A10000000000000000000024 /* RecordingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000025 /* RecordingIndicatorView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,7 @@
 		A1000000000000000000001F /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/Core/AudioRecorder.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000021 /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/UI/MenuBarController.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000023 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Murmur/UI/Assets.xcassets; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000025 /* RecordingIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/UI/RecordingIndicatorView.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +72,7 @@
 				A1000000000000000000001F /* AudioRecorder.swift */,
 				A1000000000000000000001B /* OnboardingView.swift */,
 				A10000000000000000000021 /* MenuBarController.swift */,
+				A10000000000000000000025 /* RecordingIndicatorView.swift */,
 				A10000000000000000000023 /* Assets.xcassets */,
 				A10000000000000000000017 /* SettingsModel.swift */,
 				A10000000000000000000002 /* Info.plist */,
@@ -155,6 +158,7 @@
 				A1000000000000000000001C /* HotkeyManager.swift in Sources */,
 				A1000000000000000000001E /* AudioRecorder.swift in Sources */,
 				A10000000000000000000020 /* MenuBarController.swift in Sources */,
+				A10000000000000000000024 /* RecordingIndicatorView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,4 +1,5 @@
 import AppKit
+import SwiftUI
 
 enum MenuBarState {
     case idle
@@ -9,6 +10,7 @@ enum MenuBarState {
 @MainActor
 final class MenuBarController: NSObject {
     private let statusItem: NSStatusItem
+    private var indicatorPanel: NSPanel?
 
     override init() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
@@ -44,12 +46,15 @@ final class MenuBarController: NSObject {
             case .idle:
                 iconName = "icon-idle"
                 fallbackSymbol = "waveform"
+                self.hideIndicator()
             case .recording:
                 iconName = "icon-recording"
                 fallbackSymbol = "mic.fill"
+                self.showIndicator()
             case .processing:
                 iconName = "icon-processing"
                 fallbackSymbol = "hourglass"
+                self.hideIndicator()
             }
 
             let image = NSImage(named: iconName)
@@ -63,5 +68,44 @@ final class MenuBarController: NSObject {
         } else {
             DispatchQueue.main.async(execute: applyState)
         }
+    }
+
+    func showIndicator() {
+        if indicatorPanel == nil {
+            let hostingView = NSHostingView(rootView: RecordingIndicatorView())
+            let panel = NSPanel(
+                contentRect: NSRect(x: 0, y: 0, width: 160, height: 44),
+                styleMask: [.borderless],
+                backing: .buffered,
+                defer: false
+            )
+            panel.contentView = hostingView
+            panel.isOpaque = false
+            panel.backgroundColor = .clear
+            panel.level = .floating
+            panel.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
+            panel.ignoresMouseEvents = true
+            panel.hasShadow = false
+            indicatorPanel = panel
+        }
+
+        guard let panel = indicatorPanel else { return }
+        positionIndicator(panel)
+        panel.orderFrontRegardless()
+    }
+
+    func hideIndicator() {
+        indicatorPanel?.orderOut(nil)
+    }
+
+    private func positionIndicator(_ panel: NSPanel) {
+        let margin: CGFloat = 20
+        let targetScreen = NSScreen.main ?? NSScreen.screens.first
+        guard let screen = targetScreen else { return }
+
+        let frame = screen.visibleFrame
+        let x = frame.maxX - panel.frame.width - margin
+        let y = frame.minY + margin
+        panel.setFrameOrigin(NSPoint(x: x, y: y))
     }
 }

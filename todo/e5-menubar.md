@@ -25,7 +25,7 @@ the only — visible surface of Murmur.
 ### Tasks
 - [x] E5-TASK-01 — MenuBarController skeleton (NSStatusItem + basic dropdown)
 - [x] E5-TASK-02 — Icon state management (idle / recording / processing)
-- [ ] E5-TASK-03 — Floating recording indicator (NSPanel)
+- [x] E5-TASK-03 — Floating recording indicator (NSPanel)
 - [ ] E5-TASK-04 — Dropdown menu (wired to AppDelegate actions)
 - [ ] E5-TASK-05 — [TEST] Menu Bar UI — Integration & Testing
 
@@ -123,7 +123,7 @@ Icons are stored as named image assets; the menu bar button image is swapped on 
 ### E5-TASK-03 — Floating recording indicator (NSPanel)
 
 **Epic**: Menu Bar UI
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E5-TASK-01, E5-TASK-02
 **Intersects with**: E4 (AudioRecorder state drives show/hide)
 
@@ -132,6 +132,7 @@ Icons are stored as named image assets; the menu bar button image is swapped on 
 |---|---|
 | `Murmur/UI/RecordingIndicatorView.swift` | created |
 | `Murmur/UI/MenuBarController.swift` | modified |
+| `Murmur.xcodeproj/project.pbxproj` | modified |
 
 #### Description
 A small floating panel appears in a fixed corner of the screen while recording is active,
@@ -151,11 +152,11 @@ The panel is always-on-top, non-interactive, and disappears when recording stops
 - Call `showIndicator()` in `setState(.recording)` and `hideIndicator()` in `setState(.idle)` / `setState(.processing)`
 
 #### Definition of Done (DoD)
-- [ ] Panel appears in bottom-right corner on `setState(.recording)`
-- [ ] Panel disappears on `setState(.idle)` or `setState(.processing)`
-- [ ] Panel does not intercept mouse events
-- [ ] Panel appears on all Spaces (`.canJoinAllSpaces`)
-- [ ] Panel is visible above all other windows (`.floating` level)
+- [x] Panel appears in bottom-right corner on `setState(.recording)`
+- [x] Panel disappears on `setState(.idle)` or `setState(.processing)`
+- [x] Panel does not intercept mouse events
+- [x] Panel appears on all Spaces (`.canJoinAllSpaces`)
+- [x] Panel is visible above all other windows (`.floating` level)
 
 #### Test Checklist
 - [ ] Press hotkey → floating indicator appears in bottom-right corner
