@@ -30,7 +30,7 @@ final class TranscriptionCoordinator {
         }
 
         let request = TranscriptionRequest(
-            targetLanguage: translationConfig.isEnabled ? translationConfig.targetLanguage.rawValue : nil,
+            targetLanguage: translationConfig.targetLanguage.rawValue,
             isTranslationEnabled: translationConfig.isEnabled
         )
         return try await service.transcribe(audioURL: audioURL, request: request)
