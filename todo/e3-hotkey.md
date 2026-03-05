@@ -21,7 +21,7 @@ persisted in `SettingsModel`, and re-registered automatically when changed.
 
 ### Tasks
 - [x] E3-TASK-01 — Implement HotkeyManager core
-- [ ] E3-TASK-02 — Wire toggle callback to AppDelegate
+- [x] E3-TASK-02 — Wire toggle callback to AppDelegate
 - [ ] E3-TASK-03 — Configurable hotkey (persist and re-register on change)
 - [ ] E3-TASK-04 — [TEST] Global Hotkey — Integration & Testing
 
@@ -73,7 +73,7 @@ second press = stop) and exposes `isRecording: Bool`.
 ### E3-TASK-02 — Wire toggle callback to AppDelegate
 
 **Epic**: Global Hotkey
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E3-TASK-01
 **Intersects with**: E5 (MenuBarController.setState called here), E7 (AudioRecorder start/stop called here)
 
@@ -101,10 +101,10 @@ be filled in by E4 (audio) and E7 (core flow).
 - Ensure `HotkeyManager` is only registered after permissions are confirmed (avoids registering before onboarding is complete)
 
 #### Definition of Done (DoD)
-- [ ] `AppDelegate` owns `HotkeyManager` and registers it after onboarding
-- [ ] `onToggle` callback is set before registration
-- [ ] `startRecordingFlow()` and `stopRecordingFlow()` stubs are called on toggle
-- [ ] Console logs confirm callback fires
+- [x] `AppDelegate` owns `HotkeyManager` and registers it after onboarding
+- [x] `onToggle` callback is set before registration
+- [x] `startRecordingFlow()` and `stopRecordingFlow()` stubs are called on toggle
+- [x] Console logs confirm callback fires
 
 #### Test Checklist
 - [ ] Grant permissions → press Option+Space → console shows "startRecordingFlow"
