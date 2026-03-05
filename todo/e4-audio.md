@@ -21,7 +21,7 @@ Temp files are deleted immediately after use to keep storage footprint minimal.
 
 ### Tasks
 - [x] E4-TASK-01 — Implement AudioRecorder (AVFoundation setup, 16kHz mono WAV)
-- [ ] E4-TASK-02 — Temp file management
+- [x] E4-TASK-02 — Temp file management
 - [ ] E4-TASK-03 — Recording state machine (Combine publisher)
 - [ ] E4-TASK-04 — [TEST] Audio Recording — Integration & Testing
 
@@ -75,7 +75,7 @@ inline using `AVAudioConverter` so no post-processing step is needed.
 ### E4-TASK-02 — Temp file management
 
 **Epic**: Audio Recording
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E4-TASK-01
 **Intersects with**: E6 (TranscriptionService deletes the file after use — coordinate ownership)
 
@@ -98,10 +98,10 @@ deletion after the consumer is done with the file.
 - On `startRecording()`, if `currentTempURL` is non-nil (leftover), delete it before creating a new file
 
 #### Definition of Done (DoD)
-- [ ] Each recording writes to a uniquely named file in `FileManager.temporaryDirectory`
-- [ ] `stopRecording()` returns the URL and clears `currentTempURL`
-- [ ] Stale temp file from a previous session is cleaned up on next `startRecording()`
-- [ ] `deleteCurrentRecording()` removes the file from disk
+- [x] Each recording writes to a uniquely named file in `FileManager.temporaryDirectory`
+- [x] `stopRecording()` returns the URL and clears `currentTempURL`
+- [x] Stale temp file from a previous session is cleaned up on next `startRecording()`
+- [x] `deleteCurrentRecording()` removes the file from disk
 
 #### Test Checklist
 - [ ] Record twice — two different file names in temp dir
