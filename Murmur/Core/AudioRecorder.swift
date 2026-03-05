@@ -30,7 +30,7 @@ final class AudioRecorder {
 
     private var converter: AVAudioConverter?
     private var outputFile: AVAudioFile?
-    private var outputURL: URL?
+    private var currentTempURL: URL?
     private var isRecording = false
 
     private var outputFormat: AVAudioFormat {
@@ -54,6 +54,8 @@ final class AudioRecorder {
             throw AudioRecorderError.converterCreationFailed
         }
 
+        deleteCurrentRecording()
+
         let tempURL = FileManager.default.temporaryDirectory
             .appendingPathComponent("murmur_\(UUID().uuidString).wav")
 
@@ -72,7 +74,7 @@ final class AudioRecorder {
         ioLock.lock()
         self.converter = converter
         self.outputFile = file
-        self.outputURL = tempURL
+        self.currentTempURL = tempURL
         ioLock.unlock()
 
         inputNode.removeTap(onBus: 0)
@@ -102,14 +104,34 @@ final class AudioRecorder {
         audioEngine.stop()
 
         ioLock.lock()
-        let completedURL = outputURL
+        let completedURL = currentTempURL
         outputFile = nil
-        outputURL = nil
+        currentTempURL = nil
         converter = nil
         ioLock.unlock()
 
         isRecording = false
         return completedURL
+    }
+
+    @MainActor
+    func deleteCurrentRecording() {
+        ioLock.lock()
+        let urlToDelete = currentTempURL
+        currentTempURL = nil
+        ioLock.unlock()
+
+        guard let urlToDelete else {
+            return
+        }
+
+        do {
+            if FileManager.default.fileExists(atPath: urlToDelete.path) {
+                try FileManager.default.removeItem(at: urlToDelete)
+            }
+        } catch {
+            print("AudioRecorder delete error: \(error.localizedDescription)")
+        }
     }
 
     private func processInputBuffer(_ buffer: AVAudioPCMBuffer, inputFormat: AVAudioFormat) {
@@ -163,11 +185,11 @@ final class AudioRecorder {
         audioEngine.stop()
 
         ioLock.lock()
-        if let outputURL {
-            try? FileManager.default.removeItem(at: outputURL)
+        if let currentTempURL {
+            try? FileManager.default.removeItem(at: currentTempURL)
         }
         outputFile = nil
-        outputURL = nil
+        currentTempURL = nil
         converter = nil
         ioLock.unlock()
 

@@ -27,7 +27,7 @@ Open this first, find the next task, then read the full context before touching 
 ## Current Focus
 
 > **E4 — Audio Recording** is the active epic.
-> Next up: **E4-TASK-02** (Temp file management).
+> Next up: **E4-TASK-03** (Recording state machine (Combine publisher)).
 >
 > Before picking up any task: read `CLAUDE.md`, `ARCHITECTURE.md`, `PRD.md`, this file,
 > and the full epic file for the task you are about to start. See `RULES.md §Agent Workflow`.
@@ -41,7 +41,7 @@ Open this first, find the next task, then read the full context before touching 
 | E1 | Project Skeleton & App Foundation | `todo/e1-foundation.md` | `in progress` | 4 / 5 |
 | E2 | Permissions & Onboarding | `todo/e2-permissions.md` | `in progress` | 3 / 4 |
 | E3 | Global Hotkey | `todo/e3-hotkey.md` | `done` | 4 / 4 |
-| E4 | Audio Recording | `todo/e4-audio.md` | `in progress` | 1 / 4 |
+| E4 | Audio Recording | `todo/e4-audio.md` | `in progress` | 2 / 4 |
 | E5 | Menu Bar UI | `todo/e5-menubar.md` | `pending` | 0 / 5 |
 | E6 | Local Transcription (WhisperKit) | `todo/e6-transcription-local.md` | `pending` | 0 / 5 |
 | E7 | Paste & Core Flow Integration | `todo/e7-paste-flow.md` | `pending` | 0 / 4 |
@@ -109,7 +109,7 @@ Open this first, find the next task, then read the full context before touching 
 | Task | Title | Status |
 |---|---|---|
 | E4-TASK-01 | Implement AudioRecorder (AVFoundation setup, 16kHz mono WAV) | `done` |
-| E4-TASK-02 | Temp file management | `pending` |
+| E4-TASK-02 | Temp file management | `done` |
 | E4-TASK-03 | Recording state machine (Combine publisher) | `pending` |
 | E4-TASK-04 | [TEST] Audio Recording — Integration & Testing | `pending` |
 
