@@ -62,7 +62,7 @@ Open this first, find the next task, then read the full context before touching 
 
 | Task | Title | Status |
 |---|---|---|
-| E1-TASK-01 | Create Xcode project | `pending` |
+| E1-TASK-01 | Create Xcode project | `in progress` |
 | E1-TASK-02 | Implement MurmurApp + AppDelegate skeleton | `pending` |
 | E1-TASK-03 | Implement SettingsModel (UserDefaults wrapper) | `pending` |
 | E1-TASK-04 | LaunchAtLogin via SMAppService | `pending` |

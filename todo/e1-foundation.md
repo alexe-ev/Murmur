@@ -16,6 +16,7 @@ support. Delivers a runnable macOS menu bar–only app with no Dock icon.
 - `Murmur/App/MurmurApp.swift` — created
 - `Murmur/App/AppDelegate.swift` — created
 - `Murmur/App/Info.plist` — created
+- `Murmur/App/Murmur.entitlements` — created
 - `Murmur/Settings/SettingsModel.swift` — created
 - `todo/e1-foundation.md` — modified (status updates)
 - `todo/roadmap.md` — modified (status updates)
@@ -32,7 +33,7 @@ support. Delivers a runnable macOS menu bar–only app with no Dock icon.
 ### E1-TASK-01 — Create Xcode project
 
 **Epic**: Project Skeleton & App Foundation
-**Status**: `pending`
+**Status**: `in progress`
 **Depends on**: None
 **Intersects with**: None
 
@@ -41,6 +42,7 @@ support. Delivers a runnable macOS menu bar–only app with no Dock icon.
 |---|---|
 | `Murmur.xcodeproj/` | created |
 | `Murmur/App/Info.plist` | created |
+| `Murmur/App/Murmur.entitlements` | created |
 
 #### Description
 Bootstrap the Xcode project with the correct macOS target settings. The app must run as a
@@ -55,16 +57,16 @@ menu bar–only app (no Dock icon) and target macOS 13+.
 - Confirm the project structure matches the file tree in `ARCHITECTURE.md §3`
 
 #### Definition of Done (DoD)
-- [ ] Xcode project exists at the repo root
-- [ ] App targets macOS 13.0+
-- [ ] `LSUIElement = YES` set in `Info.plist`
-- [ ] Entitlements file created with microphone entitlement
+- [x] Xcode project exists at the repo root
+- [x] App targets macOS 13.0+
+- [x] `LSUIElement = YES` set in `Info.plist`
+- [x] Entitlements file created with microphone entitlement
 - [ ] Project builds without errors or warnings
 
 #### Test Checklist
 - [ ] `cmd+B` in Xcode produces a successful build with 0 errors
 - [ ] Running the app produces no Dock icon
-- [ ] Bundle identifier is set and non-default
+- [x] Bundle identifier is set and non-default
 
 ---
 
