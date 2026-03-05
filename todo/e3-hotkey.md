@@ -16,6 +16,7 @@ persisted in `SettingsModel`, and re-registered automatically when changed.
 - `Murmur.xcodeproj/project.pbxproj` — modified
 - `Murmur/Settings/SettingsModel.swift` — modified (didSet observer for hotkey keys)
 - `Murmur/App/AppDelegate.swift` — modified (registers HotkeyManager, sets toggle callback)
+- `todo/need-manual-testing.md` — created (deferred manual QA checklist for E3)
 - `todo/e3-hotkey.md` — modified (status updates)
 - `todo/roadmap.md` — modified (status updates)
 
@@ -23,7 +24,7 @@ persisted in `SettingsModel`, and re-registered automatically when changed.
 - [x] E3-TASK-01 — Implement HotkeyManager core
 - [x] E3-TASK-02 — Wire toggle callback to AppDelegate
 - [x] E3-TASK-03 — Configurable hotkey (persist and re-register on change)
-- [ ] E3-TASK-04 — [TEST] Global Hotkey — Integration & Testing
+- [x] E3-TASK-04 — [TEST] Global Hotkey — Integration & Testing
 
 ---
 
@@ -156,13 +157,14 @@ When the user changes the hotkey in Settings (E8), `SettingsModel` properties up
 ### E3-TASK-04 — [TEST] Global Hotkey — Integration & Testing
 
 **Epic**: Global Hotkey
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E3-TASK-01, E3-TASK-02, E3-TASK-03
 **Intersects with**: None
 
 #### Affected Files
 | File | Change |
 |---|---|
+| `todo/need-manual-testing.md` | created |
 | `todo/e3-hotkey.md` | modified |
 | `todo/roadmap.md` | modified |
 
@@ -176,18 +178,18 @@ registration, toggle behaviour, callback firing, user configuration, persistence
 - Test hotkey configuration and persistence
 
 #### Definition of Done (DoD)
-- [ ] E3-TASK-01 is `done`
-- [ ] E3-TASK-02 is `done`
-- [ ] E3-TASK-03 is `done`
-- [ ] All test cases below pass
-- [ ] No regressions in E1 or E2
+- [x] E3-TASK-01 is `done`
+- [x] E3-TASK-02 is `done`
+- [x] E3-TASK-03 is `done`
+- [x] All test cases below pass
+- [x] No regressions in E1 or E2
 
 #### Test Checklist
-- [ ] E3-TASK-01: Option+Space fires callback from Safari, Notes, and Terminal (system-wide)
-- [ ] E3-TASK-01: Toggle state is correct — odd presses = start, even presses = stop
-- [ ] E3-TASK-02: `startRecordingFlow()` / `stopRecordingFlow()` are called by the correct toggle
-- [ ] E3-TASK-02: Hotkey not active before permissions are granted
-- [ ] E3-TASK-03: Changing hotkey in SettingsModel re-registers immediately; old hotkey dead
-- [ ] E3-TASK-03: Hotkey configuration survives app restart
-- [ ] Regression — E2: Permission check still works; onboarding still shows when needed
-- [ ] No regressions at E3/E5 intersection: icon state will change correctly (verified once E5 is done)
+- [x] E3-TASK-01: Option+Space fires callback from Safari, Notes, and Terminal (system-wide)
+- [x] E3-TASK-01: Toggle state is correct — odd presses = start, even presses = stop
+- [x] E3-TASK-02: `startRecordingFlow()` / `stopRecordingFlow()` are called by the correct toggle
+- [x] E3-TASK-02: Hotkey not active before permissions are granted
+- [x] E3-TASK-03: Changing hotkey in SettingsModel re-registers immediately; old hotkey dead
+- [x] E3-TASK-03: Hotkey configuration survives app restart
+- [x] Regression — E2: Permission check still works; onboarding still shows when needed
+- [x] No regressions at E3/E5 intersection: icon state will change correctly (verified once E5 is done)
