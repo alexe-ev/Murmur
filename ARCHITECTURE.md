@@ -37,16 +37,53 @@ The architecture is intentionally minimal. There is no server, no database, no a
 
 ## 3. Component Breakdown
 
+### 3.1 Logical Components
+
 ```
 Murmur.app
-├── AppDelegate                  # App entry point, menu bar setup, permission checks
+├── AppDelegate                  # App entry point, core flow coordinator, permission checks
 ├── MenuBarController            # NSStatusItem, icon state management, dropdown menu
-├── HotkeyManager                # Global hotkey registration and event handling
-├── AudioRecorder                # AVFoundation microphone capture, audio buffer management
-├── TranscriptionService         # Protocol + implementations: LocalWhisper, OpenAIWhisper
-├── TranslationConfig            # Target language selection, translation mode toggle
+├── HotkeyManager                # Global hotkey registration and event handling (Carbon)
+├── AudioRecorder                # AVFoundation microphone capture, 16kHz mono WAV, temp file
+├── TranscriptionService         # Protocol + implementations: LocalWhisperService, OpenAIWhisperService
+├── ModelManager                 # WhisperKit model download, storage, selection
+├── TranslationConfig            # Target language selection, translation mode toggle, auto-backend enforcement
 ├── PasteController              # Clipboard write + Cmd+V simulation via CGEvent
-└── SettingsView                 # SwiftUI settings window (hotkey, language, backend, login item)
+├── PermissionsManager           # Microphone + Accessibility permission check/request
+├── KeychainManager              # OpenAI API key secure storage (Keychain)
+└── SettingsView                 # SwiftUI settings window (hotkey, backend, model, language, login item)
+```
+
+### 3.2 File Structure
+
+```
+Murmur/
+├── Murmur.xcodeproj/
+└── Murmur/
+    ├── App/
+    │   ├── MurmurApp.swift             # @main, NSApplicationDelegateAdaptor
+    │   ├── AppDelegate.swift           # Entry point, coordinator, startRecordingFlow / stopRecordingFlow
+    │   └── Info.plist                  # LSUIElement=YES (hides from Dock)
+    ├── Core/
+    │   ├── HotkeyManager.swift         # Carbon RegisterEventHotKey, system-wide toggle, onToggle callback
+    │   ├── AudioRecorder.swift         # AVFoundation, 16kHz mono WAV, temp file, RecordingState publisher
+    │   ├── PasteController.swift       # NSPasteboard + CGEvent Cmd+V simulation
+    │   └── PermissionsManager.swift    # Microphone + Accessibility check/request, polling
+    ├── Transcription/
+    │   ├── TranscriptionService.swift  # Protocol: transcribe(audioURL:targetLanguage:) async throws -> String
+    │   ├── LocalWhisperService.swift   # WhisperKit on-device implementation
+    │   ├── OpenAIWhisperService.swift  # OpenAI API implementation (/transcriptions + /translations + chat)
+    │   └── ModelManager.swift          # WhisperKit model download, ~/Library/Application Support/Murmur/
+    ├── Translation/
+    │   └── TranslationConfig.swift     # Translation toggle, language selection, requiresAPI, supportedLanguages
+    ├── Settings/
+    │   ├── SettingsModel.swift         # UserDefaults wrapper — all 7 preference keys with defaults
+    │   └── KeychainManager.swift       # OpenAI API key secure storage (kSecClassGenericPassword)
+    └── UI/
+        ├── MenuBarController.swift     # NSStatusItem, MenuBarState enum, floating indicator show/hide
+        ├── RecordingIndicatorView.swift # Floating always-on-top NSPanel (borderless, .floating level)
+        ├── SettingsView.swift          # Full SwiftUI settings window (all pickers, API key SecureField)
+        └── OnboardingView.swift        # First-launch permission request screen
 ```
 
 ---
