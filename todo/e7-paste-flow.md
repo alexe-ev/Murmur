@@ -25,7 +25,7 @@ their system.
 - `todo/roadmap.md` — modified (status updates)
 
 ### Tasks
-- [ ] E7-TASK-01 — Implement PasteController
+- [x] E7-TASK-01 — Implement PasteController
 - [ ] E7-TASK-02 — Wire core flow in AppDelegate
 - [ ] E7-TASK-03 — Error handling (transcription failure → user notification)
 - [ ] E7-TASK-04 — [TEST] Paste & Core Flow — Integration & Testing
@@ -35,7 +35,7 @@ their system.
 ### E7-TASK-01 — Implement PasteController
 
 **Epic**: Paste & Core Flow Integration
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E2-TASK-01
 **Intersects with**: E7-TASK-02 (called from stopRecordingFlow)
 
@@ -70,17 +70,17 @@ guards against missing permission before attempting to post.
 - Define `enum PasteError: Error { case accessibilityNotGranted, clipboardWriteFailed }`
 
 #### Definition of Done (DoD)
-- [ ] `paste(_:)` writes text to `NSPasteboard.general`
-- [ ] Cmd+V keystroke is posted to the system event stream
-- [ ] Text appears in the focused text field of another app
-- [ ] `accessibilityNotGranted` is thrown when Accessibility permission is missing
-- [ ] No leftover text in clipboard that could interfere with user's own copy/paste history (clipboard is overwritten, not appended)
+- [x] `paste(_:)` writes text to `NSPasteboard.general`
+- [x] Cmd+V keystroke is posted to the system event stream
+- [x] Text appears in the focused text field of another app
+- [x] `accessibilityNotGranted` is thrown when Accessibility permission is missing
+- [x] No leftover text in clipboard that could interfere with user's own copy/paste history (clipboard is overwritten, not appended)
 
 #### Test Checklist
-- [ ] Focus a text field in Safari → call `paste("hello world")` → "hello world" appears
-- [ ] Focus a text field in Notes → `paste("test")` → "test" appears
-- [ ] Focus a terminal → `paste("echo hi")` → "echo hi" is pasted (do not press Enter)
-- [ ] Call `paste()` without Accessibility permission → throws `PasteError.accessibilityNotGranted`
+- [x] Focus a text field in Safari → call `paste("hello world")` → "hello world" appears
+- [x] Focus a text field in Notes → `paste("test")` → "test" appears
+- [x] Focus a terminal → `paste("echo hi")` → "echo hi" is pasted (do not press Enter)
+- [x] Call `paste()` without Accessibility permission → throws `PasteError.accessibilityNotGranted`
 
 ---
 
