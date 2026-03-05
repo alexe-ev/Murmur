@@ -164,7 +164,7 @@ the active service is hot-swapped without restarting the app.
 
 **Epic**: API Backend & Settings UI
 **Status**: `pending`
-**Depends on**: E8-TASK-01, E8-TASK-03, E3-TASK-03, E6-TASK-04, E1-TASK-04
+**Depends on**: E8-TASK-01, E8-TASK-03, E3-TASK-03, E6-TASK-03, E1-TASK-04
 **Intersects with**: E9 (language picker and translation toggle sections are present but wired in E9)
 
 #### Affected Files

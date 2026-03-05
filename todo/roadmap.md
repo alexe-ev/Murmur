@@ -27,7 +27,7 @@ Open this first, find the next task, then read the full context before touching 
 ## Current Focus
 
 > **E6 — Local Transcription (WhisperKit)** is the active epic.
-> Next up: **E6-TASK-03** (Implement LocalWhisperService).
+> Next up: **E6-TASK-04** (Implement LocalWhisperService).
 >
 > Before picking up any task: read `CLAUDE.md`, `ARCHITECTURE.md`, `PRD.md`, this file,
 > and the full epic file for the task you are about to start. See `RULES.md §Agent Workflow`.
@@ -141,8 +141,8 @@ Open this first, find the next task, then read the full context before touching 
 |---|---|---|
 | E6-TASK-01 | Define TranscriptionService protocol | `done` |
 | E6-TASK-02 | Add WhisperKit Swift Package dependency | `done` |
-| E6-TASK-03 | Implement LocalWhisperService | `pending` |
-| E6-TASK-04 | Implement ModelManager (download, store, select) | `pending` |
+| E6-TASK-03 | Implement ModelManager (download, store, select) | `done` |
+| E6-TASK-04 | Implement LocalWhisperService | `pending` |
 | E6-TASK-05 | [TEST] Local Transcription — Integration & Testing | `pending` |
 
 ---

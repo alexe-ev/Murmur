@@ -88,7 +88,7 @@ guards against missing permission before attempting to post.
 
 **Epic**: Paste & Core Flow Integration
 **Status**: `pending`
-**Depends on**: E7-TASK-01, E3-TASK-02, E4-TASK-01, E5-TASK-02, E6-TASK-03
+**Depends on**: E7-TASK-01, E3-TASK-02, E4-TASK-01, E5-TASK-02, E6-TASK-04
 **Intersects with**: E8 (backend switching: `transcriptionService` property must be swappable), E9 (translation inserted here after transcription)
 
 #### Affected Files

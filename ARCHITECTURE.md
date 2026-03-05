@@ -210,4 +210,5 @@ OpenAI API key stored in **Keychain** (never in UserDefaults).
 | Default hotkey | Option + Space (keyCode 49, optionKey modifier) |
 | Local translation to non-English | **Not supported in v1** — API required for non-English target languages |
 | Default Whisper model | **`whisper-base`** — ~1s on M1, good accuracy; user can select `tiny`/`base`/`small` in Settings |
+| WhisperKit toolchain baseline | **Swift 6 / Xcode 16+ required** (WhisperKit 0.16.0 and transitive packages use Swift tools 6.x). CI is pinned to Xcode 16.2 on macOS 15 to keep package resolution stable. |
 | Streaming transcription | Not in scope for v1; evaluate for v2 |
