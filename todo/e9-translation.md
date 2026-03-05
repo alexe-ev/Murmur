@@ -23,7 +23,7 @@ the menu bar dropdown and SettingsView.
 - `todo/roadmap.md` — modified (status updates)
 
 ### Tasks
-- [ ] E9-TASK-01 — Implement TranslationConfig
+- [x] E9-TASK-01 — Implement TranslationConfig
 - [ ] E9-TASK-02 — English target translation via /v1/audio/translations
 - [ ] E9-TASK-03 — Non-English target translation via Chat Completions chaining
 - [ ] E9-TASK-04 — Auto-backend enforcement
@@ -35,7 +35,7 @@ the menu bar dropdown and SettingsView.
 ### E9-TASK-01 — Implement TranslationConfig
 
 **Epic**: Voice Translation
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E1-TASK-03, E8-TASK-04
 **Intersects with**: E9-TASK-04 (TranslationConfig drives enforcement logic)
 
@@ -43,6 +43,9 @@ the menu bar dropdown and SettingsView.
 | File | Change |
 |---|---|
 | `Murmur/Translation/TranslationConfig.swift` | created |
+| `Murmur.xcodeproj/project.pbxproj` | modified |
+| `todo/e9-translation.md` | modified (status updates) |
+| `todo/roadmap.md` | modified (status updates) |
 
 #### Description
 `TranslationConfig` is a thin observer around the two relevant `SettingsModel` properties
@@ -68,16 +71,16 @@ into `SettingsModel` directly.
   ```
 
 #### Definition of Done (DoD)
-- [ ] `isEnabled` and `targetLanguage` mirror `SettingsModel` values and update reactively
-- [ ] `requiresAPI` is `true` whenever translation is enabled
-- [ ] `targetIsEnglish` is correct for all supported languages
-- [ ] `supportedLanguages` list is present with at least 10 entries
+- [x] `isEnabled` and `targetLanguage` mirror `SettingsModel` values and update reactively
+- [x] `requiresAPI` is `true` whenever translation is enabled
+- [x] `targetIsEnglish` is correct for all supported languages
+- [x] `supportedLanguages` list is present with at least 10 entries
 
 #### Test Checklist
-- [ ] Set `SettingsModel.shared.translationEnabled = true` → `TranslationConfig.shared.isEnabled` becomes `true`
-- [ ] Set `targetLanguage = "es"` → `TranslationConfig.shared.targetLanguage == "es"`, `targetIsEnglish == false`
-- [ ] Set `targetLanguage = "en"` → `targetIsEnglish == true`
-- [ ] `requiresAPI` is `true` whenever `isEnabled` is `true`
+- [x] Set `SettingsModel.shared.translationEnabled = true` → `TranslationConfig.shared.isEnabled` becomes `true`
+- [x] Set `targetLanguage = "es"` → `TranslationConfig.shared.targetLanguage == "es"`, `targetIsEnglish == false`
+- [x] Set `targetLanguage = "en"` → `targetIsEnglish == true`
+- [x] `requiresAPI` is `true` whenever `isEnabled` is `true`
 
 ---
 
