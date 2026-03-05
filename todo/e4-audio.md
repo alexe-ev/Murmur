@@ -15,11 +15,12 @@ Temp files are deleted immediately after use to keep storage footprint minimal.
 
 ### Affected Files
 - `Murmur/Core/AudioRecorder.swift` — created
+- `Murmur.xcodeproj/project.pbxproj` — modified
 - `todo/e4-audio.md` — modified (status updates)
 - `todo/roadmap.md` — modified (status updates)
 
 ### Tasks
-- [ ] E4-TASK-01 — Implement AudioRecorder (AVFoundation setup, 16kHz mono WAV)
+- [x] E4-TASK-01 — Implement AudioRecorder (AVFoundation setup, 16kHz mono WAV)
 - [ ] E4-TASK-02 — Temp file management
 - [ ] E4-TASK-03 — Recording state machine (Combine publisher)
 - [ ] E4-TASK-04 — [TEST] Audio Recording — Integration & Testing
@@ -29,7 +30,7 @@ Temp files are deleted immediately after use to keep storage footprint minimal.
 ### E4-TASK-01 — Implement AudioRecorder (AVFoundation setup, 16kHz mono WAV)
 
 **Epic**: Audio Recording
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E1-TASK-01, E2-TASK-01
 **Intersects with**: E4-TASK-02 (output file URL), E4-TASK-03 (state transitions)
 
@@ -37,6 +38,9 @@ Temp files are deleted immediately after use to keep storage footprint minimal.
 | File | Change |
 |---|---|
 | `Murmur/Core/AudioRecorder.swift` | created |
+| `Murmur.xcodeproj/project.pbxproj` | modified |
+| `todo/e4-audio.md` | modified (status updates) |
+| `todo/roadmap.md` | modified (status updates) |
 
 #### Description
 `AudioRecorder` wraps `AVAudioEngine` and `AVAudioFile` to capture microphone input at 16 kHz
@@ -54,11 +58,11 @@ inline using `AVAudioConverter` so no post-processing step is needed.
 - Guard against starting when mic permission is not granted (`PermissionsManager.shared.microphoneGranted`)
 
 #### Definition of Done (DoD)
-- [ ] `startRecording()` opens the mic and writes 16kHz mono WAV to disk
-- [ ] `stopRecording()` returns a valid `URL` pointing to a playable WAV file
-- [ ] Audio format is exactly: PCM, 16000 Hz, 1 channel (mono)
-- [ ] Calling `startRecording()` without mic permission throws or is a no-op (logs error)
-- [ ] No memory leaks from the tap block
+- [x] `startRecording()` opens the mic and writes 16kHz mono WAV to disk
+- [x] `stopRecording()` returns a valid `URL` pointing to a playable WAV file
+- [x] Audio format is exactly: PCM, 16000 Hz, 1 channel (mono)
+- [x] Calling `startRecording()` without mic permission throws or is a no-op (logs error)
+- [x] No memory leaks from the tap block
 
 #### Test Checklist
 - [ ] Record 5 seconds of speech → open the resulting WAV in QuickTime → audio is audible and clear
