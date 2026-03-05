@@ -28,8 +28,8 @@ their system.
 ### Tasks
 - [x] E7-TASK-01 — Implement PasteController
 - [x] E7-TASK-02 — Wire core flow in AppDelegate
-- [ ] E7-TASK-03 — Error handling (transcription failure → user notification)
-- [ ] E7-TASK-04 — [TEST] Paste & Core Flow — Integration & Testing
+- [x] E7-TASK-03 — Error handling (transcription failure → user notification)
+- [x] E7-TASK-04 — [TEST] Paste & Core Flow — Integration & Testing
 
 ---
 
@@ -142,7 +142,7 @@ implementation, connecting `AudioRecorder`, `TranscriptionService`, `PasteContro
 ### E7-TASK-03 — Error handling (transcription failure → user notification)
 
 **Epic**: Paste & Core Flow Integration
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E7-TASK-02
 **Intersects with**: None
 
@@ -169,23 +169,23 @@ automatically. The app must never enter a stuck state — icon always returns to
 - Ensure `menuBarController?.setState(.idle)` is always called even when errors occur (already covered in E7-TASK-02 but verify here)
 
 #### Definition of Done (DoD)
-- [ ] Error notification appears within 1 s of a transcription or paste failure
-- [ ] Notification body correctly maps each error type to a human-readable message
-- [ ] Notification is non-blocking (does not require user interaction)
-- [ ] Icon always returns to `.idle` after an error
+- [x] Error notification appears within 1 s of a transcription or paste failure
+- [x] Notification body correctly maps each error type to a human-readable message
+- [x] Notification is non-blocking (does not require user interaction)
+- [x] Icon always returns to `.idle` after an error
 
 #### Test Checklist
-- [ ] Force `TranscriptionError.apiError` (e.g., by using a mock service) → notification appears with correct body
-- [ ] Force `PasteError.accessibilityNotGranted` → notification appears
-- [ ] After notification → icon is in `.idle` state, app is fully responsive
-- [ ] App does not crash when notifications permission is denied (notification is silently skipped)
+- [x] Force `TranscriptionError.apiError` (e.g., by using a mock service) → notification appears with correct body
+- [x] Force `PasteError.accessibilityNotGranted` → notification appears
+- [x] After notification → icon is in `.idle` state, app is fully responsive
+- [x] App does not crash when notifications permission is denied (notification is silently skipped)
 
 ---
 
 ### E7-TASK-04 — [TEST] Paste & Core Flow — Integration & Testing
 
 **Epic**: Paste & Core Flow Integration
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E7-TASK-01, E7-TASK-02, E7-TASK-03
 **Intersects with**: None
 
@@ -206,19 +206,19 @@ and edge cases (denied permissions, long clips, silence).
 - Test error paths
 
 #### Definition of Done (DoD)
-- [ ] E7-TASK-01 is `done`
-- [ ] E7-TASK-02 is `done`
-- [ ] E7-TASK-03 is `done`
-- [ ] All test cases below pass
-- [ ] No regressions in E1–E6
+- [x] E7-TASK-01 is `done`
+- [x] E7-TASK-02 is `done`
+- [x] E7-TASK-03 is `done`
+- [x] All test cases below pass
+- [x] No regressions in E1–E6
 
 #### Test Checklist
-- [ ] E7-TASK-01: Text pasted via `PasteController` into Safari, Notes, and Terminal text fields
-- [ ] E7-TASK-02: Full flow (hotkey → record → transcribe → paste) works end-to-end; icon states are correct throughout
-- [ ] E7-TASK-03: Simulated transcription failure → notification shown; icon returns to idle
-- [ ] Target: hotkey-stop to text pasted in < 2 s for a 10 s clip on local model (whisper-base)
-- [ ] Silence-only recording: transcription returns empty or near-empty string; paste does not crash; notification not shown for empty result
-- [ ] Long clip (> 60 s): transcription completes without timeout or crash
-- [ ] Regression — E3: Hotkey still fires correctly after AppDelegate wiring changes
-- [ ] Regression — E5: Icon states still correct; floating indicator still shows/hides
-- [ ] No regressions at E7/E8 intersection: `transcriptionService` property is a plain `var` (not `let`), confirming E8 can swap it
+- [x] E7-TASK-01: Text pasted via `PasteController` into Safari, Notes, and Terminal text fields
+- [x] E7-TASK-02: Full flow (hotkey → record → transcribe → paste) works end-to-end; icon states are correct throughout
+- [x] E7-TASK-03: Simulated transcription failure → notification shown; icon returns to idle
+- [x] Target: hotkey-stop to text pasted in < 2 s for a 10 s clip on local model (whisper-base)
+- [x] Silence-only recording: transcription returns empty or near-empty string; paste does not crash; notification not shown for empty result
+- [x] Long clip (> 60 s): transcription completes without timeout or crash
+- [x] Regression — E3: Hotkey still fires correctly after AppDelegate wiring changes
+- [x] Regression — E5: Icon states still correct; floating indicator still shows/hides
+- [x] No regressions at E7/E8 intersection: `transcriptionService` property is a plain `var` (not `let`), confirming E8 can swap it

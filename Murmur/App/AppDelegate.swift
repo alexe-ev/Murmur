@@ -3,6 +3,7 @@ import Carbon.HIToolbox
 import Combine
 import ServiceManagement
 import SwiftUI
+import UserNotifications
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -16,6 +17,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var transcriptionService: TranscriptionService = LocalWhisperService()
 
     private let settingsModel = SettingsModel.shared
+    private let notificationCenter = UNUserNotificationCenter.current()
     private var onboardingWindow: NSWindow?
     private var didEnterMainFlow = false
     private var isRecordingFlowActive = false
@@ -29,6 +31,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.applyLaunchAtLogin(enabled)
         }
         applyLaunchAtLogin(settingsModel.launchAtLogin)
+        requestNotificationAuthorization()
 
         permissionsManager.checkAccessibility()
         if permissionsManager.allGranted {
@@ -201,7 +204,66 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func showErrorNotification(_ error: Error) {
-        print("Core flow error: \(error.localizedDescription)")
+        let content = UNMutableNotificationContent()
+        content.title = "Murmur"
+        content.sound = .default
+        content.body = notificationMessage(for: error)
+
+        let identifier = "murmur.error.\(UUID().uuidString)"
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+
+        notificationCenter.add(request) { [weak self] addError in
+            if let addError {
+                print("Failed to show error notification: \(addError.localizedDescription)")
+                return
+            }
+
+            // Keep error notifications short-lived and unobtrusive.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                self?.notificationCenter.removeDeliveredNotifications(withIdentifiers: [identifier])
+            }
+        }
+
+        print("Core flow error: \(content.body)")
+    }
+
+    private func requestNotificationAuthorization() {
+        notificationCenter.requestAuthorization(options: [.alert, .sound]) { granted, error in
+            if let error {
+                print("Notification permission request failed: \(error.localizedDescription)")
+                return
+            }
+            if !granted {
+                print("Notification permission was denied.")
+            }
+        }
+    }
+
+    private func notificationMessage(for error: Error) -> String {
+        if let transcriptionError = error as? TranscriptionError {
+            switch transcriptionError {
+            case .modelNotLoaded:
+                return "Whisper model is not ready yet. Please wait."
+            case .audioFileNotFound:
+                return "Recording file was missing. Please try again."
+            case .apiError:
+                return "Transcription failed. Check your API key in Settings."
+            case .cancelled:
+                return "Transcription was cancelled. Please try again."
+            }
+        }
+
+        if let pasteError = error as? PasteError {
+            switch pasteError {
+            case .accessibilityNotGranted:
+                return "Accessibility permission needed. Open Settings."
+            case .clipboardWriteFailed:
+                return "Failed to paste into the focused app. Please try again."
+            }
+        }
+
+        return "Something went wrong. Please try again."
     }
 
 }
