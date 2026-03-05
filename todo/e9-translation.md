@@ -28,7 +28,7 @@ the menu bar dropdown and SettingsView.
 - [x] E9-TASK-03 — Non-English target translation via Chat Completions chaining
 - [x] E9-TASK-04 — Auto-backend enforcement
 - [x] E9-TASK-05 — Language picker in menu bar and SettingsView
-- [ ] E9-TASK-06 — [TEST] Voice Translation — Integration & Testing
+- [x] E9-TASK-06 — [TEST] Voice Translation — Integration & Testing
 
 ---
 
@@ -261,7 +261,7 @@ of truth).
 ### E9-TASK-06 — [TEST] Voice Translation — Integration & Testing
 
 **Epic**: Voice Translation
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E9-TASK-01, E9-TASK-02, E9-TASK-03, E9-TASK-04, E9-TASK-05
 **Intersects with**: None
 
@@ -282,22 +282,22 @@ auto-backend enforcement, and UI consistency.
 - Test edge cases: no API key, local backend, translation disabled
 
 #### Definition of Done (DoD)
-- [ ] E9-TASK-01 is `done`
-- [ ] E9-TASK-02 is `done`
-- [ ] E9-TASK-03 is `done`
-- [ ] E9-TASK-04 is `done`
-- [ ] E9-TASK-05 is `done`
-- [ ] All test cases below pass
-- [ ] No regressions in E1–E8
+- [x] E9-TASK-01 is `done`
+- [x] E9-TASK-02 is `done`
+- [x] E9-TASK-03 is `done`
+- [x] E9-TASK-04 is `done`
+- [x] E9-TASK-05 is `done`
+- [x] All test cases below pass
+- [x] No regressions in E1–E8
 
 #### Test Checklist
-- [ ] E9-TASK-01: `TranslationConfig` mirrors SettingsModel values; `requiresAPI` correct
-- [ ] E9-TASK-02: English target — speak Spanish → pasted text is English; `/v1/audio/translations` used
-- [ ] E9-TASK-03: Spanish target — speak English → pasted text is Spanish; two API calls made
-- [ ] E9-TASK-04: Enable translation with local backend → API backend auto-selected; no key alert shown if key missing
-- [ ] E9-TASK-05: Language picker in menu bar and Settings are in sync; checkmark moves correctly
-- [ ] Full v1 user story: select Spanish, press hotkey, speak English, press hotkey → Spanish text pasted into Safari
-- [ ] Translation disabled: full local transcription flow still works as before (E7 regression)
-- [ ] Regression — E8: API key stored in Keychain; backend switching still functional
-- [ ] Regression — E7: Core paste flow unaffected when translation is disabled
-- [ ] Regression — E5: Menu bar icon states and floating indicator unaffected by E9 changes
+- [x] E9-TASK-01: `TranslationConfig` mirrors SettingsModel values; `requiresAPI` correct
+- [x] E9-TASK-02: English target — speak Spanish → pasted text is English; `/v1/audio/translations` used
+- [x] E9-TASK-03: Spanish target — speak English → pasted text is Spanish; two API calls made
+- [x] E9-TASK-04: Enable translation with local backend → API backend auto-selected; no key alert shown if key missing
+- [x] E9-TASK-05: Language picker in menu bar and Settings are in sync; checkmark moves correctly
+- [x] Full v1 user story: select Spanish, press hotkey, speak English, press hotkey → Spanish text pasted into Safari
+- [x] Translation disabled: full local transcription flow still works as before (E7 regression)
+- [x] Regression — E8: API key stored in Keychain; backend switching still functional
+- [x] Regression — E7: Core paste flow unaffected when translation is disabled
+- [x] Regression — E5: Menu bar icon states and floating indicator unaffected by E9 changes
