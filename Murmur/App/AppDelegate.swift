@@ -17,12 +17,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var transcriptionService: TranscriptionService = LocalWhisperService()
 
     private let settingsModel = SettingsModel.shared
+    private let translationConfig = TranslationConfig.shared
     private let notificationCenter = UNUserNotificationCenter.current()
     private var cancellables = Set<AnyCancellable>()
     private var onboardingWindow: NSWindow?
     private var settingsWindow: NSWindow?
     private var didEnterMainFlow = false
     private var isRecordingFlowActive = false
+    private var isMissingAPIKeyAlertPresented = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Self.shared = self
@@ -33,7 +35,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.applyLaunchAtLogin(enabled)
         }
         observeBackendChanges()
-        applyTranscriptionBackend()
+        observeTranslationConfigChanges()
+        enforceBackendForCurrentConfig()
         applyLaunchAtLogin(settingsModel.launchAtLogin)
         requestNotificationAuthorization()
 
@@ -96,9 +99,48 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             .removeDuplicates()
             .dropFirst()
             .sink { [weak self] _ in
-                self?.applyTranscriptionBackend()
+                self?.enforceBackendForCurrentConfig()
             }
             .store(in: &cancellables)
+    }
+
+    private func observeTranslationConfigChanges() {
+        translationConfig.$isEnabled
+            .removeDuplicates()
+            .dropFirst()
+            .sink { [weak self] _ in
+                self?.enforceBackendForCurrentConfig()
+            }
+            .store(in: &cancellables)
+
+        translationConfig.$targetLanguage
+            .removeDuplicates()
+            .dropFirst()
+            .sink { [weak self] _ in
+                self?.enforceBackendForCurrentConfig()
+            }
+            .store(in: &cancellables)
+    }
+
+    func enforceBackendForCurrentConfig() {
+        if translationConfig.requiresAPI {
+            let backend = settingsModel.whisperBackend
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .lowercased()
+
+            if backend == "api" {
+                applyTranscriptionBackend()
+            } else {
+                transcriptionService = OpenAIWhisperService()
+            }
+
+            if !hasStoredAPIKey() {
+                promptForMissingAPIKey()
+            }
+            return
+        }
+
+        applyTranscriptionBackend()
     }
 
     private func presentOnboardingWindow() {
@@ -206,7 +248,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self else { return }
 
             do {
-                let text = try await transcriptionService.transcribe(audioURL: audioURL, targetLanguage: nil)
+                enforceBackendForCurrentConfig()
+
+                if translationConfig.requiresAPI && !hasStoredAPIKey() {
+                    try? FileManager.default.removeItem(at: audioURL)
+                    menuBarController?.setState(.idle)
+                    return
+                }
+
+                let targetLanguage = translationConfig.isEnabled ? translationConfig.targetLanguage : nil
+                let text = try await transcriptionService.transcribe(audioURL: audioURL, targetLanguage: targetLanguage)
                 try pasteController.paste(text)
                 menuBarController?.setState(.idle)
                 print("stopRecordingFlow")
@@ -263,6 +314,33 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return true
         default:
             return false
+        }
+    }
+
+    private func hasStoredAPIKey() -> Bool {
+        guard
+            let apiKey = KeychainManager.load(),
+            !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        else {
+            return false
+        }
+        return true
+    }
+
+    private func promptForMissingAPIKey() {
+        guard !isMissingAPIKeyAlertPresented else { return }
+        isMissingAPIKeyAlertPresented = true
+        defer { isMissingAPIKeyAlertPresented = false }
+
+        let alert = NSAlert()
+        alert.messageText = "Translation requires an OpenAI API key."
+        alert.informativeText = "Open Settings?"
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "Open Settings")
+        alert.addButton(withTitle: "Cancel")
+
+        if alert.runModal() == .alertFirstButtonReturn {
+            openSettings()
         }
     }
 
