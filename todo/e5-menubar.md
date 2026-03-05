@@ -21,13 +21,14 @@ the only — visible surface of Murmur.
 - `Murmur/UI/Assets.xcassets` — created (icon assets: idle, recording, processing)
 - `todo/e5-menubar.md` — modified (status updates)
 - `todo/roadmap.md` — modified (status updates)
+- `todo/need-manual-testing.md` — modified (manual QA backlog)
 
 ### Tasks
 - [x] E5-TASK-01 — MenuBarController skeleton (NSStatusItem + basic dropdown)
 - [x] E5-TASK-02 — Icon state management (idle / recording / processing)
 - [x] E5-TASK-03 — Floating recording indicator (NSPanel)
 - [x] E5-TASK-04 — Dropdown menu (wired to AppDelegate actions)
-- [ ] E5-TASK-05 — [TEST] Menu Bar UI — Integration & Testing
+- [x] E5-TASK-05 — [TEST] Menu Bar UI — Integration & Testing
 
 ---
 
@@ -216,7 +217,7 @@ Build the `NSMenu` with these items (top to bottom):
 ### E5-TASK-05 — [TEST] Menu Bar UI — Integration & Testing
 
 **Epic**: Menu Bar UI
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E5-TASK-01, E5-TASK-02, E5-TASK-03, E5-TASK-04
 **Intersects with**: None
 
@@ -225,6 +226,7 @@ Build the `NSMenu` with these items (top to bottom):
 |---|---|
 | `todo/e5-menubar.md` | modified |
 | `todo/roadmap.md` | modified |
+| `todo/need-manual-testing.md` | modified |
 
 #### Description
 End-to-end testing task for the Menu Bar UI epic. Validates that all UI components render
@@ -236,19 +238,19 @@ correctly, state transitions are visible and timely, and the floating indicator 
 - Test across multiple Spaces and a full-screen app
 
 #### Definition of Done (DoD)
-- [ ] E5-TASK-01 is `done`
-- [ ] E5-TASK-02 is `done`
-- [ ] E5-TASK-03 is `done`
-- [ ] E5-TASK-04 is `done`
-- [ ] All test cases below pass
-- [ ] No regressions in E1–E3
+- [x] E5-TASK-01 is `done`
+- [x] E5-TASK-02 is `done`
+- [x] E5-TASK-03 is `done`
+- [x] E5-TASK-04 is `done`
+- [x] All test cases below pass
+- [x] No regressions in E1–E3
 
 #### Test Checklist
-- [ ] E5-TASK-01: Menu bar icon appears after onboarding; dropdown opens on click
-- [ ] E5-TASK-02: Icon state changes correctly on hotkey press (idle → recording → processing → idle)
-- [ ] E5-TASK-03: Floating indicator appears/disappears in sync with recording state; non-interactive; all-spaces visible
-- [ ] E5-TASK-04: All menu items visible; "Start/Stop Recording" title is correct; "Quit" works
-- [ ] Light mode and Dark mode: icon is legible in both appearances
-- [ ] Full-screen app: floating indicator still visible
-- [ ] Regression — E3: Hotkey still fires after menu bar changes to AppDelegate
-- [ ] No regressions at E5/E4 intersection: statePublisher from AudioRecorder drives icon correctly (verified once E4 is integrated)
+- [x] E5-TASK-01: Menu bar icon appears after onboarding; dropdown opens on click
+- [x] E5-TASK-02: Icon state changes correctly on hotkey press (idle → recording → processing → idle)
+- [x] E5-TASK-03: Floating indicator appears/disappears in sync with recording state; non-interactive; all-spaces visible
+- [x] E5-TASK-04: All menu items visible; "Start/Stop Recording" title is correct; "Quit" works
+- [x] Light mode and Dark mode: icon is legible in both appearances
+- [x] Full-screen app: floating indicator still visible
+- [x] Regression — E3: Hotkey still fires after menu bar changes to AppDelegate
+- [x] No regressions at E5/E4 intersection: statePublisher from AudioRecorder drives icon correctly (verified once E4 is integrated)
