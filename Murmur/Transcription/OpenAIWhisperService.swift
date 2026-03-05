@@ -5,6 +5,7 @@ final class OpenAIWhisperService: TranscriptionService {
     private let fileManager: FileManager
     private let transcriptionsEndpointURL = URL(string: "https://api.openai.com/v1/audio/transcriptions")!
     private let translationsEndpointURL = URL(string: "https://api.openai.com/v1/audio/translations")!
+    private let chatCompletionsEndpointURL = URL(string: "https://api.openai.com/v1/chat/completions")!
 
     init(session: URLSession = .shared, fileManager: FileManager = .default) {
         self.session = session
@@ -27,32 +28,22 @@ final class OpenAIWhisperService: TranscriptionService {
         do {
             let normalizedLanguage = targetLanguage?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
             let translationEnabled = TranslationConfig.shared.isEnabled
-            let request: URLRequest
+            let result: String
 
             if translationEnabled, normalizedLanguage == "en" {
-                request = try buildTranslationRequest(audioURL: audioURL, apiKey: apiKey)
+                let request = try buildTranslationRequest(audioURL: audioURL, apiKey: apiKey)
+                result = try await performTextRequest(request)
+            } else if translationEnabled, let targetLanguage = normalizedLanguage, !targetLanguage.isEmpty, targetLanguage != "en" {
+                let transcriptionRequest = try buildTranscriptionRequest(audioURL: audioURL, targetLanguage: nil, apiKey: apiKey)
+                let transcribedText = try await performTextRequest(transcriptionRequest)
+                result = try await chatTranslate(transcribedText, to: targetLanguage, apiKey: apiKey)
             } else {
-                request = try buildTranscriptionRequest(audioURL: audioURL, targetLanguage: normalizedLanguage, apiKey: apiKey)
-            }
-
-            let (data, response) = try await session.data(for: request)
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw TranscriptionError.apiError("Invalid API response.")
-            }
-
-            let responseText = String(data: data, encoding: .utf8) ?? ""
-            guard (200...299).contains(httpResponse.statusCode) else {
-                let errorBody = responseText.isEmpty ? "HTTP \(httpResponse.statusCode)" : responseText
-                throw TranscriptionError.apiError(errorBody)
-            }
-
-            let transcription = responseText.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !transcription.isEmpty else {
-                throw TranscriptionError.apiError("OpenAI API returned an empty transcription.")
+                let request = try buildTranscriptionRequest(audioURL: audioURL, targetLanguage: normalizedLanguage, apiKey: apiKey)
+                result = try await performTextRequest(request)
             }
 
             try? fileManager.removeItem(at: audioURL)
-            return transcription
+            return result
         } catch let error as TranscriptionError {
             throw error
         } catch is CancellationError {
@@ -60,6 +51,75 @@ final class OpenAIWhisperService: TranscriptionService {
         } catch {
             throw TranscriptionError.apiError(error.localizedDescription)
         }
+    }
+
+    private func performTextRequest(_ request: URLRequest) async throws -> String {
+        let (data, response) = try await session.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw TranscriptionError.apiError("Invalid API response.")
+        }
+
+        let responseText = String(data: data, encoding: .utf8) ?? ""
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = responseText.isEmpty ? "HTTP \(httpResponse.statusCode)" : responseText
+            throw TranscriptionError.apiError(errorBody)
+        }
+
+        let text = responseText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else {
+            throw TranscriptionError.apiError("OpenAI API returned an empty transcription.")
+        }
+
+        return text
+    }
+
+    private func chatTranslate(_ text: String, to targetLanguage: String, apiKey: String) async throws -> String {
+        let languageName = TranslationConfig.supportedLanguages.first { $0.code == targetLanguage }?.name ?? targetLanguage
+        let systemPrompt = "You are a translator. Translate the user's text to \(languageName). Return only the translated text, no explanation."
+
+        let payload: [String: Any] = [
+            "model": "gpt-4o-mini",
+            "messages": [
+                ["role": "system", "content": systemPrompt],
+                ["role": "user", "content": text]
+            ]
+        ]
+
+        let requestBody = try JSONSerialization.data(withJSONObject: payload)
+        var request = URLRequest(url: chatCompletionsEndpointURL)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 30
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = requestBody
+
+        let (data, response) = try await session.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw TranscriptionError.apiError("Invalid API response.")
+        }
+
+        let responseText = String(data: data, encoding: .utf8) ?? ""
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = responseText.isEmpty ? "HTTP \(httpResponse.statusCode)" : responseText
+            throw TranscriptionError.apiError(errorBody)
+        }
+
+        guard
+            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+            let choices = json["choices"] as? [[String: Any]],
+            let firstChoice = choices.first,
+            let message = firstChoice["message"] as? [String: Any],
+            let content = message["content"] as? String
+        else {
+            throw TranscriptionError.apiError("Invalid Chat Completions response format.")
+        }
+
+        let translatedText = content.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !translatedText.isEmpty else {
+            throw TranscriptionError.apiError("Chat Completions returned empty text.")
+        }
+
+        return translatedText
     }
 
     private func buildTranslationRequest(audioURL: URL, apiKey: String) throws -> URLRequest {
