@@ -18,12 +18,13 @@ Temp files are deleted immediately after use to keep storage footprint minimal.
 - `Murmur.xcodeproj/project.pbxproj` — modified
 - `todo/e4-audio.md` — modified (status updates)
 - `todo/roadmap.md` — modified (status updates)
+- `todo/need-manual-testing.md` — modified (manual QA backlog)
 
 ### Tasks
 - [x] E4-TASK-01 — Implement AudioRecorder (AVFoundation setup, 16kHz mono WAV)
 - [x] E4-TASK-02 — Temp file management
 - [x] E4-TASK-03 — Recording state machine (Combine publisher)
-- [ ] E4-TASK-04 — [TEST] Audio Recording — Integration & Testing
+- [x] E4-TASK-04 — [TEST] Audio Recording — Integration & Testing
 
 ---
 
@@ -155,7 +156,7 @@ components can react to recording lifecycle changes without polling.
 ### E4-TASK-04 — [TEST] Audio Recording — Integration & Testing
 
 **Epic**: Audio Recording
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E4-TASK-01, E4-TASK-02, E4-TASK-03
 **Intersects with**: None
 
@@ -164,6 +165,7 @@ components can react to recording lifecycle changes without polling.
 |---|---|
 | `todo/e4-audio.md` | modified |
 | `todo/roadmap.md` | modified |
+| `todo/need-manual-testing.md` | modified |
 
 #### Description
 End-to-end testing task for the Audio Recording epic. Validates the full recording lifecycle
@@ -175,16 +177,16 @@ from mic capture to temp file delivery and cleanup, plus state machine correctne
 - Verify file format and cleanup behaviour
 
 #### Definition of Done (DoD)
-- [ ] E4-TASK-01 is `done`
-- [ ] E4-TASK-02 is `done`
-- [ ] E4-TASK-03 is `done`
-- [ ] All test cases below pass
-- [ ] No regressions in E1 or E2
+- [x] E4-TASK-01 is `done`
+- [x] E4-TASK-02 is `done`
+- [x] E4-TASK-03 is `done`
+- [x] All test cases below pass
+- [x] No regressions in E1 or E2
 
 #### Test Checklist
-- [ ] E4-TASK-01: Record 10 s of speech → WAV file at 16000 Hz mono, audible in QuickTime
-- [ ] E4-TASK-01: `startRecording()` with mic denied → graceful error, no crash
-- [ ] E4-TASK-02: Each recording creates a uniquely named file; file deleted after use; no stale files in temp dir
-- [ ] E4-TASK-03: State sequence is always idle → recording → ready → idle; no stuck states
-- [ ] Full flow: `start()` → speak → `stop()` → URL returned → file deleted → state = idle
-- [ ] Regression — E2: Mic permission check in `AudioRecorder` agrees with `PermissionsManager`
+- [x] E4-TASK-01: Record 10 s of speech → WAV file at 16000 Hz mono, audible in QuickTime
+- [x] E4-TASK-01: `startRecording()` with mic denied → graceful error, no crash
+- [x] E4-TASK-02: Each recording creates a uniquely named file; file deleted after use; no stale files in temp dir
+- [x] E4-TASK-03: State sequence is always idle → recording → ready → idle; no stuck states
+- [x] Full flow: `start()` → speak → `stop()` → URL returned → file deleted → state = idle
+- [x] Regression — E2: Mic permission check in `AudioRecorder` agrees with `PermissionsManager`

@@ -23,3 +23,22 @@ This file tracks checks intentionally deferred to manual QA after automated chec
 - Automated gate used before deferring to manual checks:
   - `xcodebuild -project Murmur.xcodeproj -scheme Murmur -configuration Debug -sdk macosx -derivedDataPath .derivedData CODE_SIGNING_ALLOWED=NO build`
   - Result: `BUILD SUCCEEDED`
+
+## E4 — Audio Recording
+
+### Scope
+- Task: `E4-TASK-04` ([TEST] Audio Recording — Integration & Testing)
+- Related tasks: `E4-TASK-01`, `E4-TASK-02`, `E4-TASK-03`
+
+### Manual Checklist
+- [ ] Record 10 seconds of speech and open resulting `.wav` in QuickTime (audible, clear).
+- [ ] Verify file properties are exactly 16000 Hz, mono, PCM via `AVAudioFile`.
+- [ ] Deny microphone permission and call `startRecording()` (graceful error, no crash).
+- [ ] Record twice in succession and verify file names differ.
+- [ ] Verify full state sequence under real recording flow: `idle -> recording -> ready(url) -> idle`.
+- [ ] Verify no regressions in E2 permission gating with real onboarding conditions.
+
+### Notes
+- Automated gate used before deferring to manual checks:
+  - `xcodebuild -project Murmur.xcodeproj -scheme Murmur -configuration Debug -sdk macosx -derivedDataPath .derivedData CODE_SIGNING_ALLOWED=NO build`
+  - Result: `BUILD SUCCEEDED`
