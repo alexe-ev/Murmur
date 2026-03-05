@@ -72,7 +72,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         switch backend {
         case "api":
             transcriptionService = OpenAIWhisperService()
-            if !transcriptionService.isAvailable {
+            if !KeychainManager.hasValidAPIKey() {
                 print("OpenAI API backend selected, but API key is missing in Keychain.")
             }
         case "local":
@@ -134,7 +134,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 transcriptionService = OpenAIWhisperService()
             }
 
-            if !hasStoredAPIKey() {
+            if !KeychainManager.hasValidAPIKey() {
                 promptForMissingAPIKey()
             }
             return
@@ -185,12 +185,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         didEnterMainFlow = true
         menuBarController = MenuBarController()
 
-        hotkeyManager.onToggle = { [weak self] isRecording in
-            if isRecording {
-                self?.startRecordingFlow()
-            } else {
-                self?.stopRecordingFlow()
-            }
+        hotkeyManager.onToggleRequest = { [weak self] in
+            self?.toggleRecordingFromHotkey()
         }
 
         reregisterHotkey()
@@ -251,7 +247,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             do {
                 enforceBackendForCurrentConfig()
 
-                if translationConfig.requiresAPI && !hasStoredAPIKey() {
+                if translationConfig.requiresAPI && !KeychainManager.hasValidAPIKey() {
                     menuBarController?.setState(.idle)
                     return
                 }
@@ -280,13 +276,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    @objc
-    func toggleRecordingFromMenu() {
+    private func toggleRecordingFromHotkey() {
         if isRecordingFlowActive {
             stopRecordingFlow()
         } else {
             startRecordingFlow()
         }
+    }
+
+    @objc
+    func toggleRecordingFromMenu() {
+        toggleRecordingFromHotkey()
     }
 
     @objc
@@ -327,16 +327,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         default:
             return false
         }
-    }
-
-    private func hasStoredAPIKey() -> Bool {
-        guard
-            let apiKey = KeychainManager.load(),
-            !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        else {
-            return false
-        }
-        return true
     }
 
     private func promptForMissingAPIKey() {
