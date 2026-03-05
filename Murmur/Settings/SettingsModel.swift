@@ -28,11 +28,23 @@ final class SettingsModel: ObservableObject {
     var launchAtLoginDidChange: ((Bool) -> Void)?
 
     @Published var hotkeyKeyCode: Int {
-        didSet { userDefaults.set(hotkeyKeyCode, forKey: Keys.hotkeyKeyCode) }
+        didSet {
+            userDefaults.set(hotkeyKeyCode, forKey: Keys.hotkeyKeyCode)
+            guard hotkeyKeyCode != oldValue else { return }
+            Task { @MainActor in
+                AppDelegate.shared?.reregisterHotkey()
+            }
+        }
     }
 
     @Published var hotkeyModifiers: Int {
-        didSet { userDefaults.set(hotkeyModifiers, forKey: Keys.hotkeyModifiers) }
+        didSet {
+            userDefaults.set(hotkeyModifiers, forKey: Keys.hotkeyModifiers)
+            guard hotkeyModifiers != oldValue else { return }
+            Task { @MainActor in
+                AppDelegate.shared?.reregisterHotkey()
+            }
+        }
     }
 
     @Published var translationEnabled: Bool {
