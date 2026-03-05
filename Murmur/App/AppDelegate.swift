@@ -246,12 +246,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         Task { [weak self] in
             guard let self else { return }
+            defer { cleanupTemporaryAudioFile(at: audioURL) }
 
             do {
                 enforceBackendForCurrentConfig()
 
                 if translationConfig.requiresAPI && !hasStoredAPIKey() {
-                    try? FileManager.default.removeItem(at: audioURL)
                     menuBarController?.setState(.idle)
                     return
                 }
@@ -265,6 +265,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 showErrorNotification(error)
                 menuBarController?.setState(.idle)
             }
+        }
+    }
+
+    private func cleanupTemporaryAudioFile(at audioURL: URL) {
+        guard FileManager.default.fileExists(atPath: audioURL.path) else {
+            return
+        }
+
+        do {
+            try FileManager.default.removeItem(at: audioURL)
+        } catch {
+            print("Failed to remove temporary audio file at \(audioURL.path): \(error.localizedDescription)")
         }
     }
 

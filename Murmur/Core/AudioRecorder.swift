@@ -230,11 +230,24 @@ final class AudioRecorder {
         audioEngine.stop()
 
         ioLock.lock()
+        let currentURLToDelete = currentTempURL
+        let completedURLToDelete = lastCompletedURL
         outputFile = nil
         currentTempURL = nil
         lastCompletedURL = nil
         converter = nil
         ioLock.unlock()
+
+        do {
+            if let currentURLToDelete, FileManager.default.fileExists(atPath: currentURLToDelete.path) {
+                try FileManager.default.removeItem(at: currentURLToDelete)
+            }
+            if let completedURLToDelete, FileManager.default.fileExists(atPath: completedURLToDelete.path) {
+                try FileManager.default.removeItem(at: completedURLToDelete)
+            }
+        } catch {
+            print("AudioRecorder runtime cleanup error: \(error.localizedDescription)")
+        }
 
         isRecording = false
         state = .idle
