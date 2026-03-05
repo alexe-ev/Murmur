@@ -46,7 +46,7 @@ final class LocalWhisperService: TranscriptionService {
                 return loadedModel
             }
 
-            let options = decodingOptions(for: request.targetLanguage)
+            let options = decodingOptions(for: request)
             let results = try await whisperKit.transcribe(audioPath: audioURL.path, decodeOptions: options)
 
             let text = concatenateText(from: results)
@@ -68,13 +68,18 @@ final class LocalWhisperService: TranscriptionService {
     }
 
 #if arch(arm64)
-    private func decodingOptions(for targetLanguage: String?) -> DecodingOptions {
-        let normalizedLanguage = targetLanguage?
+    private func decodingOptions(for request: TranscriptionRequest) -> DecodingOptions {
+        let normalizedLanguage = request.targetLanguage?
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .lowercased()
 
-        let task: DecodingTask = (normalizedLanguage != nil && normalizedLanguage != "en") ? .translate : .transcribe
-        return DecodingOptions(task: task, withoutTimestamps: true)
+        // Local backend is transcription-first in v1: keep source language output and provide
+        // a language hint to improve recognition stability for short utterances.
+        return DecodingOptions(
+            task: .transcribe,
+            language: normalizedLanguage?.isEmpty == false ? normalizedLanguage : nil,
+            withoutTimestamps: true
+        )
     }
 
     private func concatenateText(from results: [TranscriptionResult]) -> String {
