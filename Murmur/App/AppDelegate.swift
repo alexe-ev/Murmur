@@ -8,8 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let permissionsManager = PermissionsManager.shared
     // TODO: Add MenuBarController in E5.
     private var menuBarController: AnyObject?
-    // TODO: Add HotkeyManager in E3.
-    private var hotkeyManager: AnyObject?
+    private let hotkeyManager = HotkeyManager()
     // TODO: Add AudioRecorder in E4.
     private var audioRecorder: AnyObject?
     // TODO: Add TranscriptionService in E6/E8.
@@ -92,6 +91,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func enterMainFlowIfNeeded() {
         guard !didEnterMainFlow else { return }
         didEnterMainFlow = true
-        // TODO: Continue startup pipeline in later epics (MenuBarController, HotkeyManager, etc.).
+
+        hotkeyManager.onToggle = { [weak self] isRecording in
+            if isRecording {
+                self?.startRecordingFlow()
+            } else {
+                self?.stopRecordingFlow()
+            }
+        }
+
+        let keyCode = UInt32(settingsModel.hotkeyKeyCode)
+        let modifiers = UInt32(settingsModel.hotkeyModifiers)
+        hotkeyManager.register(keyCode: keyCode, modifiers: modifiers)
+    }
+
+    private func startRecordingFlow() {
+        print("startRecordingFlow")
+    }
+
+    private func stopRecordingFlow() {
+        print("stopRecordingFlow")
     }
 }
