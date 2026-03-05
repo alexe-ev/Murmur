@@ -18,6 +18,7 @@ String entirely on-device.
 - `Murmur/Transcription/TranscriptionService.swift` — created
 - `Murmur/Transcription/LocalWhisperService.swift` — created
 - `Murmur/Transcription/ModelManager.swift` — created
+- `.github/workflows/macos-build.yml` — modified
 - `todo/e6-transcription-local.md` — modified (status updates)
 - `todo/roadmap.md` — modified (status updates)
 
@@ -87,6 +88,7 @@ calling code.
 | File | Change |
 |---|---|
 | `Murmur.xcodeproj/` | modified |
+| `.github/workflows/macos-build.yml` | modified |
 
 #### Description
 Adds WhisperKit as a Swift Package dependency. WhisperKit provides on-device Whisper inference
