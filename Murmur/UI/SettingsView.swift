@@ -161,9 +161,12 @@ struct SettingsView: View {
         hotkeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             let keyCode = Int(event.keyCode)
             let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+            let carbon = Int(carbonModifiers(from: modifiers))
 
+            // Require at least one modifier to avoid hijacking regular typing (e.g. plain Space).
+            guard carbon != 0 else { return nil }
             settings.hotkeyKeyCode = keyCode
-            settings.hotkeyModifiers = Int(carbonModifiers(from: modifiers))
+            settings.hotkeyModifiers = carbon
 
             stopHotkeyCapture()
             return nil

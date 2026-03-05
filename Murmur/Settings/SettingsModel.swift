@@ -1,6 +1,9 @@
+import Carbon.HIToolbox
 import Foundation
 
 final class SettingsModel: ObservableObject {
+    private static let hotkeyModifierMask = Int(cmdKey | optionKey | controlKey | shiftKey)
+
     enum WhisperBackend: String, CaseIterable, Identifiable {
         case local
         case api
@@ -115,6 +118,19 @@ final class SettingsModel: ObservableObject {
 
     @Published var hotkeyModifiers: Int {
         didSet {
+            let normalizedModifiers = hotkeyModifiers & Self.hotkeyModifierMask
+            if hotkeyModifiers != normalizedModifiers {
+                hotkeyModifiers = normalizedModifiers
+                return
+            }
+
+            // Never allow a modifier-less global hotkey because it can hijack regular typing (e.g. Space).
+            if normalizedModifiers == 0 {
+                hotkeyKeyCode = Defaults.hotkeyKeyCode
+                hotkeyModifiers = Defaults.hotkeyModifiers
+                return
+            }
+
             userDefaults.set(hotkeyModifiers, forKey: Keys.hotkeyModifiers)
             guard hotkeyModifiers != oldValue else { return }
             Task { @MainActor in
@@ -162,6 +178,7 @@ final class SettingsModel: ObservableObject {
         launchAtLogin = userDefaults.object(forKey: Keys.launchAtLogin) as? Bool ?? Defaults.launchAtLogin
         restoreClipboardAfterPaste = userDefaults.object(forKey: Keys.restoreClipboardAfterPaste) as? Bool ?? Defaults.restoreClipboardAfterPaste
 
+        normalizeHotkeyConfigurationIfNeeded()
         persistNormalizedConfigurationValues()
     }
 
@@ -177,8 +194,23 @@ final class SettingsModel: ObservableObject {
     }
 
     private func persistNormalizedConfigurationValues() {
+        userDefaults.set(hotkeyKeyCode, forKey: Keys.hotkeyKeyCode)
+        userDefaults.set(hotkeyModifiers, forKey: Keys.hotkeyModifiers)
         userDefaults.set(targetLanguage.rawValue, forKey: Keys.targetLanguage)
         userDefaults.set(whisperBackend.rawValue, forKey: Keys.whisperBackend)
         userDefaults.set(whisperModel.rawValue, forKey: Keys.whisperModel)
+    }
+
+    private func normalizeHotkeyConfigurationIfNeeded() {
+        let normalizedModifiers = hotkeyModifiers & Self.hotkeyModifierMask
+        if normalizedModifiers == 0 {
+            hotkeyKeyCode = Defaults.hotkeyKeyCode
+            hotkeyModifiers = Defaults.hotkeyModifiers
+            return
+        }
+
+        if hotkeyModifiers != normalizedModifiers {
+            hotkeyModifiers = normalizedModifiers
+        }
     }
 }
