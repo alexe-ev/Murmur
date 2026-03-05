@@ -24,6 +24,27 @@ This file tracks checks intentionally deferred to manual QA after automated chec
   - `xcodebuild -project Murmur.xcodeproj -scheme Murmur -configuration Debug -sdk macosx -derivedDataPath .derivedData CODE_SIGNING_ALLOWED=NO build`
   - Result: `BUILD SUCCEEDED`
 
+## E5 — Menu Bar UI
+
+### Scope
+- Task: `E5-TASK-05` ([TEST] Menu Bar UI — Integration & Testing)
+- Related tasks: `E5-TASK-01`, `E5-TASK-02`, `E5-TASK-03`, `E5-TASK-04`
+
+### Manual Checklist
+- [ ] Verify menu bar icon appears after onboarding and persists across Spaces.
+- [ ] Verify icon transitions on hotkey cycle: `idle -> recording -> processing -> idle`.
+- [ ] Verify dropdown order and labels: Start/Stop, Language submenu placeholder, Settings, Quit.
+- [ ] Verify Start/Stop menu title toggles correctly while recording state changes.
+- [ ] Verify floating indicator appears/disappears with recording and stays click-through.
+- [ ] Verify indicator remains visible across Spaces and over full-screen apps.
+- [ ] Verify icon legibility in both Light and Dark menu bar appearances.
+- [ ] Verify no regression in E3 hotkey behavior after menu bar integration.
+
+### Notes
+- Automated gate used before deferring to manual checks:
+  - `xcodebuild -project Murmur.xcodeproj -scheme Murmur -configuration Debug -sdk macosx -derivedDataPath .derivedData CODE_SIGNING_ALLOWED=NO build`
+  - Result: `BUILD SUCCEEDED`
+
 ## E4 — Audio Recording
 
 ### Scope
