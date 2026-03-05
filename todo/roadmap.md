@@ -27,7 +27,7 @@ Open this first, find the next task, then read the full context before touching 
 ## Current Focus
 
 > **E9 — Voice Translation** is the active epic.
-> Next up: **E9-TASK-05** (Language picker in menu bar and SettingsView).
+> Next up: **E9-TASK-06** ([TEST] Voice Translation — Integration & Testing).
 >
 > Before picking up any task: read `CLAUDE.md`, `ARCHITECTURE.md`, `PRD.md`, this file,
 > and the full epic file for the task you are about to start. See `RULES.md §Agent Workflow`.
@@ -46,7 +46,7 @@ Open this first, find the next task, then read the full context before touching 
 | E6 | Local Transcription (WhisperKit) | `todo/e6-transcription-local.md` | `done` | 5 / 5 |
 | E7 | Paste & Core Flow Integration | `todo/e7-paste-flow.md` | `done` | 4 / 4 |
 | E8 | API Backend & Settings UI | `todo/e8-api-settings.md` | `done` | 5 / 5 |
-| E9 | Voice Translation | `todo/e9-translation.md` | `in progress` | 4 / 6 |
+| E9 | Voice Translation | `todo/e9-translation.md` | `in progress` | 5 / 6 |
 
 ---
 
@@ -190,7 +190,7 @@ Open this first, find the next task, then read the full context before touching 
 | E9-TASK-02 | English target translation via /v1/audio/translations | `done` |
 | E9-TASK-03 | Non-English target translation via Chat Completions chaining | `done` |
 | E9-TASK-04 | Auto-backend enforcement | `done` |
-| E9-TASK-05 | Language picker in menu bar and SettingsView | `pending` |
+| E9-TASK-05 | Language picker in menu bar and SettingsView | `done` |
 | E9-TASK-06 | [TEST] Voice Translation — Integration & Testing | `pending` |
 
 ---
