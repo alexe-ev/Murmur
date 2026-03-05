@@ -3,6 +3,10 @@ import Foundation
 
 final class SettingsModel: ObservableObject {
     private static let hotkeyModifierMask = Int(cmdKey | optionKey | controlKey | shiftKey)
+    private static let legacyCommandModifier = 0x0010_0000
+    private static let legacyOptionModifier = 0x0008_0000
+    private static let legacyControlModifier = 0x0004_0000
+    private static let legacyShiftModifier = 0x0002_0000
 
     enum WhisperBackend: String, CaseIterable, Identifiable {
         case local
@@ -93,7 +97,7 @@ final class SettingsModel: ObservableObject {
 
     private enum Defaults {
         static let hotkeyKeyCode = 49
-        static let hotkeyModifiers = 0x0008_0000
+        static let hotkeyModifiers = Int(optionKey)
         static let translationEnabled = false
         static let targetLanguage: TargetLanguage = .en
         static let whisperBackend: WhisperBackend = .local
@@ -118,7 +122,7 @@ final class SettingsModel: ObservableObject {
 
     @Published var hotkeyModifiers: Int {
         didSet {
-            let normalizedModifiers = hotkeyModifiers & Self.hotkeyModifierMask
+            let normalizedModifiers = Self.normalizeHotkeyModifiers(hotkeyModifiers)
             if hotkeyModifiers != normalizedModifiers {
                 hotkeyModifiers = normalizedModifiers
                 return
@@ -202,7 +206,7 @@ final class SettingsModel: ObservableObject {
     }
 
     private func normalizeHotkeyConfigurationIfNeeded() {
-        let normalizedModifiers = hotkeyModifiers & Self.hotkeyModifierMask
+        let normalizedModifiers = Self.normalizeHotkeyModifiers(hotkeyModifiers)
         if normalizedModifiers == 0 {
             hotkeyKeyCode = Defaults.hotkeyKeyCode
             hotkeyModifiers = Defaults.hotkeyModifiers
@@ -212,5 +216,20 @@ final class SettingsModel: ObservableObject {
         if hotkeyModifiers != normalizedModifiers {
             hotkeyModifiers = normalizedModifiers
         }
+    }
+
+    private static func normalizeHotkeyModifiers(_ raw: Int) -> Int {
+        let carbonModifiers = raw & hotkeyModifierMask
+        if carbonModifiers != 0 || raw == 0 {
+            return carbonModifiers
+        }
+
+        // Migrate legacy NSEvent-style modifier flags persisted by older builds.
+        var converted = 0
+        if raw & legacyCommandModifier != 0 { converted |= Int(cmdKey) }
+        if raw & legacyOptionModifier != 0 { converted |= Int(optionKey) }
+        if raw & legacyControlModifier != 0 { converted |= Int(controlKey) }
+        if raw & legacyShiftModifier != 0 { converted |= Int(shiftKey) }
+        return converted
     }
 }
