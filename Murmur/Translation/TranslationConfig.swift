@@ -4,30 +4,20 @@ import Foundation
 final class TranslationConfig: ObservableObject {
     static let shared = TranslationConfig()
 
-    static let supportedLanguages: [(code: String, name: String)] = [
-        ("en", "English"),
-        ("es", "Spanish"),
-        ("fr", "French"),
-        ("de", "German"),
-        ("it", "Italian"),
-        ("pt", "Portuguese"),
-        ("zh", "Chinese"),
-        ("ja", "Japanese"),
-        ("ko", "Korean"),
-        ("ru", "Russian"),
-        ("ar", "Arabic"),
-        ("hi", "Hindi")
-    ]
+    static let supportedLanguages: [(code: String, name: String)] =
+        SettingsModel.TargetLanguage.allCases.map { language in
+            (language.rawValue, language.displayName)
+        }
 
     @Published private(set) var isEnabled: Bool
-    @Published private(set) var targetLanguage: String
+    @Published private(set) var targetLanguage: SettingsModel.TargetLanguage
 
     var requiresAPI: Bool {
         isEnabled
     }
 
     var targetIsEnglish: Bool {
-        targetLanguage == "en"
+        targetLanguage == .en
     }
 
     private let settings: SettingsModel

@@ -77,9 +77,8 @@ final class MenuBarController: NSObject {
     }
 
     private func rebuildLanguageSubmenu() {
-        let currentCode = settingsModel.targetLanguage
-        let currentLanguageName = TranslationConfig.supportedLanguages.first(where: { $0.code == currentCode })?.name ?? "English"
-        languageItem?.title = "Language: \(currentLanguageName)"
+        let currentLanguage = settingsModel.targetLanguage
+        languageItem?.title = "Language: \(currentLanguage.displayName)"
 
         guard let languageSubmenu else { return }
         languageSubmenu.removeAllItems()
@@ -92,19 +91,24 @@ final class MenuBarController: NSObject {
 
         languageSubmenu.addItem(.separator())
 
-        for language in TranslationConfig.supportedLanguages {
-            let item = NSMenuItem(title: language.name, action: #selector(selectLanguage(_:)), keyEquivalent: "")
+        for language in SettingsModel.TargetLanguage.allCases {
+            let item = NSMenuItem(title: language.displayName, action: #selector(selectLanguage(_:)), keyEquivalent: "")
             item.target = self
-            item.representedObject = language.code
-            item.state = (language.code == currentCode) ? .on : .off
+            item.representedObject = language.rawValue
+            item.state = (language == currentLanguage) ? .on : .off
             languageSubmenu.addItem(item)
         }
     }
 
     @objc
     private func selectLanguage(_ sender: NSMenuItem) {
-        guard let languageCode = sender.representedObject as? String else { return }
-        settingsModel.targetLanguage = languageCode
+        guard
+            let languageCode = sender.representedObject as? String,
+            let language = SettingsModel.TargetLanguage(rawValue: languageCode)
+        else {
+            return
+        }
+        settingsModel.targetLanguage = language
     }
 
     func setState(_ state: MenuBarState) {
