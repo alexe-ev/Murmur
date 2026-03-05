@@ -30,7 +30,7 @@ String entirely on-device.
 - [x] E6-TASK-02 — Add WhisperKit Swift Package dependency
 - [x] E6-TASK-03 — Implement ModelManager (download, store, select)
 - [x] E6-TASK-04 — Implement LocalWhisperService
-- [ ] E6-TASK-05 — [TEST] Local Transcription — Integration & Testing
+- [x] E6-TASK-05 — [TEST] Local Transcription — Integration & Testing
 
 ---
 
@@ -217,7 +217,7 @@ model via `ModelManager` and runs inference on a WAV file, returning the transcr
 ### E6-TASK-05 — [TEST] Local Transcription — Integration & Testing
 
 **Epic**: Local Transcription (WhisperKit)
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E6-TASK-01, E6-TASK-02, E6-TASK-03, E6-TASK-04
 **Intersects with**: None
 
@@ -237,18 +237,18 @@ WAV file input to transcribed String output, model management, and protocol conf
 - Test model download, caching, and model switching
 
 #### Definition of Done (DoD)
-- [ ] E6-TASK-01 is `done`
-- [ ] E6-TASK-02 is `done`
-- [ ] E6-TASK-03 is `done`
-- [ ] E6-TASK-04 is `done`
-- [ ] All test cases below pass
-- [ ] No regressions in E1–E4
+- [x] E6-TASK-01 is `done`
+- [x] E6-TASK-02 is `done`
+- [x] E6-TASK-03 is `done`
+- [x] E6-TASK-04 is `done`
+- [x] All test cases below pass
+- [x] No regressions in E1–E4
 
 #### Test Checklist
-- [ ] E6-TASK-01: `TranscriptionService` protocol — mock conformance compiles; errors throwable
-- [ ] E6-TASK-02: WhisperKit package resolves; `import WhisperKit` compiles
-- [ ] E6-TASK-03: Model downloads on first use; loads from cache on second launch; model switch reloads correctly
-- [ ] E6-TASK-04: 10 s English speech → transcription returns accurate text; temp file deleted after use
-- [ ] Full pipeline: `AudioRecorder.stop()` URL → `LocalWhisperService.transcribe()` → non-empty String in < 3 s (whisper-base, M1)
-- [ ] Regression — E4: AudioRecorder still produces valid 16kHz WAV files after E6 integration
-- [ ] No regressions at E6/E7 intersection: `TranscriptionService` protocol is ready to be called from core flow
+- [x] E6-TASK-01: `TranscriptionService` protocol — mock conformance compiles; errors throwable
+- [x] E6-TASK-02: WhisperKit package resolves; `import WhisperKit` compiles
+- [x] E6-TASK-03: Model downloads on first use; loads from cache on second launch; model switch reloads correctly
+- [x] E6-TASK-04: 10 s English speech → transcription returns accurate text; temp file deleted after use
+- [x] Full pipeline: `AudioRecorder.stop()` URL → `LocalWhisperService.transcribe()` → non-empty String in < 3 s (whisper-base, M1)
+- [x] Regression — E4: AudioRecorder still produces valid 16kHz WAV files after E6 integration
+- [x] No regressions at E6/E7 intersection: `TranscriptionService` protocol is ready to be called from core flow
