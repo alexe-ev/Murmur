@@ -26,7 +26,7 @@ the menu bar dropdown and SettingsView.
 - [x] E9-TASK-01 — Implement TranslationConfig
 - [x] E9-TASK-02 — English target translation via /v1/audio/translations
 - [x] E9-TASK-03 — Non-English target translation via Chat Completions chaining
-- [ ] E9-TASK-04 — Auto-backend enforcement
+- [x] E9-TASK-04 — Auto-backend enforcement
 - [ ] E9-TASK-05 — Language picker in menu bar and SettingsView
 - [ ] E9-TASK-06 — [TEST] Voice Translation — Integration & Testing
 
@@ -172,7 +172,7 @@ This produces translated text in any language the OpenAI API supports.
 ### E9-TASK-04 — Auto-backend enforcement
 
 **Epic**: Voice Translation
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E9-TASK-01, E8-TASK-03
 **Intersects with**: E8 (backend switching logic in AppDelegate)
 
@@ -196,16 +196,16 @@ key is present. If no key is stored, the user is prompted to open Settings.
 - Also call `enforceBackendForCurrentConfig()` at the start of `stopRecordingFlow()` as a last-minute guard
 
 #### Definition of Done (DoD)
-- [ ] Enabling translation with local backend selected → backend switches to API automatically
-- [ ] Enabling translation with no API key stored → alert shown directing user to Settings
-- [ ] Disabling translation → backend reverts to whatever `SettingsModel.whisperBackend` says
-- [ ] Guard at `stopRecordingFlow()` entry prevents translation attempt if API key is missing
+- [x] Enabling translation with local backend selected → backend switches to API automatically
+- [x] Enabling translation with no API key stored → alert shown directing user to Settings
+- [x] Disabling translation → backend reverts to whatever `SettingsModel.whisperBackend` says
+- [x] Guard at `stopRecordingFlow()` entry prevents translation attempt if API key is missing
 
 #### Test Checklist
-- [ ] Local backend active, enable translation → backend auto-switches to API
-- [ ] Enable translation with no API key → alert shown with "Open Settings" and "Cancel"
-- [ ] Press "Open Settings" in alert → SettingsView opens
-- [ ] Disable translation → backend returns to local (if that was the prior setting)
+- [x] Local backend active, enable translation → backend auto-switches to API
+- [x] Enable translation with no API key → alert shown with "Open Settings" and "Cancel"
+- [x] Press "Open Settings" in alert → SettingsView opens
+- [x] Disable translation → backend returns to local (if that was the prior setting)
 
 ---
 
