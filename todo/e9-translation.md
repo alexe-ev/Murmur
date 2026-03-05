@@ -25,7 +25,7 @@ the menu bar dropdown and SettingsView.
 ### Tasks
 - [x] E9-TASK-01 — Implement TranslationConfig
 - [x] E9-TASK-02 — English target translation via /v1/audio/translations
-- [ ] E9-TASK-03 — Non-English target translation via Chat Completions chaining
+- [x] E9-TASK-03 — Non-English target translation via Chat Completions chaining
 - [ ] E9-TASK-04 — Auto-backend enforcement
 - [ ] E9-TASK-05 — Language picker in menu bar and SettingsView
 - [ ] E9-TASK-06 — [TEST] Voice Translation — Integration & Testing
@@ -125,7 +125,7 @@ an English transcript. This is the simpler translation path.
 ### E9-TASK-03 — Non-English target translation via Chat Completions chaining
 
 **Epic**: Voice Translation
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E9-TASK-02
 **Intersects with**: E9-TASK-04 (API backend enforced before this path runs)
 
@@ -155,17 +155,17 @@ This produces translated text in any language the OpenAI API supports.
   - Delete temp file after the full chain completes
 
 #### Definition of Done (DoD)
-- [ ] Non-English target → two API calls are made (transcription + chat)
-- [ ] Speaking English, Spanish selected → pasted text is in Spanish
-- [ ] Speaking any language, French selected → pasted text is in French
-- [ ] Chat Completions errors are caught and re-thrown as `TranscriptionError.apiError`
-- [ ] Temp file deleted after chain completes
+- [x] Non-English target → two API calls are made (transcription + chat)
+- [x] Speaking English, Spanish selected → pasted text is in Spanish
+- [x] Speaking any language, French selected → pasted text is in French
+- [x] Chat Completions errors are caught and re-thrown as `TranscriptionError.apiError`
+- [x] Temp file deleted after chain completes
 
 #### Test Checklist
-- [ ] Enable translation, select Spanish, speak English → pasted text is correct Spanish
-- [ ] Enable translation, select Japanese, speak English → pasted text is correct Japanese
-- [ ] Chat Completions API returns an error → `apiError` is thrown; notification shown; no stuck state
-- [ ] Verify two separate HTTP requests are made (via logging or proxy)
+- [x] Enable translation, select Spanish, speak English → pasted text is correct Spanish
+- [x] Enable translation, select Japanese, speak English → pasted text is correct Japanese
+- [x] Chat Completions API returns an error → `apiError` is thrown; notification shown; no stuck state
+- [x] Verify two separate HTTP requests are made (via logging or proxy)
 
 ---
 
