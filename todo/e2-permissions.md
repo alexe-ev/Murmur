@@ -22,7 +22,7 @@ clearly and that the app checks permission state on every foreground event.
 
 ### Tasks
 - [x] E2-TASK-01 — Implement PermissionsManager
-- [ ] E2-TASK-02 — Build OnboardingView
+- [x] E2-TASK-02 — Build OnboardingView
 - [ ] E2-TASK-03 — Integrate onboarding into launch flow
 - [ ] E2-TASK-04 — [TEST] Permissions & Onboarding — Integration & Testing
 
@@ -77,7 +77,7 @@ Published properties allow the UI and other managers to react when status change
 ### E2-TASK-02 — Build OnboardingView
 
 **Epic**: Permissions & Onboarding
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E2-TASK-01
 **Intersects with**: None
 
@@ -85,6 +85,7 @@ Published properties allow the UI and other managers to react when status change
 | File | Change |
 |---|---|
 | `Murmur/UI/OnboardingView.swift` | created |
+| `Murmur.xcodeproj/project.pbxproj` | modified |
 
 #### Description
 SwiftUI onboarding screen shown on first launch (or any time a required permission is missing).
@@ -104,11 +105,11 @@ The screen dismisses automatically once `PermissionsManager.shared.allGranted` b
 - Minimal, clean layout consistent with macOS HIG
 
 #### Definition of Done (DoD)
-- [ ] Both permission rows are visible with correct explanations
-- [ ] Status badges update reactively when permissions change
-- [ ] Mic grant button triggers the system dialog
-- [ ] Accessibility button opens System Settings
-- [ ] View auto-dismisses when `allGranted` flips to `true`
+- [x] Both permission rows are visible with correct explanations
+- [x] Status badges update reactively when permissions change
+- [x] Mic grant button triggers the system dialog
+- [x] Accessibility button opens System Settings
+- [x] View auto-dismisses when `allGranted` flips to `true`
 
 #### Test Checklist
 - [ ] Launch with no permissions → both rows show "Required"
