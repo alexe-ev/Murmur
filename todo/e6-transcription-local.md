@@ -29,7 +29,7 @@ String entirely on-device.
 - [x] E6-TASK-01 — Define TranscriptionService protocol
 - [x] E6-TASK-02 — Add WhisperKit Swift Package dependency
 - [x] E6-TASK-03 — Implement ModelManager (download, store, select)
-- [ ] E6-TASK-04 — Implement LocalWhisperService
+- [x] E6-TASK-04 — Implement LocalWhisperService
 - [ ] E6-TASK-05 — [TEST] Local Transcription — Integration & Testing
 
 ---
@@ -170,7 +170,7 @@ Manages the WhisperKit model lifecycle: downloading on first use, storing in
 ### E6-TASK-04 — Implement LocalWhisperService
 
 **Epic**: Local Transcription (WhisperKit)
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E6-TASK-01, E6-TASK-02, E6-TASK-03
 **Intersects with**: E7 (called by stopRecordingFlow), E8 (AppDelegate swaps this out for OpenAIWhisperService based on settings)
 
@@ -178,6 +178,9 @@ Manages the WhisperKit model lifecycle: downloading on first use, storing in
 | File | Change |
 |---|---|
 | `Murmur/Transcription/LocalWhisperService.swift` | created |
+| `Murmur.xcodeproj/project.pbxproj` | modified |
+| `todo/e6-transcription-local.md` | modified |
+| `todo/roadmap.md` | modified |
 
 #### Description
 Concrete `TranscriptionService` implementation using WhisperKit. Loads the selected Whisper
@@ -197,17 +200,17 @@ model via `ModelManager` and runs inference on a WAV file, returning the transcr
 - Handle WhisperKit errors and wrap them in `TranscriptionError.apiError`
 
 #### Definition of Done (DoD)
-- [ ] Transcription of a 10 s WAV clip returns a non-empty String
-- [ ] `isAvailable` correctly reflects model load state
-- [ ] Temp file is deleted after transcription
-- [ ] `modelNotLoaded` and `audioFileNotFound` errors are thrown in the correct conditions
-- [ ] Whisper errors are wrapped and re-thrown as `TranscriptionError.apiError`
+- [x] Transcription of a 10 s WAV clip returns a non-empty String
+- [x] `isAvailable` correctly reflects model load state
+- [x] Temp file is deleted after transcription
+- [x] `modelNotLoaded` and `audioFileNotFound` errors are thrown in the correct conditions
+- [x] Whisper errors are wrapped and re-thrown as `TranscriptionError.apiError`
 
 #### Test Checklist
-- [ ] Record 10 s of English speech → `transcribe()` returns accurate text
-- [ ] Call with unloaded model → throws `TranscriptionError.modelNotLoaded`
-- [ ] Call with non-existent file → throws `TranscriptionError.audioFileNotFound`
-- [ ] After successful transcription, temp file no longer exists on disk
+- [x] Record 10 s of English speech → `transcribe()` returns accurate text
+- [x] Call with unloaded model → throws `TranscriptionError.modelNotLoaded`
+- [x] Call with non-existent file → throws `TranscriptionError.audioFileNotFound`
+- [x] After successful transcription, temp file no longer exists on disk
 
 ---
 
