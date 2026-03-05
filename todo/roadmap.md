@@ -46,7 +46,7 @@ Open this first, find the next task, then read the full context before touching 
 |---|---|---|
 | PR-1 | Release blockers (`C-01`, `C-02`, `C-03`) | `done` |
 | PR-2 | Runtime stability (`H-01`, `H-02`, `M-03`) | `done` |
-| PR-3 | Privacy/Security hardening (`H-03`, `L-02`) | `pending` |
+| PR-3 | Privacy/Security hardening (`H-03`, `L-02`) | `done` |
 | PR-4 | Type-safety foundation (`M-01`) | `pending` |
 | PR-5 | Decoupling and readability (`M-02`, `L-01`) | `pending` |
 | PR-6 | Quality gates and process (`H-05`, `H-06`, `H-07`, `M-05`, `M-06`, `L-03`) | `pending` |
