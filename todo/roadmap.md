@@ -26,8 +26,8 @@ Open this first, find the next task, then read the full context before touching 
 
 ## Current Focus
 
-> **E1 — Project Skeleton & App Foundation** is the active epic.
-> In progress: **E1-TASK-05** ([TEST] Project Skeleton & App Foundation — Integration & Testing).
+> **E2 — Permissions & Onboarding** is the active epic.
+> Next up: **E2-TASK-02** (Build OnboardingView).
 >
 > Before picking up any task: read `CLAUDE.md`, `ARCHITECTURE.md`, `PRD.md`, this file,
 > and the full epic file for the task you are about to start. See `RULES.md §Agent Workflow`.
@@ -39,7 +39,7 @@ Open this first, find the next task, then read the full context before touching 
 | # | Epic | File | Status | Progress |
 |---|---|---|---|---|
 | E1 | Project Skeleton & App Foundation | `todo/e1-foundation.md` | `in progress` | 4 / 5 |
-| E2 | Permissions & Onboarding | `todo/e2-permissions.md` | `pending` | 0 / 4 |
+| E2 | Permissions & Onboarding | `todo/e2-permissions.md` | `in progress` | 1 / 4 |
 | E3 | Global Hotkey | `todo/e3-hotkey.md` | `pending` | 0 / 4 |
 | E4 | Audio Recording | `todo/e4-audio.md` | `pending` | 0 / 4 |
 | E5 | Menu Bar UI | `todo/e5-menubar.md` | `pending` | 0 / 5 |
@@ -73,12 +73,12 @@ Open this first, find the next task, then read the full context before touching 
 ### Epic E2 — Permissions & Onboarding
 
 **File**: `todo/e2-permissions.md`
-**Status**: `pending`
+**Status**: `in progress`
 **Depends on**: E1
 
 | Task | Title | Status |
 |---|---|---|
-| E2-TASK-01 | Implement PermissionsManager | `pending` |
+| E2-TASK-01 | Implement PermissionsManager | `done` |
 | E2-TASK-02 | Build OnboardingView | `pending` |
 | E2-TASK-03 | Integrate onboarding into launch flow | `pending` |
 | E2-TASK-04 | [TEST] Permissions & Onboarding — Integration & Testing | `pending` |
