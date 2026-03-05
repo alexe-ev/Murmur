@@ -129,12 +129,34 @@ final class PasteController {
             return ClipboardSnapshot(items: [], wasEmpty: true)
         }
 
-        let copiedItems = existingItems.compactMap { $0.copy() as? NSPasteboardItem }
+        let copiedItems = existingItems.compactMap(clonePasteboardItem)
         guard copiedItems.count == existingItems.count else {
             return nil
         }
 
         return ClipboardSnapshot(items: copiedItems, wasEmpty: false)
+    }
+
+    private func clonePasteboardItem(_ item: NSPasteboardItem) -> NSPasteboardItem? {
+        let clonedItem = NSPasteboardItem()
+
+        for type in item.types {
+            if let data = item.data(forType: type) {
+                clonedItem.setData(data, forType: type)
+                continue
+            }
+
+            if let string = item.string(forType: type) {
+                clonedItem.setString(string, forType: type)
+                continue
+            }
+
+            if let propertyList = item.propertyList(forType: type) {
+                clonedItem.setPropertyList(propertyList, forType: type)
+            }
+        }
+
+        return clonedItem.types.isEmpty ? nil : clonedItem
     }
 
     private func scheduleClipboardRestore(_ snapshot: ClipboardSnapshot, expectedChangeCount: Int) {
