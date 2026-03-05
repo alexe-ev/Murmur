@@ -19,6 +19,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let settingsModel = SettingsModel.shared
     private var onboardingWindow: NSWindow?
     private var didEnterMainFlow = false
+    private var isRecordingFlowActive = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Self.shared = self
@@ -122,16 +123,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func startRecordingFlow() {
+        isRecordingFlowActive = true
         menuBarController?.setState(.recording)
         print("startRecordingFlow")
     }
 
     private func stopRecordingFlow() {
+        isRecordingFlowActive = false
         menuBarController?.setState(.processing)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             self?.menuBarController?.setState(.idle)
         }
         print("stopRecordingFlow")
+    }
+
+    @objc
+    func toggleRecordingFromMenu() {
+        if isRecordingFlowActive {
+            stopRecordingFlow()
+        } else {
+            startRecordingFlow()
+        }
     }
 
     @objc
@@ -154,4 +166,5 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return false
         }
     }
+
 }
