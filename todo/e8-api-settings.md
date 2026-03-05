@@ -26,7 +26,7 @@ select the Whisper model size, and toggle launch-at-login — all from a single 
 - [x] E8-TASK-01 — Implement KeychainManager
 - [x] E8-TASK-02 — Implement OpenAIWhisperService
 - [x] E8-TASK-03 — Backend switching in AppDelegate
-- [ ] E8-TASK-04 — Build full SettingsView
+- [x] E8-TASK-04 — Build full SettingsView
 - [ ] E8-TASK-05 — [TEST] API Backend & Settings UI — Integration & Testing
 
 ---
@@ -169,7 +169,7 @@ the active service is hot-swapped without restarting the app.
 ### E8-TASK-04 — Build full SettingsView
 
 **Epic**: API Backend & Settings UI
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E8-TASK-01, E8-TASK-03, E3-TASK-03, E6-TASK-03, E1-TASK-04
 **Intersects with**: E9 (language picker and translation toggle sections are present but wired in E9)
 
@@ -178,6 +178,9 @@ the active service is hot-swapped without restarting the app.
 |---|---|
 | `Murmur/UI/SettingsView.swift` | created |
 | `Murmur/App/AppDelegate.swift` | modified (openSettings() implementation) |
+| `Murmur.xcodeproj/project.pbxproj` | modified (register SettingsView in target) |
+| `todo/e8-api-settings.md` | modified (status updates) |
+| `todo/roadmap.md` | modified (status updates) |
 
 #### Description
 Full SwiftUI settings window with all user-configurable options. Opened from the menu bar
@@ -211,22 +214,22 @@ Implement `AppDelegate.openSettings()`:
 - Bring to front with `makeKeyAndOrderFront`
 
 #### Definition of Done (DoD)
-- [ ] All sections and controls are present and functional
-- [ ] Backend picker changes `SettingsModel.whisperBackend` and triggers backend switch
-- [ ] Model picker changes `SettingsModel.whisperModel` and triggers model reload
-- [ ] API key SecureField saves to Keychain on "Save"
-- [ ] Launch at Login toggle registers/unregisters via SMAppService
-- [ ] Hotkey capture field works and persists the new hotkey
-- [ ] Translation section is present (may be stub for now)
+- [x] All sections and controls are present and functional
+- [x] Backend picker changes `SettingsModel.whisperBackend` and triggers backend switch
+- [x] Model picker changes `SettingsModel.whisperModel` and triggers model reload
+- [x] API key SecureField saves to Keychain on "Save"
+- [x] Launch at Login toggle registers/unregisters via SMAppService
+- [x] Hotkey capture field works and persists the new hotkey
+- [x] Translation section is present (may be stub for now)
 
 #### Test Checklist
-- [ ] Open Settings from menu bar → window appears
-- [ ] Switch backend to "OpenAI API" → model picker hides; API key field appears
-- [ ] Enter a valid API key and save → `KeychainManager.load()` returns the key
-- [ ] Change model to "small" → `ModelManager` begins loading small model
-- [ ] Toggle "Launch at Login" → System Settings reflects the change
-- [ ] Capture a new hotkey → new combo fires `onToggle` from any app
-- [ ] Close and reopen Settings → all values reflect persisted state
+- [x] Open Settings from menu bar → window appears
+- [x] Switch backend to "OpenAI API" → model picker hides; API key field appears
+- [x] Enter a valid API key and save → `KeychainManager.load()` returns the key
+- [x] Change model to "small" → `ModelManager` begins loading small model
+- [x] Toggle "Launch at Login" → System Settings reflects the change
+- [x] Capture a new hotkey → new combo fires `onToggle` from any app
+- [x] Close and reopen Settings → all values reflect persisted state
 
 ---
 
