@@ -22,7 +22,7 @@ select the Whisper model size, and toggle launch-at-login — all from a single 
 - `todo/roadmap.md` — modified (status updates)
 
 ### Tasks
-- [ ] E8-TASK-01 — Implement KeychainManager
+- [x] E8-TASK-01 — Implement KeychainManager
 - [ ] E8-TASK-02 — Implement OpenAIWhisperService
 - [ ] E8-TASK-03 — Backend switching in AppDelegate
 - [ ] E8-TASK-04 — Build full SettingsView
@@ -33,7 +33,7 @@ select the Whisper model size, and toggle launch-at-login — all from a single 
 ### E8-TASK-01 — Implement KeychainManager
 
 **Epic**: API Backend & Settings UI
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E1-TASK-01
 **Intersects with**: E8-TASK-02 (OpenAIWhisperService reads key via KeychainManager), E8-TASK-04 (SettingsView writes key via KeychainManager), E9 (translation API calls also require this key)
 
@@ -57,17 +57,17 @@ The API key must never be stored in `UserDefaults`, committed to source control,
 - Never log the API key value — log only success/failure status
 
 #### Definition of Done (DoD)
-- [ ] `save(apiKey:)` stores the key in Keychain
-- [ ] `load()` retrieves the stored key; returns `nil` if none stored
-- [ ] `delete()` removes the key
-- [ ] API key survives app restart (persists in Keychain)
-- [ ] Keychain errors are wrapped and thrown — no raw OSStatus values exposed to callers
+- [x] `save(apiKey:)` stores the key in Keychain
+- [x] `load()` retrieves the stored key; returns `nil` if none stored
+- [x] `delete()` removes the key
+- [x] API key survives app restart (persists in Keychain)
+- [x] Keychain errors are wrapped and thrown — no raw OSStatus values exposed to callers
 
 #### Test Checklist
-- [ ] `save("sk-test")` → `load()` returns `"sk-test"`
-- [ ] `delete()` → `load()` returns `nil`
-- [ ] Save a new key over an existing one → `load()` returns the new value
-- [ ] Key is accessible in Keychain Access.app under "com.murmur.app"
+- [x] `save("sk-test")` → `load()` returns `"sk-test"`
+- [x] `delete()` → `load()` returns `nil`
+- [x] Save a new key over an existing one → `load()` returns the new value
+- [x] Key is accessible in Keychain Access.app under "com.murmur.app"
 
 ---
 
