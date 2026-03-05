@@ -7,12 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A10000000000000000000012 /* MurmurApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000013 /* MurmurApp.swift */; };
+		A10000000000000000000014 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000015 /* AppDelegate.swift */; };
+		A10000000000000000000016 /* SettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000017 /* SettingsModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A10000000000000000000001 /* Murmur.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Murmur.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000002 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Murmur/App/Info.plist; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000003 /* Murmur.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Murmur/App/Murmur.entitlements; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000013 /* MurmurApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/App/MurmurApp.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000015 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/App/AppDelegate.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000017 /* SettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/Settings/SettingsModel.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,6 +51,9 @@
 		A10000000000000000000006 /* Murmur */ = {
 			isa = PBXGroup;
 			children = (
+				A10000000000000000000013 /* MurmurApp.swift */,
+				A10000000000000000000015 /* AppDelegate.swift */,
+				A10000000000000000000017 /* SettingsModel.swift */,
 				A10000000000000000000002 /* Info.plist */,
 				A10000000000000000000003 /* Murmur.entitlements */,
 			);
@@ -119,6 +128,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A10000000000000000000012 /* MurmurApp.swift in Sources */,
+				A10000000000000000000014 /* AppDelegate.swift in Sources */,
+				A10000000000000000000016 /* SettingsModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
