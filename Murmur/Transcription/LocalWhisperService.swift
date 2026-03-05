@@ -49,7 +49,6 @@ final class LocalWhisperService: TranscriptionService {
                 throw TranscriptionError.apiError("WhisperKit returned an empty transcription.")
             }
 
-            try? fileManager.removeItem(at: audioURL)
             return text
 #else
             throw TranscriptionError.apiError("WhisperKit is available only on arm64 builds.")

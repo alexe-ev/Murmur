@@ -42,7 +42,6 @@ final class OpenAIWhisperService: TranscriptionService {
                 result = try await performTextRequest(request)
             }
 
-            try? fileManager.removeItem(at: audioURL)
             return result
         } catch let error as TranscriptionError {
             throw error
