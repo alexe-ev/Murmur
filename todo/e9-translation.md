@@ -24,7 +24,7 @@ the menu bar dropdown and SettingsView.
 
 ### Tasks
 - [x] E9-TASK-01 — Implement TranslationConfig
-- [ ] E9-TASK-02 — English target translation via /v1/audio/translations
+- [x] E9-TASK-02 — English target translation via /v1/audio/translations
 - [ ] E9-TASK-03 — Non-English target translation via Chat Completions chaining
 - [ ] E9-TASK-04 — Auto-backend enforcement
 - [ ] E9-TASK-05 — Language picker in menu bar and SettingsView
@@ -87,7 +87,7 @@ into `SettingsModel` directly.
 ### E9-TASK-02 — English target translation via /v1/audio/translations
 
 **Epic**: Voice Translation
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E8-TASK-02, E9-TASK-01
 **Intersects with**: E9-TASK-03 (non-English path; these two share the same flow entry point)
 
@@ -109,16 +109,16 @@ an English transcript. This is the simpler translation path.
 - Add a private helper `func buildTranslationRequest(audioURL: URL, apiKey: String) throws -> URLRequest` that encapsulates the multipart form for the translations endpoint
 
 #### Definition of Done (DoD)
-- [ ] When `targetLanguage = "en"` and translation enabled: `/v1/audio/translations` is called
-- [ ] Speaking Spanish and selecting English target → pasted text is in English
-- [ ] HTTP errors handled as `TranscriptionError.apiError`
-- [ ] Temp file deleted after use
+- [x] When `targetLanguage = "en"` and translation enabled: `/v1/audio/translations` is called
+- [x] Speaking Spanish and selecting English target → pasted text is in English
+- [x] HTTP errors handled as `TranscriptionError.apiError`
+- [x] Temp file deleted after use
 
 #### Test Checklist
-- [ ] Enable translation, select English target, speak Spanish → pasted text is English
-- [ ] Enable translation, select English target, speak French → pasted text is English
-- [ ] Translation disabled, speak Spanish → pasted text is Spanish (transcription mode)
-- [ ] `/v1/audio/translations` is called (verify with Charles proxy or logging)
+- [x] Enable translation, select English target, speak Spanish → pasted text is English
+- [x] Enable translation, select English target, speak French → pasted text is English
+- [x] Translation disabled, speak Spanish → pasted text is Spanish (transcription mode)
+- [x] `/v1/audio/translations` is called (verify with Charles proxy or logging)
 
 ---
 

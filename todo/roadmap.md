@@ -27,7 +27,7 @@ Open this first, find the next task, then read the full context before touching 
 ## Current Focus
 
 > **E9 — Voice Translation** is the active epic.
-> Next up: **E9-TASK-02** (English target translation via /v1/audio/translations).
+> Next up: **E9-TASK-03** (Non-English target translation via Chat Completions chaining).
 >
 > Before picking up any task: read `CLAUDE.md`, `ARCHITECTURE.md`, `PRD.md`, this file,
 > and the full epic file for the task you are about to start. See `RULES.md §Agent Workflow`.
@@ -46,7 +46,7 @@ Open this first, find the next task, then read the full context before touching 
 | E6 | Local Transcription (WhisperKit) | `todo/e6-transcription-local.md` | `done` | 5 / 5 |
 | E7 | Paste & Core Flow Integration | `todo/e7-paste-flow.md` | `done` | 4 / 4 |
 | E8 | API Backend & Settings UI | `todo/e8-api-settings.md` | `done` | 5 / 5 |
-| E9 | Voice Translation | `todo/e9-translation.md` | `in progress` | 1 / 6 |
+| E9 | Voice Translation | `todo/e9-translation.md` | `in progress` | 2 / 6 |
 
 ---
 
@@ -181,13 +181,13 @@ Open this first, find the next task, then read the full context before touching 
 ### Epic E9 — Voice Translation
 
 **File**: `todo/e9-translation.md`
-**Status**: `pending`
+**Status**: `in progress`
 **Depends on**: E8
 
 | Task | Title | Status |
 |---|---|---|
 | E9-TASK-01 | Implement TranslationConfig | `done` |
-| E9-TASK-02 | English target translation via /v1/audio/translations | `pending` |
+| E9-TASK-02 | English target translation via /v1/audio/translations | `done` |
 | E9-TASK-03 | Non-English target translation via Chat Completions chaining | `pending` |
 | E9-TASK-04 | Auto-backend enforcement | `pending` |
 | E9-TASK-05 | Language picker in menu bar and SettingsView | `pending` |

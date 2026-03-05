@@ -3,7 +3,8 @@ import Foundation
 final class OpenAIWhisperService: TranscriptionService {
     private let session: URLSession
     private let fileManager: FileManager
-    private let endpointURL = URL(string: "https://api.openai.com/v1/audio/transcriptions")!
+    private let transcriptionsEndpointURL = URL(string: "https://api.openai.com/v1/audio/transcriptions")!
+    private let translationsEndpointURL = URL(string: "https://api.openai.com/v1/audio/translations")!
 
     init(session: URLSession = .shared, fileManager: FileManager = .default) {
         self.session = session
@@ -24,13 +25,15 @@ final class OpenAIWhisperService: TranscriptionService {
         }
 
         do {
-            let boundary = "Boundary-\(UUID().uuidString)"
-            var request = URLRequest(url: endpointURL)
-            request.httpMethod = "POST"
-            request.timeoutInterval = 30
-            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-            request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-            request.httpBody = try makeMultipartBody(audioURL: audioURL, targetLanguage: targetLanguage, boundary: boundary)
+            let normalizedLanguage = targetLanguage?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            let translationEnabled = TranslationConfig.shared.isEnabled
+            let request: URLRequest
+
+            if translationEnabled, normalizedLanguage == "en" {
+                request = try buildTranslationRequest(audioURL: audioURL, apiKey: apiKey)
+            } else {
+                request = try buildTranscriptionRequest(audioURL: audioURL, targetLanguage: normalizedLanguage, apiKey: apiKey)
+            }
 
             let (data, response) = try await session.data(for: request)
             guard let httpResponse = response as? HTTPURLResponse else {
@@ -59,14 +62,46 @@ final class OpenAIWhisperService: TranscriptionService {
         }
     }
 
-    private func makeMultipartBody(audioURL: URL, targetLanguage: String?, boundary: String) throws -> Data {
+    private func buildTranslationRequest(audioURL: URL, apiKey: String) throws -> URLRequest {
+        let boundary = "Boundary-\(UUID().uuidString)"
+        var request = URLRequest(url: translationsEndpointURL)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 30
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try makeMultipartBody(
+            audioURL: audioURL,
+            boundary: boundary,
+            includeLanguageField: false,
+            targetLanguage: nil
+        )
+        return request
+    }
+
+    private func buildTranscriptionRequest(audioURL: URL, targetLanguage: String?, apiKey: String) throws -> URLRequest {
+        let boundary = "Boundary-\(UUID().uuidString)"
+        var request = URLRequest(url: transcriptionsEndpointURL)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 30
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try makeMultipartBody(
+            audioURL: audioURL,
+            boundary: boundary,
+            includeLanguageField: true,
+            targetLanguage: targetLanguage
+        )
+        return request
+    }
+
+    private func makeMultipartBody(audioURL: URL, boundary: String, includeLanguageField: Bool, targetLanguage: String?) throws -> Data {
         let audioData = try Data(contentsOf: audioURL)
         var body = Data()
 
         appendFormField(named: "model", value: "whisper-1", to: &body, boundary: boundary)
         appendFormField(named: "response_format", value: "text", to: &body, boundary: boundary)
 
-        if let language = targetLanguage?.trimmingCharacters(in: .whitespacesAndNewlines), !language.isEmpty {
+        if includeLanguageField, let language = targetLanguage, !language.isEmpty {
             appendFormField(named: "language", value: language, to: &body, boundary: boundary)
         }
 
