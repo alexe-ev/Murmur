@@ -24,6 +24,7 @@
 		A10000000000000000000030 /* PasteController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000031 /* PasteController.swift */; };
 		A10000000000000000000032 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000033 /* KeychainManager.swift */; };
 		A10000000000000000000034 /* OpenAIWhisperService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000035 /* OpenAIWhisperService.swift */; };
+		A10000000000000000000036 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000037 /* SettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 		A10000000000000000000031 /* PasteController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/Core/PasteController.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000033 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/Settings/KeychainManager.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000035 /* OpenAIWhisperService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/Transcription/OpenAIWhisperService.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000037 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/UI/SettingsView.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +89,7 @@
 				A1000000000000000000001B /* OnboardingView.swift */,
 				A10000000000000000000021 /* MenuBarController.swift */,
 				A10000000000000000000025 /* RecordingIndicatorView.swift */,
+				A10000000000000000000037 /* SettingsView.swift */,
 				A1000000000000000000002B /* ModelManager.swift */,
 				A1000000000000000000002D /* TranscriptionService.swift */,
 				A1000000000000000000002F /* LocalWhisperService.swift */,
@@ -185,6 +188,7 @@
 				A1000000000000000000001E /* AudioRecorder.swift in Sources */,
 				A10000000000000000000020 /* MenuBarController.swift in Sources */,
 				A10000000000000000000024 /* RecordingIndicatorView.swift in Sources */,
+				A10000000000000000000036 /* SettingsView.swift in Sources */,
 				A1000000000000000000002A /* ModelManager.swift in Sources */,
 				A1000000000000000000002C /* TranscriptionService.swift in Sources */,
 				A1000000000000000000002E /* LocalWhisperService.swift in Sources */,

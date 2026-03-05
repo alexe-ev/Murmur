@@ -20,6 +20,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let notificationCenter = UNUserNotificationCenter.current()
     private var cancellables = Set<AnyCancellable>()
     private var onboardingWindow: NSWindow?
+    private var settingsWindow: NSWindow?
     private var didEnterMainFlow = false
     private var isRecordingFlowActive = false
 
@@ -227,7 +228,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc
     func openSettings() {
-        print("openSettings stub")
+        if settingsWindow == nil {
+            let hostingController = NSHostingController(rootView: SettingsView())
+            let window = NSWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 520, height: 440),
+                styleMask: [.titled, .closable, .miniaturizable],
+                backing: .buffered,
+                defer: false
+            )
+            window.contentViewController = hostingController
+            window.title = "Murmur Settings"
+            window.isReleasedWhenClosed = false
+            window.center()
+            window.setContentSize(NSSize(width: 520, height: 440))
+            window.minSize = NSSize(width: 520, height: 440)
+            window.maxSize = NSSize(width: 520, height: 440)
+            settingsWindow = window
+        }
+
+        settingsWindow?.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
     }
 
     private func isPotentiallyReservedHotkey(keyCode: UInt32, modifiers: UInt32) -> Bool {
