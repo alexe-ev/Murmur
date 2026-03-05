@@ -27,7 +27,7 @@ Open this first, find the next task, then read the full context before touching 
 ## Current Focus
 
 > **E5 — Menu Bar UI** is the active epic.
-> Next up: **E5-TASK-01** (MenuBarController skeleton (NSStatusItem + basic dropdown)).
+> Next up: **E5-TASK-02** (Icon state management (idle / recording / processing)).
 >
 > Before picking up any task: read `CLAUDE.md`, `ARCHITECTURE.md`, `PRD.md`, this file,
 > and the full epic file for the task you are about to start. See `RULES.md §Agent Workflow`.
@@ -42,7 +42,7 @@ Open this first, find the next task, then read the full context before touching 
 | E2 | Permissions & Onboarding | `todo/e2-permissions.md` | `in progress` | 3 / 4 |
 | E3 | Global Hotkey | `todo/e3-hotkey.md` | `done` | 4 / 4 |
 | E4 | Audio Recording | `todo/e4-audio.md` | `done` | 4 / 4 |
-| E5 | Menu Bar UI | `todo/e5-menubar.md` | `pending` | 0 / 5 |
+| E5 | Menu Bar UI | `todo/e5-menubar.md` | `in progress` | 1 / 5 |
 | E6 | Local Transcription (WhisperKit) | `todo/e6-transcription-local.md` | `pending` | 0 / 5 |
 | E7 | Paste & Core Flow Integration | `todo/e7-paste-flow.md` | `pending` | 0 / 4 |
 | E8 | API Backend & Settings UI | `todo/e8-api-settings.md` | `pending` | 0 / 5 |
@@ -118,12 +118,12 @@ Open this first, find the next task, then read the full context before touching 
 ### Epic E5 — Menu Bar UI
 
 **File**: `todo/e5-menubar.md`
-**Status**: `pending`
+**Status**: `in progress`
 **Depends on**: E1
 
 | Task | Title | Status |
 |---|---|---|
-| E5-TASK-01 | MenuBarController skeleton (NSStatusItem + basic dropdown) | `pending` |
+| E5-TASK-01 | MenuBarController skeleton (NSStatusItem + basic dropdown) | `done` |
 | E5-TASK-02 | Icon state management (idle / recording / processing) | `pending` |
 | E5-TASK-03 | Floating recording indicator (NSPanel) | `pending` |
 | E5-TASK-04 | Dropdown menu (wired to AppDelegate actions) | `pending` |

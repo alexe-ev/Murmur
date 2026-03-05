@@ -9,8 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     static weak var shared: AppDelegate?
 
     private let permissionsManager = PermissionsManager.shared
-    // TODO: Add MenuBarController in E5.
-    private var menuBarController: AnyObject?
+    var menuBarController: MenuBarController?
     private let hotkeyManager = HotkeyManager()
     // TODO: Add AudioRecorder in E4.
     private var audioRecorder: AnyObject?
@@ -95,6 +94,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func enterMainFlowIfNeeded() {
         guard !didEnterMainFlow else { return }
         didEnterMainFlow = true
+        menuBarController = MenuBarController()
 
         hotkeyManager.onToggle = { [weak self] isRecording in
             if isRecording {
@@ -127,6 +127,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func stopRecordingFlow() {
         print("stopRecordingFlow")
+    }
+
+    @objc
+    func openSettings() {
+        print("openSettings stub")
     }
 
     private func isPotentiallyReservedHotkey(keyCode: UInt32, modifiers: UInt32) -> Bool {

@@ -17,12 +17,13 @@ the only — visible surface of Murmur.
 - `Murmur/UI/MenuBarController.swift` — created
 - `Murmur/UI/RecordingIndicatorView.swift` — created
 - `Murmur/App/AppDelegate.swift` — modified (instantiates MenuBarController, connects state changes)
+- `Murmur.xcodeproj/project.pbxproj` — modified (registers new UI source files in target build phase)
 - `Murmur/UI/Assets.xcassets` — created (icon assets: idle, recording, processing)
 - `todo/e5-menubar.md` — modified (status updates)
 - `todo/roadmap.md` — modified (status updates)
 
 ### Tasks
-- [ ] E5-TASK-01 — MenuBarController skeleton (NSStatusItem + basic dropdown)
+- [x] E5-TASK-01 — MenuBarController skeleton (NSStatusItem + basic dropdown)
 - [ ] E5-TASK-02 — Icon state management (idle / recording / processing)
 - [ ] E5-TASK-03 — Floating recording indicator (NSPanel)
 - [ ] E5-TASK-04 — Dropdown menu (wired to AppDelegate actions)
@@ -33,7 +34,7 @@ the only — visible surface of Murmur.
 ### E5-TASK-01 — MenuBarController skeleton (NSStatusItem + basic dropdown)
 
 **Epic**: Menu Bar UI
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E1-TASK-02
 **Intersects with**: E5-TASK-02 (icon), E5-TASK-04 (menu)
 
@@ -42,6 +43,7 @@ the only — visible surface of Murmur.
 |---|---|
 | `Murmur/UI/MenuBarController.swift` | created |
 | `Murmur/App/AppDelegate.swift` | modified |
+| `Murmur.xcodeproj/project.pbxproj` | modified |
 
 #### Description
 Creates `MenuBarController` which owns the `NSStatusItem` and is instantiated by `AppDelegate`
@@ -58,10 +60,10 @@ minimal menu (Settings, Quit).
 - `AppDelegate` instantiates `MenuBarController` once permissions are granted and stores it as `var menuBarController: MenuBarController?`
 
 #### Definition of Done (DoD)
-- [ ] Menu bar icon appears after permissions are granted
-- [ ] Clicking the icon shows a dropdown with "Settings" and "Quit"
-- [ ] "Quit" terminates the app
-- [ ] "Settings" calls a stub (logged) without crashing
+- [x] Menu bar icon appears after permissions are granted
+- [x] Clicking the icon shows a dropdown with "Settings" and "Quit"
+- [x] "Quit" terminates the app
+- [x] "Settings" calls a stub (logged) without crashing
 
 #### Test Checklist
 - [ ] Grant permissions → menu bar icon appears
