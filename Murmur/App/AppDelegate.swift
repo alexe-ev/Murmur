@@ -11,10 +11,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let permissionsManager = PermissionsManager.shared
     var menuBarController: MenuBarController?
     private let hotkeyManager = HotkeyManager()
-    // TODO: Add AudioRecorder in E4.
-    private var audioRecorder: AnyObject?
-    // TODO: Add TranscriptionService in E6/E8.
-    private var transcriptionService: AnyObject?
+    private let audioRecorder = AudioRecorder()
+    private let pasteController = PasteController()
+    var transcriptionService: TranscriptionService = LocalWhisperService()
 
     private let settingsModel = SettingsModel.shared
     private var onboardingWindow: NSWindow?
@@ -123,18 +122,52 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func startRecordingFlow() {
+        guard !isRecordingFlowActive else { return }
+
         isRecordingFlowActive = true
         menuBarController?.setState(.recording)
-        print("startRecordingFlow")
+        menuBarController?.showIndicator()
+        menuBarController?.updateMenuItems(isRecording: true)
+
+        do {
+            try audioRecorder.startRecording()
+            print("startRecordingFlow")
+        } catch {
+            isRecordingFlowActive = false
+            menuBarController?.setState(.idle)
+            menuBarController?.hideIndicator()
+            menuBarController?.updateMenuItems(isRecording: false)
+            showErrorNotification(error)
+        }
     }
 
     private func stopRecordingFlow() {
+        guard isRecordingFlowActive else { return }
+
         isRecordingFlowActive = false
         menuBarController?.setState(.processing)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            self?.menuBarController?.setState(.idle)
+        menuBarController?.hideIndicator()
+        menuBarController?.updateMenuItems(isRecording: false)
+
+        guard let audioURL = audioRecorder.stopRecording() else {
+            menuBarController?.setState(.idle)
+            showErrorNotification(TranscriptionError.audioFileNotFound)
+            return
         }
-        print("stopRecordingFlow")
+
+        Task { [weak self] in
+            guard let self else { return }
+
+            do {
+                let text = try await transcriptionService.transcribe(audioURL: audioURL, targetLanguage: nil)
+                try pasteController.paste(text)
+                menuBarController?.setState(.idle)
+                print("stopRecordingFlow")
+            } catch {
+                showErrorNotification(error)
+                menuBarController?.setState(.idle)
+            }
+        }
     }
 
     @objc
@@ -165,6 +198,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         default:
             return false
         }
+    }
+
+    private func showErrorNotification(_ error: Error) {
+        print("Core flow error: \(error.localizedDescription)")
     }
 
 }

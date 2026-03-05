@@ -21,12 +21,13 @@ their system.
 ### Affected Files
 - `Murmur/Core/PasteController.swift` — created
 - `Murmur/App/AppDelegate.swift` — modified (startRecordingFlow, stopRecordingFlow, error handling)
+- `Murmur.xcodeproj/project.pbxproj` — modified (target membership for PasteController)
 - `todo/e7-paste-flow.md` — modified (status updates)
 - `todo/roadmap.md` — modified (status updates)
 
 ### Tasks
 - [x] E7-TASK-01 — Implement PasteController
-- [ ] E7-TASK-02 — Wire core flow in AppDelegate
+- [x] E7-TASK-02 — Wire core flow in AppDelegate
 - [ ] E7-TASK-03 — Error handling (transcription failure → user notification)
 - [ ] E7-TASK-04 — [TEST] Paste & Core Flow — Integration & Testing
 
@@ -87,7 +88,7 @@ guards against missing permission before attempting to post.
 ### E7-TASK-02 — Wire core flow in AppDelegate
 
 **Epic**: Paste & Core Flow Integration
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E7-TASK-01, E3-TASK-02, E4-TASK-01, E5-TASK-02, E6-TASK-04
 **Intersects with**: E8 (backend switching: `transcriptionService` property must be swappable), E9 (translation inserted here after transcription)
 
@@ -95,6 +96,7 @@ guards against missing permission before attempting to post.
 | File | Change |
 |---|---|
 | `Murmur/App/AppDelegate.swift` | modified |
+| `Murmur.xcodeproj/project.pbxproj` | modified |
 
 #### Description
 Replaces the stub `startRecordingFlow()` / `stopRecordingFlow()` methods with the full
@@ -122,18 +124,18 @@ implementation, connecting `AudioRecorder`, `TranscriptionService`, `PasteContro
 - All UI updates dispatched on `@MainActor`
 
 #### Definition of Done (DoD)
-- [ ] `startRecordingFlow()` starts mic capture and updates UI
-- [ ] `stopRecordingFlow()` stops capture, transcribes, and pastes
-- [ ] `transcriptionService` is a swappable property (not hardcoded)
-- [ ] Icon returns to `.idle` in all code paths (success and error)
-- [ ] Whole async pipeline runs without blocking the main thread
+- [x] `startRecordingFlow()` starts mic capture and updates UI
+- [x] `stopRecordingFlow()` stops capture, transcribes, and pastes
+- [x] `transcriptionService` is a swappable property (not hardcoded)
+- [x] Icon returns to `.idle` in all code paths (success and error)
+- [x] Whole async pipeline runs without blocking the main thread
 
 #### Test Checklist
-- [ ] Press hotkey → icon → recording, indicator appears
-- [ ] Press hotkey again → icon → processing, indicator hides
-- [ ] After transcription → text pasted into focused field, icon → idle
-- [ ] If transcription throws → error notification shown, icon → idle (no stuck state)
-- [ ] `transcriptionService` can be replaced with a mock at runtime without changing other code
+- [x] Press hotkey → icon → recording, indicator appears
+- [x] Press hotkey again → icon → processing, indicator hides
+- [x] After transcription → text pasted into focused field, icon → idle
+- [x] If transcription throws → error notification shown, icon → idle (no stuck state)
+- [x] `transcriptionService` can be replaced with a mock at runtime without changing other code
 
 ---
 
