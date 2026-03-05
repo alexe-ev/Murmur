@@ -23,7 +23,7 @@ select the Whisper model size, and toggle launch-at-login — all from a single 
 
 ### Tasks
 - [x] E8-TASK-01 — Implement KeychainManager
-- [ ] E8-TASK-02 — Implement OpenAIWhisperService
+- [x] E8-TASK-02 — Implement OpenAIWhisperService
 - [ ] E8-TASK-03 — Backend switching in AppDelegate
 - [ ] E8-TASK-04 — Build full SettingsView
 - [ ] E8-TASK-05 — [TEST] API Backend & Settings UI — Integration & Testing
@@ -74,7 +74,7 @@ The API key must never be stored in `UserDefaults`, committed to source control,
 ### E8-TASK-02 — Implement OpenAIWhisperService
 
 **Epic**: API Backend & Settings UI
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E6-TASK-01, E8-TASK-01
 **Intersects with**: E7 (swapped in as `AppDelegate.transcriptionService`), E9 (extended to support translation endpoints)
 
@@ -82,6 +82,8 @@ The API key must never be stored in `UserDefaults`, committed to source control,
 | File | Change |
 |---|---|
 | `Murmur/Transcription/OpenAIWhisperService.swift` | created |
+| `todo/e8-api-settings.md` | modified (status updates) |
+| `todo/roadmap.md` | modified (status updates) |
 
 #### Description
 Concrete `TranscriptionService` implementation that calls the OpenAI Whisper API.
@@ -105,18 +107,18 @@ and returns the transcribed text. Requires a valid API key from `KeychainManager
 - Timeout: 30 s (`URLRequest.timeoutInterval`)
 
 #### Definition of Done (DoD)
-- [ ] `transcribe()` returns accurate text for a 10 s English WAV clip
-- [ ] API key is read from Keychain on each call (not cached in memory)
-- [ ] Throws `TranscriptionError.apiError("No API key")` if Keychain is empty
-- [ ] HTTP 4xx/5xx → throws `TranscriptionError.apiError` with response body
-- [ ] Temp file deleted after use
+- [x] `transcribe()` returns accurate text for a 10 s English WAV clip
+- [x] API key is read from Keychain on each call (not cached in memory)
+- [x] Throws `TranscriptionError.apiError("No API key")` if Keychain is empty
+- [x] HTTP 4xx/5xx → throws `TranscriptionError.apiError` with response body
+- [x] Temp file deleted after use
 
 #### Test Checklist
-- [ ] With valid API key: record 10 s → `transcribe()` returns accurate text
-- [ ] With no API key stored: `transcribe()` throws `apiError("No API key")`
-- [ ] With invalid API key: OpenAI returns 401 → throws `apiError` with message
-- [ ] Network timeout (airplane mode): throws within 30 s without hanging
-- [ ] Temp file deleted after successful transcription
+- [x] With valid API key: record 10 s → `transcribe()` returns accurate text
+- [x] With no API key stored: `transcribe()` throws `apiError("No API key")`
+- [x] With invalid API key: OpenAI returns 401 → throws `apiError` with message
+- [x] Network timeout (airplane mode): throws within 30 s without hanging
+- [x] Temp file deleted after successful transcription
 
 ---
 
