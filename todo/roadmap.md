@@ -27,7 +27,7 @@ Open this first, find the next task, then read the full context before touching 
 ## Current Focus
 
 > **E1 — Project Skeleton & App Foundation** is the active epic.
-> Next up: **E1-TASK-05** ([TEST] Project Skeleton & App Foundation — Integration & Testing).
+> In progress: **E1-TASK-05** ([TEST] Project Skeleton & App Foundation — Integration & Testing).
 >
 > Before picking up any task: read `CLAUDE.md`, `ARCHITECTURE.md`, `PRD.md`, this file,
 > and the full epic file for the task you are about to start. See `RULES.md §Agent Workflow`.
@@ -66,7 +66,7 @@ Open this first, find the next task, then read the full context before touching 
 | E1-TASK-02 | Implement MurmurApp + AppDelegate skeleton | `done` |
 | E1-TASK-03 | Implement SettingsModel (UserDefaults wrapper) | `done` |
 | E1-TASK-04 | LaunchAtLogin via SMAppService | `done` |
-| E1-TASK-05 | [TEST] Project Skeleton & App Foundation — Integration & Testing | `pending` |
+| E1-TASK-05 | [TEST] Project Skeleton & App Foundation — Integration & Testing | `in progress` |
 
 ---
 
