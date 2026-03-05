@@ -19,6 +19,8 @@
 		A10000000000000000000024 /* RecordingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000025 /* RecordingIndicatorView.swift */; };
 		A10000000000000000000026 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000027 /* WhisperKit */; };
 		A1000000000000000000002A /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002B /* ModelManager.swift */; };
+		A1000000000000000000002C /* TranscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002D /* TranscriptionService.swift */; };
+		A1000000000000000000002E /* LocalWhisperService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002F /* LocalWhisperService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +38,8 @@
 		A10000000000000000000023 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Murmur/UI/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000025 /* RecordingIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/UI/RecordingIndicatorView.swift; sourceTree = SOURCE_ROOT; };
 		A1000000000000000000002B /* ModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/Transcription/ModelManager.swift; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000002D /* TranscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/Transcription/TranscriptionService.swift; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000002F /* LocalWhisperService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/Transcription/LocalWhisperService.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +82,8 @@
 				A10000000000000000000021 /* MenuBarController.swift */,
 				A10000000000000000000025 /* RecordingIndicatorView.swift */,
 				A1000000000000000000002B /* ModelManager.swift */,
+				A1000000000000000000002D /* TranscriptionService.swift */,
+				A1000000000000000000002F /* LocalWhisperService.swift */,
 				A10000000000000000000023 /* Assets.xcassets */,
 				A10000000000000000000017 /* SettingsModel.swift */,
 				A10000000000000000000002 /* Info.plist */,
@@ -171,6 +177,8 @@
 				A10000000000000000000020 /* MenuBarController.swift in Sources */,
 				A10000000000000000000024 /* RecordingIndicatorView.swift in Sources */,
 				A1000000000000000000002A /* ModelManager.swift in Sources */,
+				A1000000000000000000002C /* TranscriptionService.swift in Sources */,
+				A1000000000000000000002E /* LocalWhisperService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
