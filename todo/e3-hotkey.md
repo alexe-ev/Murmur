@@ -13,13 +13,14 @@ persisted in `SettingsModel`, and re-registered automatically when changed.
 
 ### Affected Files
 - `Murmur/Core/HotkeyManager.swift` — created
+- `Murmur.xcodeproj/project.pbxproj` — modified
 - `Murmur/Settings/SettingsModel.swift` — modified (didSet observer for hotkey keys)
 - `Murmur/App/AppDelegate.swift` — modified (registers HotkeyManager, sets toggle callback)
 - `todo/e3-hotkey.md` — modified (status updates)
 - `todo/roadmap.md` — modified (status updates)
 
 ### Tasks
-- [ ] E3-TASK-01 — Implement HotkeyManager core
+- [x] E3-TASK-01 — Implement HotkeyManager core
 - [ ] E3-TASK-02 — Wire toggle callback to AppDelegate
 - [ ] E3-TASK-03 — Configurable hotkey (persist and re-register on change)
 - [ ] E3-TASK-04 — [TEST] Global Hotkey — Integration & Testing
@@ -29,7 +30,7 @@ persisted in `SettingsModel`, and re-registered automatically when changed.
 ### E3-TASK-01 — Implement HotkeyManager core
 
 **Epic**: Global Hotkey
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E1-TASK-01
 **Intersects with**: None
 
@@ -37,6 +38,7 @@ persisted in `SettingsModel`, and re-registered automatically when changed.
 | File | Change |
 |---|---|
 | `Murmur/Core/HotkeyManager.swift` | created |
+| `Murmur.xcodeproj/project.pbxproj` | modified |
 
 #### Description
 `HotkeyManager` registers a system-wide hotkey using the Carbon `RegisterEventHotKey` API and
@@ -54,11 +56,11 @@ second press = stop) and exposes `isRecording: Bool`.
 - Handle registration failure gracefully (log error, surface via `var lastError: Error?`)
 
 #### Definition of Done (DoD)
-- [ ] `register()` successfully registers the hotkey system-wide
-- [ ] `unregister()` cleanly removes the registration
-- [ ] First press → `isRecording` = `true`, `onToggle(true)` called
-- [ ] Second press → `isRecording` = `false`, `onToggle(false)` called
-- [ ] Registration errors are captured and logged
+- [x] `register()` successfully registers the hotkey system-wide
+- [x] `unregister()` cleanly removes the registration
+- [x] First press → `isRecording` = `true`, `onToggle(true)` called
+- [x] Second press → `isRecording` = `false`, `onToggle(false)` called
+- [x] Registration errors are captured and logged
 
 #### Test Checklist
 - [ ] Call `register(keyCode: 49, modifiers: optionKey)` → Option+Space fires `onToggle` from any app
