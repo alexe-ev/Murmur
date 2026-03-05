@@ -8,15 +8,23 @@ enum PasteError: Error {
 
 @MainActor
 final class PasteController {
+    private struct ClipboardSnapshot {
+        let items: [NSPasteboardItem]
+        let wasEmpty: Bool
+    }
+
     private let permissionsManager: PermissionsManager
     private let pasteboard: NSPasteboard
+    private let settingsModel: SettingsModel
 
     init(
         permissionsManager: PermissionsManager = .shared,
-        pasteboard: NSPasteboard = .general
+        pasteboard: NSPasteboard = .general,
+        settingsModel: SettingsModel = .shared
     ) {
         self.permissionsManager = permissionsManager
         self.pasteboard = pasteboard
+        self.settingsModel = settingsModel
     }
 
     func paste(_ text: String) throws {
@@ -24,10 +32,13 @@ final class PasteController {
             throw PasteError.accessibilityNotGranted
         }
 
+        let clipboardSnapshot = settingsModel.restoreClipboardAfterPaste ? captureClipboardSnapshot() : nil
+
         pasteboard.clearContents()
         guard pasteboard.setString(text, forType: .string) else {
             throw PasteError.clipboardWriteFailed
         }
+        let murmurClipboardChangeCount = pasteboard.changeCount
 
         usleep(50_000)
 
@@ -43,5 +54,45 @@ final class PasteController {
         keyDown.post(tap: .cghidEventTap)
         keyUp.flags = .maskCommand
         keyUp.post(tap: .cghidEventTap)
+
+        if let clipboardSnapshot {
+            scheduleClipboardRestore(clipboardSnapshot, expectedChangeCount: murmurClipboardChangeCount)
+        }
+    }
+
+    private func captureClipboardSnapshot() -> ClipboardSnapshot? {
+        let existingItems = pasteboard.pasteboardItems ?? []
+        guard !existingItems.isEmpty else {
+            return ClipboardSnapshot(items: [], wasEmpty: true)
+        }
+
+        let copiedItems = existingItems.compactMap { $0.copy() as? NSPasteboardItem }
+        guard copiedItems.count == existingItems.count else {
+            return nil
+        }
+
+        return ClipboardSnapshot(items: copiedItems, wasEmpty: false)
+    }
+
+    private func scheduleClipboardRestore(_ snapshot: ClipboardSnapshot, expectedChangeCount: Int) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) { [weak self] in
+            Task { @MainActor in
+                guard let self else { return }
+                self.restoreClipboardIfUnchanged(snapshot, expectedChangeCount: expectedChangeCount)
+            }
+        }
+    }
+
+    private func restoreClipboardIfUnchanged(_ snapshot: ClipboardSnapshot, expectedChangeCount: Int) {
+        guard pasteboard.changeCount == expectedChangeCount else {
+            return
+        }
+
+        pasteboard.clearContents()
+        guard !snapshot.wasEmpty else {
+            return
+        }
+
+        _ = pasteboard.writeObjects(snapshot.items)
     }
 }

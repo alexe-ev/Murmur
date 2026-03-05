@@ -10,11 +10,16 @@ enum KeychainError: Error {
 final class KeychainManager {
     private static let service = "com.murmur.app"
     private static let account = "openai-api-key"
+    // Keep the API key on this device and available after first user unlock.
+    private static let accessibilityPolicy = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
 
     static func save(apiKey: String) throws {
         let data = Data(apiKey.utf8)
         let query = baseQuery()
-        let attributesToUpdate: [String: Any] = [kSecValueData as String: data]
+        let attributesToUpdate: [String: Any] = [
+            kSecValueData as String: data,
+            kSecAttrAccessible as String: accessibilityPolicy
+        ]
 
         let updateStatus = SecItemUpdate(query as CFDictionary, attributesToUpdate as CFDictionary)
         if updateStatus == errSecSuccess {
@@ -24,6 +29,7 @@ final class KeychainManager {
         if updateStatus == errSecItemNotFound {
             var addQuery = query
             addQuery[kSecValueData as String] = data
+            addQuery[kSecAttrAccessible as String] = accessibilityPolicy
             let addStatus = SecItemAdd(addQuery as CFDictionary, nil)
             guard addStatus == errSecSuccess else {
                 throw KeychainError.saveFailed(addStatus)

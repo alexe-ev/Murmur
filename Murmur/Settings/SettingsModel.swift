@@ -11,6 +11,7 @@ final class SettingsModel: ObservableObject {
         static let whisperBackend = "whisperBackend"
         static let whisperModel = "whisperModel"
         static let launchAtLogin = "launchAtLogin"
+        static let restoreClipboardAfterPaste = "restoreClipboardAfterPaste"
     }
 
     private enum Defaults {
@@ -21,6 +22,7 @@ final class SettingsModel: ObservableObject {
         static let whisperBackend = "local"
         static let whisperModel = "base"
         static let launchAtLogin = false
+        static let restoreClipboardAfterPaste = true
     }
 
     private let userDefaults: UserDefaults
@@ -70,6 +72,10 @@ final class SettingsModel: ObservableObject {
         }
     }
 
+    @Published var restoreClipboardAfterPaste: Bool {
+        didSet { userDefaults.set(restoreClipboardAfterPaste, forKey: Keys.restoreClipboardAfterPaste) }
+    }
+
     private init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
 
@@ -80,6 +86,7 @@ final class SettingsModel: ObservableObject {
         whisperBackend = userDefaults.string(forKey: Keys.whisperBackend) ?? Defaults.whisperBackend
         whisperModel = userDefaults.string(forKey: Keys.whisperModel) ?? Defaults.whisperModel
         launchAtLogin = userDefaults.object(forKey: Keys.launchAtLogin) as? Bool ?? Defaults.launchAtLogin
+        restoreClipboardAfterPaste = userDefaults.object(forKey: Keys.restoreClipboardAfterPaste) as? Bool ?? Defaults.restoreClipboardAfterPaste
     }
 
     func reset() {
@@ -90,5 +97,6 @@ final class SettingsModel: ObservableObject {
         whisperBackend = Defaults.whisperBackend
         whisperModel = Defaults.whisperModel
         launchAtLogin = Defaults.launchAtLogin
+        restoreClipboardAfterPaste = Defaults.restoreClipboardAfterPaste
     }
 }

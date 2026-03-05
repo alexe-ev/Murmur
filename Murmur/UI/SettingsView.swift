@@ -111,6 +111,7 @@ struct SettingsView: View {
     private var generalSection: some View {
         Section("General") {
             Toggle("Launch at Login", isOn: $settings.launchAtLogin)
+            Toggle("Restore Clipboard After Paste", isOn: $settings.restoreClipboardAfterPaste)
 
             HStack {
                 Text("Version")
