@@ -26,7 +26,7 @@ the only — visible surface of Murmur.
 - [x] E5-TASK-01 — MenuBarController skeleton (NSStatusItem + basic dropdown)
 - [x] E5-TASK-02 — Icon state management (idle / recording / processing)
 - [x] E5-TASK-03 — Floating recording indicator (NSPanel)
-- [ ] E5-TASK-04 — Dropdown menu (wired to AppDelegate actions)
+- [x] E5-TASK-04 — Dropdown menu (wired to AppDelegate actions)
 - [ ] E5-TASK-05 — [TEST] Menu Bar UI — Integration & Testing
 
 ---
@@ -170,7 +170,7 @@ The panel is always-on-top, non-interactive, and disappears when recording stops
 ### E5-TASK-04 — Dropdown menu (wired to AppDelegate actions)
 
 **Epic**: Menu Bar UI
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E5-TASK-01
 **Intersects with**: E9 (language picker item added to menu in E9-TASK-05)
 
@@ -199,11 +199,11 @@ Build the `NSMenu` with these items (top to bottom):
 - Expose `func updateMenuItems(isRecording: Bool)` for AppDelegate to call
 
 #### Definition of Done (DoD)
-- [ ] All menu items are present in the correct order
-- [ ] "Start Recording" / "Stop Recording" title reflects current state
-- [ ] "Quit Murmur" terminates the app
-- [ ] Separator items separate logical groups
-- [ ] Language placeholder and Settings stubs are present (not yet functional)
+- [x] All menu items are present in the correct order
+- [x] "Start Recording" / "Stop Recording" title reflects current state
+- [x] "Quit Murmur" terminates the app
+- [x] Separator items separate logical groups
+- [x] Language placeholder and Settings stubs are present (not yet functional)
 
 #### Test Checklist
 - [ ] Click menu → all 7 items/separators visible in correct order
