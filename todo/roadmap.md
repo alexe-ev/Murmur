@@ -27,7 +27,7 @@ Open this first, find the next task, then read the full context before touching 
 ## Current Focus
 
 > **E8 — API Backend & Settings UI** is the active epic.
-> Next up: **E8-TASK-01** (Implement KeychainManager).
+> Next up: **E8-TASK-02** (Implement OpenAIWhisperService).
 >
 > Before picking up any task: read `CLAUDE.md`, `ARCHITECTURE.md`, `PRD.md`, this file,
 > and the full epic file for the task you are about to start. See `RULES.md §Agent Workflow`.
@@ -45,7 +45,7 @@ Open this first, find the next task, then read the full context before touching 
 | E5 | Menu Bar UI | `todo/e5-menubar.md` | `done` | 5 / 5 |
 | E6 | Local Transcription (WhisperKit) | `todo/e6-transcription-local.md` | `done` | 5 / 5 |
 | E7 | Paste & Core Flow Integration | `todo/e7-paste-flow.md` | `done` | 4 / 4 |
-| E8 | API Backend & Settings UI | `todo/e8-api-settings.md` | `pending` | 0 / 5 |
+| E8 | API Backend & Settings UI | `todo/e8-api-settings.md` | `in progress` | 1 / 5 |
 | E9 | Voice Translation | `todo/e9-translation.md` | `pending` | 0 / 6 |
 
 ---
@@ -165,12 +165,12 @@ Open this first, find the next task, then read the full context before touching 
 ### Epic E8 — API Backend & Settings UI
 
 **File**: `todo/e8-api-settings.md`
-**Status**: `pending`
+**Status**: `in progress`
 **Depends on**: E6, E7
 
 | Task | Title | Status |
 |---|---|---|
-| E8-TASK-01 | Implement KeychainManager | `pending` |
+| E8-TASK-01 | Implement KeychainManager | `done` |
 | E8-TASK-02 | Implement OpenAIWhisperService | `pending` |
 | E8-TASK-03 | Backend switching in AppDelegate | `pending` |
 | E8-TASK-04 | Build full SettingsView | `pending` |
