@@ -23,7 +23,7 @@ final class LocalWhisperService: TranscriptionService {
         }
     }
 
-    func transcribe(audioURL: URL, targetLanguage: String?) async throws -> String {
+    func transcribe(audioURL: URL, request: TranscriptionRequest) async throws -> String {
         guard isAvailable else {
             throw TranscriptionError.modelNotLoaded
         }
@@ -41,7 +41,7 @@ final class LocalWhisperService: TranscriptionService {
                 return loadedModel
             }
 
-            let options = decodingOptions(for: targetLanguage)
+            let options = decodingOptions(for: request.targetLanguage)
             let results = try await whisperKit.transcribe(audioPath: audioURL.path, decodeOptions: options)
 
             let text = concatenateText(from: results)

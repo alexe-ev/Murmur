@@ -16,7 +16,7 @@ final class OpenAIWhisperService: TranscriptionService {
         KeychainManager.load() != nil
     }
 
-    func transcribe(audioURL: URL, targetLanguage: String?) async throws -> String {
+    func transcribe(audioURL: URL, request: TranscriptionRequest) async throws -> String {
         guard let apiKey = KeychainManager.load(), !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw TranscriptionError.apiError("No API key")
         }
@@ -26,20 +26,19 @@ final class OpenAIWhisperService: TranscriptionService {
         }
 
         do {
-            let normalizedLanguage = targetLanguage?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-            let translationEnabled = TranslationConfig.shared.isEnabled
+            let normalizedLanguage = request.targetLanguage?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
             let result: String
 
-            if translationEnabled, normalizedLanguage == "en" {
-                let request = try buildTranslationRequest(audioURL: audioURL, apiKey: apiKey)
-                result = try await performTextRequest(request)
-            } else if translationEnabled, let targetLanguage = normalizedLanguage, !targetLanguage.isEmpty, targetLanguage != "en" {
+            if request.isTranslationEnabled, normalizedLanguage == "en" {
+                let apiRequest = try buildTranslationRequest(audioURL: audioURL, apiKey: apiKey)
+                result = try await performTextRequest(apiRequest)
+            } else if request.isTranslationEnabled, let targetLanguage = normalizedLanguage, !targetLanguage.isEmpty, targetLanguage != "en" {
                 let transcriptionRequest = try buildTranscriptionRequest(audioURL: audioURL, targetLanguage: nil, apiKey: apiKey)
                 let transcribedText = try await performTextRequest(transcriptionRequest)
                 result = try await chatTranslate(transcribedText, to: targetLanguage, apiKey: apiKey)
             } else {
-                let request = try buildTranscriptionRequest(audioURL: audioURL, targetLanguage: normalizedLanguage, apiKey: apiKey)
-                result = try await performTextRequest(request)
+                let apiRequest = try buildTranscriptionRequest(audioURL: audioURL, targetLanguage: normalizedLanguage, apiKey: apiKey)
+                result = try await performTextRequest(apiRequest)
             }
 
             return result
