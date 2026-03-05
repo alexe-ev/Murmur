@@ -56,21 +56,21 @@ struct SettingsView: View {
     private var transcriptionSection: some View {
         Section("Transcription") {
             Picker("Engine", selection: $settings.whisperBackend) {
-                Text("On-Device (WhisperKit)").tag("local")
-                Text("OpenAI API").tag("api")
+                Text("On-Device (WhisperKit)").tag(SettingsModel.WhisperBackend.local)
+                Text("OpenAI API").tag(SettingsModel.WhisperBackend.api)
             }
             .pickerStyle(.segmented)
 
-            if settings.whisperBackend == "local" {
+            if settings.whisperBackend == .local {
                 Picker("Model", selection: $settings.whisperModel) {
-                    Text("tiny").tag("tiny")
-                    Text("base").tag("base")
-                    Text("small").tag("small")
+                    Text("tiny").tag(SettingsModel.WhisperModel.tiny)
+                    Text("base").tag(SettingsModel.WhisperModel.base)
+                    Text("small").tag(SettingsModel.WhisperModel.small)
                 }
                 .pickerStyle(.segmented)
             }
 
-            if settings.whisperBackend == "api" {
+            if settings.whisperBackend == .api {
                 SecureField("sk-...", text: $apiKeyInput)
                     .textFieldStyle(.roundedBorder)
 
@@ -100,8 +100,8 @@ struct SettingsView: View {
             Toggle("Enable Translation", isOn: $settings.translationEnabled)
 
             Picker("Target Language", selection: $settings.targetLanguage) {
-                ForEach(TranslationConfig.supportedLanguages, id: \.code) { language in
-                    Text(language.name).tag(language.code)
+                ForEach(SettingsModel.TargetLanguage.allCases) { language in
+                    Text(language.displayName).tag(language)
                 }
             }
             .disabled(!settings.translationEnabled)

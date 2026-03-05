@@ -33,7 +33,7 @@ final class ModelManager: ObservableObject {
 
     func loadModel() async throws {
 #if arch(arm64)
-        let selectedVariant = normalizedModelVariant(from: settings.whisperModel)
+        let selectedVariant = settings.whisperModel.rawValue
 
         if isModelLoaded, currentModelVariant == selectedVariant, whisperKit != nil {
             return
@@ -176,19 +176,6 @@ final class ModelManager: ObservableObject {
         return false
     }
 
-    private func normalizedModelVariant(from rawValue: String) -> String {
-        let cleaned = rawValue
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .lowercased()
-            .replacingOccurrences(of: "whisper-", with: "")
-
-        switch cleaned {
-        case "tiny", "base", "small":
-            return cleaned
-        default:
-            return "base"
-        }
-    }
 }
 
 enum ModelManagerError: LocalizedError {

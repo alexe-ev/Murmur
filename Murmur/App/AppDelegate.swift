@@ -65,22 +65,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applyTranscriptionBackend() {
-        let backend = settingsModel.whisperBackend
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .lowercased()
-
-        switch backend {
-        case "api":
+        switch settingsModel.whisperBackend {
+        case .api:
             transcriptionService = OpenAIWhisperService()
             if !KeychainManager.hasValidAPIKey() {
                 print("OpenAI API backend selected, but API key is missing in Keychain.")
             }
-        case "local":
-            fallthrough
-        default:
-            if backend != "local" {
-                print("Unknown backend '\(settingsModel.whisperBackend)'; falling back to local.")
-            }
+        case .local:
             transcriptionService = LocalWhisperService()
             Task {
                 do {
@@ -124,11 +115,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func enforceBackendForCurrentConfig() {
         if translationConfig.requiresAPI {
-            let backend = settingsModel.whisperBackend
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-                .lowercased()
-
-            if backend == "api" {
+            if settingsModel.whisperBackend == .api {
                 applyTranscriptionBackend()
             } else {
                 transcriptionService = OpenAIWhisperService()
@@ -252,7 +239,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     return
                 }
 
-                let targetLanguage = translationConfig.isEnabled ? translationConfig.targetLanguage : nil
+                let targetLanguage = translationConfig.isEnabled ? translationConfig.targetLanguage.rawValue : nil
                 let text = try await transcriptionService.transcribe(audioURL: audioURL, targetLanguage: targetLanguage)
                 try pasteController.paste(text)
                 menuBarController?.setState(.idle)
