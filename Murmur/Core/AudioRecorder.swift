@@ -1,7 +1,14 @@
 import AVFoundation
+import Combine
 import Foundation
 
 final class AudioRecorder {
+    enum RecordingState {
+        case idle
+        case recording
+        case ready(URL)
+    }
+
     enum AudioRecorderError: LocalizedError {
         case microphonePermissionDenied
         case alreadyRecording
@@ -28,9 +35,18 @@ final class AudioRecorder {
     private let audioEngine = AVAudioEngine()
     private let ioLock = NSLock()
 
+    @Published private(set) var state: RecordingState = .idle
+
+    var statePublisher: AnyPublisher<RecordingState, Never> {
+        $state
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+
     private var converter: AVAudioConverter?
     private var outputFile: AVAudioFile?
     private var currentTempURL: URL?
+    private var lastCompletedURL: URL?
     private var isRecording = false
 
     private var outputFormat: AVAudioFormat {
@@ -87,6 +103,7 @@ final class AudioRecorder {
         do {
             try audioEngine.start()
             isRecording = true
+            state = .recording
         } catch {
             cleanupAfterFailedStart(inputNode: inputNode)
             throw AudioRecorderError.engineStartFailed(error)
@@ -106,32 +123,45 @@ final class AudioRecorder {
         ioLock.lock()
         let completedURL = currentTempURL
         outputFile = nil
+        lastCompletedURL = completedURL
         currentTempURL = nil
         converter = nil
         ioLock.unlock()
 
         isRecording = false
+        if let completedURL {
+            state = .ready(completedURL)
+        } else {
+            state = .idle
+        }
         return completedURL
     }
 
     @MainActor
     func deleteCurrentRecording() {
-        ioLock.lock()
-        let urlToDelete = currentTempURL
-        currentTempURL = nil
-        ioLock.unlock()
-
-        guard let urlToDelete else {
+        guard !isRecording else {
             return
         }
 
+        ioLock.lock()
+        let urlToDelete = currentTempURL
+        currentTempURL = nil
+        let completedURLToDelete = lastCompletedURL
+        lastCompletedURL = nil
+        ioLock.unlock()
+
         do {
-            if FileManager.default.fileExists(atPath: urlToDelete.path) {
+            if let urlToDelete, FileManager.default.fileExists(atPath: urlToDelete.path) {
                 try FileManager.default.removeItem(at: urlToDelete)
+            }
+            if let completedURLToDelete, FileManager.default.fileExists(atPath: completedURLToDelete.path) {
+                try FileManager.default.removeItem(at: completedURLToDelete)
             }
         } catch {
             print("AudioRecorder delete error: \(error.localizedDescription)")
         }
+
+        state = .idle
     }
 
     private func processInputBuffer(_ buffer: AVAudioPCMBuffer, inputFormat: AVAudioFormat) {
@@ -170,6 +200,7 @@ final class AudioRecorder {
             if let conversionError {
                 print("AudioRecorder conversion error: \(conversionError.localizedDescription)")
             }
+            handleRuntimeRecordingError()
             return
         }
 
@@ -177,7 +208,36 @@ final class AudioRecorder {
             try outputFile.write(from: convertedBuffer)
         } catch {
             print("AudioRecorder write error: \(error.localizedDescription)")
+            handleRuntimeRecordingError()
         }
+    }
+
+    private func handleRuntimeRecordingError() {
+        DispatchQueue.main.async { [weak self] in
+            self?.stopRecordingDueToError()
+        }
+    }
+
+    @MainActor
+    private func stopRecordingDueToError() {
+        guard isRecording else {
+            state = .idle
+            return
+        }
+
+        let inputNode = audioEngine.inputNode
+        inputNode.removeTap(onBus: 0)
+        audioEngine.stop()
+
+        ioLock.lock()
+        outputFile = nil
+        currentTempURL = nil
+        lastCompletedURL = nil
+        converter = nil
+        ioLock.unlock()
+
+        isRecording = false
+        state = .idle
     }
 
     private func cleanupAfterFailedStart(inputNode: AVAudioInputNode) {
@@ -190,9 +250,11 @@ final class AudioRecorder {
         }
         outputFile = nil
         currentTempURL = nil
+        lastCompletedURL = nil
         converter = nil
         ioLock.unlock()
 
         isRecording = false
+        state = .idle
     }
 }

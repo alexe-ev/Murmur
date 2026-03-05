@@ -22,7 +22,7 @@ Temp files are deleted immediately after use to keep storage footprint minimal.
 ### Tasks
 - [x] E4-TASK-01 — Implement AudioRecorder (AVFoundation setup, 16kHz mono WAV)
 - [x] E4-TASK-02 — Temp file management
-- [ ] E4-TASK-03 — Recording state machine (Combine publisher)
+- [x] E4-TASK-03 — Recording state machine (Combine publisher)
 - [ ] E4-TASK-04 — [TEST] Audio Recording — Integration & Testing
 
 ---
@@ -114,7 +114,7 @@ deletion after the consumer is done with the file.
 ### E4-TASK-03 — Recording state machine (Combine publisher)
 
 **Epic**: Audio Recording
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E4-TASK-01
 **Intersects with**: E5 (MenuBarController subscribes to state to update icon), E7 (AppDelegate uses state to drive UI during processing)
 
@@ -138,11 +138,11 @@ components can react to recording lifecycle changes without polling.
 - Expose `var statePublisher: AnyPublisher<RecordingState, Never>` for external subscription
 
 #### Definition of Done (DoD)
-- [ ] `state` transitions correctly through the full lifecycle
-- [ ] `.recording` state is set synchronously when `startRecording()` succeeds
-- [ ] `.ready(url)` is set synchronously when `stopRecording()` is called
-- [ ] State returns to `.idle` after the file is consumed/deleted
-- [ ] `statePublisher` emits on the main thread (or callers receive on main)
+- [x] `state` transitions correctly through the full lifecycle
+- [x] `.recording` state is set synchronously when `startRecording()` succeeds
+- [x] `.ready(url)` is set synchronously when `stopRecording()` is called
+- [x] State returns to `.idle` after the file is consumed/deleted
+- [x] `statePublisher` emits on the main thread (or callers receive on main)
 
 #### Test Checklist
 - [ ] Observe `statePublisher` — sequence is idle → recording → ready(url) → idle
