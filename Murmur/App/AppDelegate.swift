@@ -18,6 +18,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private let settingsModel = SettingsModel.shared
     private let notificationCenter = UNUserNotificationCenter.current()
+    private var cancellables = Set<AnyCancellable>()
     private var onboardingWindow: NSWindow?
     private var didEnterMainFlow = false
     private var isRecordingFlowActive = false
@@ -30,6 +31,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         settingsModel.launchAtLoginDidChange = { [weak self] enabled in
             self?.applyLaunchAtLogin(enabled)
         }
+        observeBackendChanges()
+        applyTranscriptionBackend()
         applyLaunchAtLogin(settingsModel.launchAtLogin)
         requestNotificationAuthorization()
 
@@ -55,6 +58,46 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } catch {
             print("Failed to update launch at login state (enabled: \(enabled)): \(error)")
         }
+    }
+
+    func applyTranscriptionBackend() {
+        let backend = settingsModel.whisperBackend
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+
+        switch backend {
+        case "api":
+            transcriptionService = OpenAIWhisperService()
+            if !transcriptionService.isAvailable {
+                print("OpenAI API backend selected, but API key is missing in Keychain.")
+            }
+        case "local":
+            fallthrough
+        default:
+            if backend != "local" {
+                print("Unknown backend '\(settingsModel.whisperBackend)'; falling back to local.")
+            }
+            transcriptionService = LocalWhisperService()
+            Task {
+                do {
+                    try await ModelManager.shared.loadModel()
+                } catch is CancellationError {
+                    return
+                } catch {
+                    print("Failed to load local Whisper model: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+
+    private func observeBackendChanges() {
+        settingsModel.$whisperBackend
+            .removeDuplicates()
+            .dropFirst()
+            .sink { [weak self] _ in
+                self?.applyTranscriptionBackend()
+            }
+            .store(in: &cancellables)
     }
 
     private func presentOnboardingWindow() {

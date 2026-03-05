@@ -18,13 +18,14 @@ select the Whisper model size, and toggle launch-at-login — all from a single 
 - `Murmur/Transcription/OpenAIWhisperService.swift` — created
 - `Murmur/App/AppDelegate.swift` — modified (backend switching, settings window)
 - `Murmur/UI/SettingsView.swift` — created
+- `Murmur.xcodeproj/project.pbxproj` — modified (register new source files in target)
 - `todo/e8-api-settings.md` — modified (status updates)
 - `todo/roadmap.md` — modified (status updates)
 
 ### Tasks
 - [x] E8-TASK-01 — Implement KeychainManager
 - [x] E8-TASK-02 — Implement OpenAIWhisperService
-- [ ] E8-TASK-03 — Backend switching in AppDelegate
+- [x] E8-TASK-03 — Backend switching in AppDelegate
 - [ ] E8-TASK-04 — Build full SettingsView
 - [ ] E8-TASK-05 — [TEST] API Backend & Settings UI — Integration & Testing
 
@@ -125,7 +126,7 @@ and returns the transcribed text. Requires a valid API key from `KeychainManager
 ### E8-TASK-03 — Backend switching in AppDelegate
 
 **Epic**: API Backend & Settings UI
-**Status**: `pending`
+**Status**: `done`
 **Depends on**: E8-TASK-02, E7-TASK-02
 **Intersects with**: E9 (translation mode may force API backend — E9-TASK-04)
 
@@ -133,6 +134,9 @@ and returns the transcribed text. Requires a valid API key from `KeychainManager
 | File | Change |
 |---|---|
 | `Murmur/App/AppDelegate.swift` | modified |
+| `Murmur.xcodeproj/project.pbxproj` | modified (register OpenAI/Keychain source files in target) |
+| `todo/e8-api-settings.md` | modified (status updates) |
+| `todo/roadmap.md` | modified (status updates) |
 
 #### Description
 `AppDelegate` reads `SettingsModel.whisperBackend` and instantiates the correct
@@ -149,16 +153,16 @@ the active service is hot-swapped without restarting the app.
 - If API backend selected but no key stored: log a warning (SettingsView will show the SecureField; we don't block here)
 
 #### Definition of Done (DoD)
-- [ ] On launch, the correct backend is instantiated based on saved preference
-- [ ] Changing `whisperBackend` in SettingsModel hot-swaps the service without relaunch
-- [ ] Switching to local → `ModelManager.loadModel()` is triggered
-- [ ] `transcriptionService` is never `nil` — always falls back to `LocalWhisperService`
+- [x] On launch, the correct backend is instantiated based on saved preference
+- [x] Changing `whisperBackend` in SettingsModel hot-swaps the service without relaunch
+- [x] Switching to local → `ModelManager.loadModel()` is triggered
+- [x] `transcriptionService` is never `nil` — always falls back to `LocalWhisperService`
 
 #### Test Checklist
-- [ ] Set `whisperBackend = "api"` → `transcriptionService` is `OpenAIWhisperService`
-- [ ] Set `whisperBackend = "local"` → `transcriptionService` is `LocalWhisperService`, model begins loading
-- [ ] Change backend in SettingsView → hot-swap occurs, next recording uses new backend
-- [ ] API backend with no key: app doesn't crash; error is shown only when recording is attempted
+- [x] Set `whisperBackend = "api"` → `transcriptionService` is `OpenAIWhisperService`
+- [x] Set `whisperBackend = "local"` → `transcriptionService` is `LocalWhisperService`, model begins loading
+- [x] Change backend in SettingsView → hot-swap occurs, next recording uses new backend
+- [x] API backend with no key: app doesn't crash; error is shown only when recording is attempted
 
 ---
 
