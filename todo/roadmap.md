@@ -26,8 +26,8 @@ Open this first, find the next task, then read the full context before touching 
 
 ## Current Focus
 
-> **E6 — Local Transcription (WhisperKit)** is the active epic.
-> Next up: **E6-TASK-05** ([TEST] Local Transcription — Integration & Testing).
+> **E7 — Paste & Core Flow Integration** is the active epic.
+> Next up: **E7-TASK-01** (Implement PasteController).
 >
 > Before picking up any task: read `CLAUDE.md`, `ARCHITECTURE.md`, `PRD.md`, this file,
 > and the full epic file for the task you are about to start. See `RULES.md §Agent Workflow`.
@@ -43,7 +43,7 @@ Open this first, find the next task, then read the full context before touching 
 | E3 | Global Hotkey | `todo/e3-hotkey.md` | `done` | 4 / 4 |
 | E4 | Audio Recording | `todo/e4-audio.md` | `done` | 4 / 4 |
 | E5 | Menu Bar UI | `todo/e5-menubar.md` | `done` | 5 / 5 |
-| E6 | Local Transcription (WhisperKit) | `todo/e6-transcription-local.md` | `in progress` | 4 / 5 |
+| E6 | Local Transcription (WhisperKit) | `todo/e6-transcription-local.md` | `done` | 5 / 5 |
 | E7 | Paste & Core Flow Integration | `todo/e7-paste-flow.md` | `pending` | 0 / 4 |
 | E8 | API Backend & Settings UI | `todo/e8-api-settings.md` | `pending` | 0 / 5 |
 | E9 | Voice Translation | `todo/e9-translation.md` | `pending` | 0 / 6 |
@@ -134,7 +134,7 @@ Open this first, find the next task, then read the full context before touching 
 ### Epic E6 — Local Transcription (WhisperKit)
 
 **File**: `todo/e6-transcription-local.md`
-**Status**: `in progress`
+**Status**: `done`
 **Depends on**: E1, E4
 
 | Task | Title | Status |
@@ -143,7 +143,7 @@ Open this first, find the next task, then read the full context before touching 
 | E6-TASK-02 | Add WhisperKit Swift Package dependency | `done` |
 | E6-TASK-03 | Implement ModelManager (download, store, select) | `done` |
 | E6-TASK-04 | Implement LocalWhisperService | `done` |
-| E6-TASK-05 | [TEST] Local Transcription — Integration & Testing | `pending` |
+| E6-TASK-05 | [TEST] Local Transcription — Integration & Testing | `done` |
 
 ---
 
