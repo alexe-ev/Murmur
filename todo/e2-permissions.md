@@ -162,7 +162,7 @@ if any permission is missing, and re-checked whenever the app comes to the foreg
 ### E2-TASK-04 — [TEST] Permissions & Onboarding — Integration & Testing
 
 **Epic**: Permissions & Onboarding
-**Status**: `pending`
+**Status**: `in progress`
 **Depends on**: E2-TASK-01, E2-TASK-02, E2-TASK-03
 **Intersects with**: None
 
@@ -184,9 +184,9 @@ state, and verifies the flow on subsequent launches.
 - Verify subsequent launch behaviour
 
 #### Definition of Done (DoD)
-- [ ] E2-TASK-01 is `done`
-- [ ] E2-TASK-02 is `done`
-- [ ] E2-TASK-03 is `done`
+- [x] E2-TASK-01 is `done`
+- [x] E2-TASK-02 is `done`
+- [x] E2-TASK-03 is `done`
 - [ ] All test cases below pass
 - [ ] No regressions in E1 (app still launches with no Dock icon, settings still persist)
 
@@ -197,4 +197,4 @@ state, and verifies the flow on subsequent launches.
 - [ ] Full flow: grant mic → row updates; open Accessibility settings → grant → view dismisses → menu bar icon appears
 - [ ] Subsequent launch with all permissions granted: no onboarding window, app enters normal state immediately
 - [ ] Regression — E1: No Dock icon, settings defaults still apply after onboarding changes to AppDelegate
-- [ ] Verify `PermissionsManager.allGranted` is the single source of truth (no duplicate permission checks elsewhere)
+- [x] Verify `PermissionsManager.allGranted` is the single source of truth (no duplicate permission checks elsewhere)
