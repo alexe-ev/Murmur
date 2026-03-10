@@ -144,7 +144,7 @@ final class MenuBarController: NSObject {
             panel.isOpaque = false
             panel.backgroundColor = .clear
             panel.level = .popUpMenu
-            panel.collectionBehavior = [.canJoinAllSpaces, .moveToActiveSpace, .fullScreenAuxiliary, .transient]
+            panel.collectionBehavior = [.moveToActiveSpace, .fullScreenAuxiliary, .transient]
             panel.ignoresMouseEvents = true
             panel.hasShadow = false
             panel.hidesOnDeactivate = false
@@ -165,7 +165,9 @@ final class MenuBarController: NSObject {
     }
 
     private func positionIndicator(_ panel: NSPanel) {
-        let margin: CGFloat = 20
+        let margin: CGFloat = 12
+        let pointerOffsetX: CGFloat = 16
+        let pointerOffsetY: CGFloat = 20
         let mouseLocation = NSEvent.mouseLocation
         let targetScreen = NSScreen.screens.first { NSMouseInRect(mouseLocation, $0.frame, false) }
             ?? NSScreen.main
@@ -173,8 +175,20 @@ final class MenuBarController: NSObject {
         guard let screen = targetScreen else { return }
 
         let frame = screen.visibleFrame
-        let x = frame.maxX - panel.frame.width - margin
-        let y = frame.maxY - panel.frame.height - margin
+        let maxX = frame.maxX - panel.frame.width - margin
+        let minX = frame.minX + margin
+        let minY = frame.minY + margin
+        let maxY = frame.maxY - panel.frame.height - margin
+
+        var x = mouseLocation.x + pointerOffsetX
+        var y = mouseLocation.y + pointerOffsetY
+
+        if y > maxY {
+            y = mouseLocation.y - panel.frame.height - pointerOffsetY
+        }
+
+        x = min(max(x, minX), maxX)
+        y = min(max(y, minY), maxY)
         panel.setFrameOrigin(NSPoint(x: x, y: y))
     }
 
