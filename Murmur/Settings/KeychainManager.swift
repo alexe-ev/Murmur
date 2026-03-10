@@ -1,4 +1,5 @@
 import Foundation
+import LocalAuthentication
 import Security
 
 enum KeychainError: Error {
@@ -45,7 +46,7 @@ final class KeychainManager {
         query[kSecReturnData as String] = true
         query[kSecMatchLimit as String] = kSecMatchLimitOne
         if !allowAuthenticationUI {
-            query[kSecUseAuthenticationUI as String] = kSecUseAuthenticationUIFail
+            query[kSecUseAuthenticationContext as String] = nonInteractiveAuthContext()
         }
 
         var item: CFTypeRef?
@@ -68,7 +69,7 @@ final class KeychainManager {
         var query = baseQuery()
         query[kSecReturnAttributes as String] = true
         query[kSecMatchLimit as String] = kSecMatchLimitOne
-        query[kSecUseAuthenticationUI as String] = kSecUseAuthenticationUIFail
+        query[kSecUseAuthenticationContext as String] = nonInteractiveAuthContext()
 
         var item: CFTypeRef?
         let status = SecItemCopyMatching(query as CFDictionary, &item)
@@ -102,5 +103,11 @@ final class KeychainManager {
             kSecAttrService as String: service,
             kSecAttrAccount as String: account
         ]
+    }
+
+    private static func nonInteractiveAuthContext() -> LAContext {
+        let context = LAContext()
+        context.interactionNotAllowed = true
+        return context
     }
 }
