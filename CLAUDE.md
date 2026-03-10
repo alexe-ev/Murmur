@@ -53,3 +53,4 @@ Active baseline: Swift language mode 5.0 on Xcode 16+ toolchain, with arm64-only
 - When in doubt about architecture decisions, favor simplicity over extensibility at this stage
 - The focus-and-paste feature requires a **global hotkey** (registered system-wide, not just when Murmur is focused) and **Accessibility API access** (to programmatically paste into whichever input field the user clicked into); this is a core permission to request on first launch
 - Paste should be done via simulating Cmd+V or writing to the clipboard, targeting the currently focused element
+- For PR creation via `gh`, always use `scripts/create-pr.sh` (it passes `--body-file`) to avoid shell breaking on special characters in PR body text
