@@ -1,4 +1,5 @@
 import Foundation
+import LocalAuthentication
 import Security
 
 enum KeychainError: Error {
@@ -12,10 +13,12 @@ final class KeychainManager {
     private static let account = "openai-api-key"
     // Keep the API key on this device and available after first user unlock.
     private static let accessibilityPolicy = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+    private static let cacheLock = NSLock()
+    private static var cachedAPIKey: String?
 
     static func save(apiKey: String) throws {
         let data = Data(apiKey.utf8)
-        let query = baseQuery()
+        let query = baseQuery(useDataProtectionKeychain: true)
         let attributesToUpdate: [String: Any] = [
             kSecValueData as String: data,
             kSecAttrAccessible as String: accessibilityPolicy
@@ -23,6 +26,7 @@ final class KeychainManager {
 
         let updateStatus = SecItemUpdate(query as CFDictionary, attributesToUpdate as CFDictionary)
         if updateStatus == errSecSuccess {
+            setCachedAPIKey(apiKey)
             return
         }
 
@@ -34,6 +38,7 @@ final class KeychainManager {
             guard addStatus == errSecSuccess else {
                 throw KeychainError.saveFailed(addStatus)
             }
+            setCachedAPIKey(apiKey)
             return
         }
 
@@ -41,38 +46,37 @@ final class KeychainManager {
     }
 
     static func load(allowAuthenticationUI: Bool = true) -> String? {
-        var query = baseQuery()
-        query[kSecReturnData as String] = true
-        query[kSecMatchLimit as String] = kSecMatchLimitOne
-        if !allowAuthenticationUI {
-            query[kSecUseAuthenticationUI as String] = kSecUseAuthenticationUIFail
+        if let cached = getCachedAPIKey(), !cached.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return cached
         }
 
-        var item: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        if let apiKey = loadFromKeychain(useDataProtectionKeychain: true, allowAuthenticationUI: allowAuthenticationUI) {
+            setCachedAPIKey(apiKey)
+            return apiKey
+        }
 
-        if status == errSecItemNotFound {
+        // One-time migration path for legacy login-keychain items created by older builds.
+        guard let legacyAPIKey = loadFromKeychain(useDataProtectionKeychain: false, allowAuthenticationUI: allowAuthenticationUI) else {
+            setCachedAPIKey(nil)
             return nil
         }
 
-        guard status == errSecSuccess,
-              let data = item as? Data,
-              let apiKey = String(data: data, encoding: .utf8) else {
-            return nil
-        }
-
-        return apiKey
+        try? save(apiKey: legacyAPIKey)
+        _ = deleteFromKeychain(useDataProtectionKeychain: false)
+        setCachedAPIKey(legacyAPIKey)
+        return legacyAPIKey
     }
 
     static func hasStoredAPIKey() -> Bool {
-        var query = baseQuery()
-        query[kSecReturnAttributes as String] = true
-        query[kSecMatchLimit as String] = kSecMatchLimitOne
-        query[kSecUseAuthenticationUI as String] = kSecUseAuthenticationUIFail
+        if let cached = getCachedAPIKey(), !cached.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return true
+        }
 
-        var item: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &item)
-        return status == errSecSuccess
+        if hasItemInKeychain(useDataProtectionKeychain: true) {
+            return true
+        }
+
+        return hasItemInKeychain(useDataProtectionKeychain: false)
     }
 
     static func hasValidAPIKey() -> Bool {
@@ -86,21 +90,84 @@ final class KeychainManager {
     }
 
     static func delete() throws {
-        let query = baseQuery()
-        let status = SecItemDelete(query as CFDictionary)
+        let dataProtectionStatus = deleteFromKeychain(useDataProtectionKeychain: true)
+        let legacyStatus = deleteFromKeychain(useDataProtectionKeychain: false)
 
-        if status == errSecSuccess || status == errSecItemNotFound {
+        let dataProtectionDeleted = (dataProtectionStatus == errSecSuccess || dataProtectionStatus == errSecItemNotFound)
+        let legacyDeleted = (legacyStatus == errSecSuccess || legacyStatus == errSecItemNotFound)
+
+        if dataProtectionDeleted && legacyDeleted {
+            setCachedAPIKey(nil)
             return
         }
 
-        throw KeychainError.deleteFailed(status)
+        if dataProtectionStatus != errSecSuccess && dataProtectionStatus != errSecItemNotFound {
+            throw KeychainError.deleteFailed(dataProtectionStatus)
+        }
+        throw KeychainError.deleteFailed(legacyStatus)
     }
 
-    private static func baseQuery() -> [String: Any] {
-        [
+    private static func baseQuery(useDataProtectionKeychain: Bool) -> [String: Any] {
+        var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: account
         ]
+        if useDataProtectionKeychain {
+            query[kSecUseDataProtectionKeychain as String] = true
+        }
+        return query
+    }
+
+    private static func loadFromKeychain(useDataProtectionKeychain: Bool, allowAuthenticationUI: Bool) -> String? {
+        var query = baseQuery(useDataProtectionKeychain: useDataProtectionKeychain)
+        query[kSecReturnData as String] = true
+        query[kSecMatchLimit as String] = kSecMatchLimitOne
+        if !allowAuthenticationUI {
+            query[kSecUseAuthenticationContext as String] = nonInteractiveAuthContext()
+        }
+
+        var item: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        guard status == errSecSuccess,
+              let data = item as? Data,
+              let apiKey = String(data: data, encoding: .utf8) else {
+            return nil
+        }
+        return apiKey
+    }
+
+    private static func hasItemInKeychain(useDataProtectionKeychain: Bool) -> Bool {
+        var query = baseQuery(useDataProtectionKeychain: useDataProtectionKeychain)
+        query[kSecReturnAttributes as String] = true
+        query[kSecMatchLimit as String] = kSecMatchLimitOne
+        query[kSecUseAuthenticationContext as String] = nonInteractiveAuthContext()
+
+        var item: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        return status == errSecSuccess
+    }
+
+    private static func deleteFromKeychain(useDataProtectionKeychain: Bool) -> OSStatus {
+        let query = baseQuery(useDataProtectionKeychain: useDataProtectionKeychain)
+        return SecItemDelete(query as CFDictionary)
+    }
+
+    private static func nonInteractiveAuthContext() -> LAContext {
+        let context = LAContext()
+        context.interactionNotAllowed = true
+        return context
+    }
+
+    private static func getCachedAPIKey() -> String? {
+        cacheLock.lock()
+        defer { cacheLock.unlock() }
+        return cachedAPIKey
+    }
+
+    private static func setCachedAPIKey(_ value: String?) {
+        cacheLock.lock()
+        cachedAPIKey = value
+        cacheLock.unlock()
     }
 }
