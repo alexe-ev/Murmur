@@ -24,7 +24,8 @@ final class TranscriptionCoordinator {
     func transcribe(audioURL: URL) async throws -> String? {
         enforceBackendForCurrentConfig()
 
-        if translationConfig.requiresAPI && !KeychainManager.hasStoredAPIKey() {
+        let requiresAPIKey = translationConfig.requiresAPI || settingsModel.whisperBackend == .api
+        if requiresAPIKey && !KeychainManager.hasStoredAPIKey() {
             onMissingAPIKey?()
             return nil
         }
@@ -69,9 +70,6 @@ final class TranscriptionCoordinator {
         switch settingsModel.whisperBackend {
         case .api:
             service = OpenAIWhisperService()
-            if !KeychainManager.hasStoredAPIKey() {
-                onMissingAPIKey?()
-            }
         case .local:
             service = LocalWhisperService()
             Task {
@@ -92,10 +90,6 @@ final class TranscriptionCoordinator {
                 applyTranscriptionBackend()
             } else {
                 service = OpenAIWhisperService()
-            }
-
-            if !KeychainManager.hasStoredAPIKey() {
-                onMissingAPIKey?()
             }
             return
         }

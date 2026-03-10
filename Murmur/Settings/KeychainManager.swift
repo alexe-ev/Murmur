@@ -18,31 +18,21 @@ final class KeychainManager {
 
     static func save(apiKey: String) throws {
         let data = Data(apiKey.utf8)
-        let query = baseQuery(useDataProtectionKeychain: true)
-        let attributesToUpdate: [String: Any] = [
-            kSecValueData as String: data,
-            kSecAttrAccessible as String: accessibilityPolicy
-        ]
-
-        let updateStatus = SecItemUpdate(query as CFDictionary, attributesToUpdate as CFDictionary)
-        if updateStatus == errSecSuccess {
+        let dataProtectionStatus = upsert(data: data, useDataProtectionKeychain: true)
+        if dataProtectionStatus == errSecSuccess {
+            _ = deleteFromKeychain(useDataProtectionKeychain: false)
             setCachedAPIKey(apiKey)
             return
         }
 
-        if updateStatus == errSecItemNotFound {
-            var addQuery = query
-            addQuery[kSecValueData as String] = data
-            addQuery[kSecAttrAccessible as String] = accessibilityPolicy
-            let addStatus = SecItemAdd(addQuery as CFDictionary, nil)
-            guard addStatus == errSecSuccess else {
-                throw KeychainError.saveFailed(addStatus)
-            }
+        // Legacy fallback for environments where Data Protection Keychain is unavailable.
+        let legacyStatus = upsert(data: data, useDataProtectionKeychain: false)
+        if legacyStatus == errSecSuccess {
             setCachedAPIKey(apiKey)
             return
         }
 
-        throw KeychainError.saveFailed(updateStatus)
+        throw KeychainError.saveFailed(legacyStatus)
     }
 
     static func load(allowAuthenticationUI: Bool = true) -> String? {
@@ -62,7 +52,9 @@ final class KeychainManager {
         }
 
         try? save(apiKey: legacyAPIKey)
-        _ = deleteFromKeychain(useDataProtectionKeychain: false)
+        if hasItemInKeychain(useDataProtectionKeychain: true) {
+            _ = deleteFromKeychain(useDataProtectionKeychain: false)
+        }
         setCachedAPIKey(legacyAPIKey)
         return legacyAPIKey
     }
@@ -151,6 +143,28 @@ final class KeychainManager {
     private static func deleteFromKeychain(useDataProtectionKeychain: Bool) -> OSStatus {
         let query = baseQuery(useDataProtectionKeychain: useDataProtectionKeychain)
         return SecItemDelete(query as CFDictionary)
+    }
+
+    private static func upsert(data: Data, useDataProtectionKeychain: Bool) -> OSStatus {
+        let query = baseQuery(useDataProtectionKeychain: useDataProtectionKeychain)
+        let attributesToUpdate: [String: Any] = [
+            kSecValueData as String: data,
+            kSecAttrAccessible as String: accessibilityPolicy
+        ]
+
+        let updateStatus = SecItemUpdate(query as CFDictionary, attributesToUpdate as CFDictionary)
+        if updateStatus == errSecSuccess {
+            return errSecSuccess
+        }
+
+        if updateStatus == errSecItemNotFound {
+            var addQuery = query
+            addQuery[kSecValueData as String] = data
+            addQuery[kSecAttrAccessible as String] = accessibilityPolicy
+            return SecItemAdd(addQuery as CFDictionary, nil)
+        }
+
+        return updateStatus
     }
 
     private static func nonInteractiveAuthContext() -> LAContext {
