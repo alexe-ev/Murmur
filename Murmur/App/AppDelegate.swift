@@ -195,6 +195,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func promptForMissingAPIKey() {
+        if settingsWindow?.isVisible == true {
+            return
+        }
+
         guard !isMissingAPIKeyAlertPresented else { return }
         isMissingAPIKeyAlertPresented = true
         defer { isMissingAPIKeyAlertPresented = false }

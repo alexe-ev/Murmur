@@ -84,6 +84,12 @@ struct SettingsView: View {
             }
 
             if shouldShowAPIKeySection {
+                if !hasSavedAPIKey {
+                    Text("Add an OpenAI API key to use OpenAI engine and translation.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
                 SecureField("sk-...", text: $apiKeyInput)
                     .textFieldStyle(.roundedBorder)
 
@@ -126,6 +132,12 @@ struct SettingsView: View {
     private var translationSection: some View {
         Section("Translation") {
             Toggle("Enable Translation", isOn: $settings.translationEnabled)
+
+            if settings.translationEnabled && !hasSavedAPIKey {
+                Label("Add API key in Transcription section to enable translation.", systemImage: "key.fill")
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+            }
 
             Picker("Output Language", selection: $settings.targetLanguage) {
                 ForEach(SettingsModel.TargetLanguage.allCases) { language in
@@ -187,7 +199,7 @@ struct SettingsView: View {
             refreshAPIKeyState()
         } catch {
             apiKeySaveSucceeded = false
-            apiKeyMessage = "Failed to save API key"
+            apiKeyMessage = saveFailureMessage(for: error)
         }
     }
 
@@ -202,6 +214,13 @@ struct SettingsView: View {
             apiKeySaveSucceeded = false
             apiKeyMessage = "Failed to remove API key"
         }
+    }
+
+    private func saveFailureMessage(for error: Error) -> String {
+        if case let KeychainError.saveFailed(status) = error {
+            return "Failed to save API key (\(status))"
+        }
+        return "Failed to save API key"
     }
 
     private func startHotkeyCapture() {
