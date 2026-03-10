@@ -11,6 +11,7 @@ struct SettingsView: View {
     @State private var apiKeyMessage: String?
     @State private var apiKeySaveSucceeded = false
     @State private var hasSavedAPIKey = false
+    @State private var maskedAPIKeyPreview: String?
 
     var body: some View {
         Form {
@@ -99,9 +100,24 @@ struct SettingsView: View {
                 }
 
                 if hasSavedAPIKey {
-                    Text("API key is saved in Keychain.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text("Stored key: \(maskedAPIKeyPreview ?? "hidden")")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .textSelection(.enabled)
+
+                            Spacer()
+
+                            Button("Remove", role: .destructive) {
+                                deleteAPIKey()
+                            }
+                        }
+
+                        Text("API key is stored in macOS Keychain.")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
         }
@@ -156,7 +172,9 @@ struct SettingsView: View {
     }
 
     private func refreshAPIKeyState() {
-        hasSavedAPIKey = KeychainManager.hasValidAPIKey()
+        let loadedKey = KeychainManager.load()?.trimmingCharacters(in: .whitespacesAndNewlines)
+        hasSavedAPIKey = (loadedKey?.isEmpty == false)
+        maskedAPIKeyPreview = loadedKey.flatMap(maskAPIKey)
     }
 
     private func saveAPIKey() {
@@ -172,6 +190,32 @@ struct SettingsView: View {
             apiKeySaveSucceeded = false
             apiKeyMessage = "Failed to save API key"
         }
+    }
+
+    private func deleteAPIKey() {
+        do {
+            try KeychainManager.delete()
+            apiKeyInput = ""
+            apiKeySaveSucceeded = true
+            apiKeyMessage = "Deleted"
+            refreshAPIKeyState()
+        } catch {
+            apiKeySaveSucceeded = false
+            apiKeyMessage = "Failed to remove API key"
+        }
+    }
+
+    private func maskAPIKey(_ key: String) -> String {
+        guard !key.isEmpty else { return "" }
+
+        let prefixCount = min(4, key.count)
+        let suffixCount = min(4, max(0, key.count - prefixCount))
+        let maskedCount = max(6, key.count - prefixCount - suffixCount)
+
+        let prefix = String(key.prefix(prefixCount))
+        let suffix = String(key.suffix(suffixCount))
+        let masked = String(repeating: "•", count: maskedCount)
+        return "\(prefix)\(masked)\(suffix)"
     }
 
     private func startHotkeyCapture() {
