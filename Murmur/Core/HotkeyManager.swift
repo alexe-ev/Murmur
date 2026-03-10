@@ -31,13 +31,14 @@ final class HotkeyManager {
     private let hotKeySignature: OSType = 0x4D55524D // 'MURM'
     private let hotKeyID: UInt32 = 1
 
-    func register(keyCode: UInt32, modifiers: UInt32) {
+    @discardableResult
+    func register(keyCode: UInt32, modifiers: UInt32) -> Bool {
         unregister()
 
         let installStatus = installHandlerIfNeeded()
         guard installStatus == noErr else {
             setError(HotkeyError.installHandlerFailed(installStatus))
-            return
+            return false
         }
 
         let eventHotKeyID = EventHotKeyID(signature: hotKeySignature, id: hotKeyID)
@@ -53,10 +54,11 @@ final class HotkeyManager {
         guard registerStatus == noErr else {
             hotKeyRef = nil
             setError(HotkeyError.registerFailed(registerStatus))
-            return
+            return false
         }
 
         lastError = nil
+        return true
     }
 
     func unregister() {
