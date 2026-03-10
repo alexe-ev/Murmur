@@ -22,7 +22,7 @@ final class MenuBarController: NSObject {
     private var cancellables = Set<AnyCancellable>()
 
     override init() {
-        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         super.init()
         configureStatusItem()
         observeSettings()
@@ -31,6 +31,9 @@ final class MenuBarController: NSObject {
     }
 
     private func configureStatusItem() {
+        statusItem.button?.title = ""
+        statusItem.button?.imagePosition = .imageOnly
+
         let toggleItem = NSMenuItem(title: "Start Recording", action: #selector(AppDelegate.toggleRecordingFromMenu), keyEquivalent: "")
         toggleItem.target = AppDelegate.shared
         menu.addItem(toggleItem)
@@ -133,17 +136,19 @@ final class MenuBarController: NSObject {
             let hostingView = NSHostingView(rootView: RecordingIndicatorView(state: state))
             let panel = NSPanel(
                 contentRect: NSRect(x: 0, y: 0, width: 300, height: 44),
-                styleMask: [.borderless],
+                styleMask: [.borderless, .nonactivatingPanel],
                 backing: .buffered,
                 defer: false
             )
             panel.contentView = hostingView
             panel.isOpaque = false
             panel.backgroundColor = .clear
-            panel.level = .statusBar
-            panel.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
+            panel.level = .popUpMenu
+            panel.collectionBehavior = [.canJoinAllSpaces, .moveToActiveSpace, .fullScreenAuxiliary, .transient]
             panel.ignoresMouseEvents = true
             panel.hasShadow = false
+            panel.hidesOnDeactivate = false
+            panel.animationBehavior = .utilityWindow
             indicatorPanel = panel
             indicatorHostingView = hostingView
         } else {
@@ -168,9 +173,20 @@ final class MenuBarController: NSObject {
         guard let screen = targetScreen else { return }
 
         let frame = screen.visibleFrame
-        let x = frame.midX - panel.frame.width / 2
+        let x = frame.maxX - panel.frame.width - margin
         let y = frame.maxY - panel.frame.height - margin
         panel.setFrameOrigin(NSPoint(x: x, y: y))
+    }
+
+    private func statusTitle(for state: MenuBarState) -> String {
+        switch state {
+        case .idle:
+            return ""
+        case .recording:
+            return " REC"
+        case .processing:
+            return " ..."
+        }
     }
 
     private func applyState(_ state: MenuBarState) {
@@ -200,6 +216,8 @@ final class MenuBarController: NSObject {
             ?? NSImage(systemSymbolName: fallbackSymbol, accessibilityDescription: "Murmur")
         image?.isTemplate = true
         statusItem.button?.image = image
+        statusItem.button?.title = statusTitle(for: state)
+        statusItem.button?.imagePosition = statusTitle(for: state).isEmpty ? .imageOnly : .imageLeading
         updateMenuItems(isRecording: isRecording)
     }
 }
