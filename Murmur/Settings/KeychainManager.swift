@@ -13,6 +13,8 @@ final class KeychainManager {
     private static let account = "openai-api-key"
     // Keep the API key on this device and available after first user unlock.
     private static let accessibilityPolicy = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+    private static let cacheLock = NSLock()
+    private static var cachedAPIKey: String?
 
     static func save(apiKey: String) throws {
         let data = Data(apiKey.utf8)
@@ -24,6 +26,7 @@ final class KeychainManager {
 
         let updateStatus = SecItemUpdate(query as CFDictionary, attributesToUpdate as CFDictionary)
         if updateStatus == errSecSuccess {
+            setCachedAPIKey(apiKey)
             return
         }
 
@@ -35,6 +38,7 @@ final class KeychainManager {
             guard addStatus == errSecSuccess else {
                 throw KeychainError.saveFailed(addStatus)
             }
+            setCachedAPIKey(apiKey)
             return
         }
 
@@ -42,6 +46,10 @@ final class KeychainManager {
     }
 
     static func load(allowAuthenticationUI: Bool = true) -> String? {
+        if let cached = getCachedAPIKey(), !cached.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return cached
+        }
+
         var query = baseQuery()
         query[kSecReturnData as String] = true
         query[kSecMatchLimit as String] = kSecMatchLimitOne
@@ -53,6 +61,7 @@ final class KeychainManager {
         let status = SecItemCopyMatching(query as CFDictionary, &item)
 
         if status == errSecItemNotFound {
+            setCachedAPIKey(nil)
             return nil
         }
 
@@ -62,10 +71,15 @@ final class KeychainManager {
             return nil
         }
 
+        setCachedAPIKey(apiKey)
         return apiKey
     }
 
     static func hasStoredAPIKey() -> Bool {
+        if let cached = getCachedAPIKey(), !cached.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return true
+        }
+
         var query = baseQuery()
         query[kSecReturnAttributes as String] = true
         query[kSecMatchLimit as String] = kSecMatchLimitOne
@@ -91,6 +105,7 @@ final class KeychainManager {
         let status = SecItemDelete(query as CFDictionary)
 
         if status == errSecSuccess || status == errSecItemNotFound {
+            setCachedAPIKey(nil)
             return
         }
 
@@ -109,5 +124,17 @@ final class KeychainManager {
         let context = LAContext()
         context.interactionNotAllowed = true
         return context
+    }
+
+    private static func getCachedAPIKey() -> String? {
+        cacheLock.lock()
+        defer { cacheLock.unlock() }
+        return cachedAPIKey
+    }
+
+    private static func setCachedAPIKey(_ value: String?) {
+        cacheLock.lock()
+        cachedAPIKey = value
+        cacheLock.unlock()
     }
 }
