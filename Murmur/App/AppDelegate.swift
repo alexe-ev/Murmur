@@ -23,8 +23,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var onboardingWindow: NSWindow?
     private var settingsWindow: NSWindow?
     private var didEnterMainFlow = false
-    private var isMissingAPIKeyAlertPresented = false
     private var hasPresentedHotkeyIssueAlert = false
+    private var lastMissingAPIKeyPromptDate: Date?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Self.shared = self
@@ -74,7 +74,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let hostingController = NSHostingController(rootView: onboardingView)
 
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 560, height: 320),
+            contentRect: NSRect(x: 0, y: 0, width: 640, height: 420),
             styleMask: [.titled],
             backing: .buffered,
             defer: false
@@ -82,6 +82,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         window.contentViewController = hostingController
         window.title = "Murmur Permissions"
         window.center()
+        window.minSize = NSSize(width: 620, height: 400)
         window.isReleasedWhenClosed = false
         window.level = .normal
         window.makeKeyAndOrderFront(nil)
@@ -178,18 +179,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if settingsWindow == nil {
             let hostingController = NSHostingController(rootView: SettingsView())
             let window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 520, height: 440),
-                styleMask: [.titled, .closable, .miniaturizable],
+                contentRect: NSRect(x: 0, y: 0, width: 760, height: 580),
+                styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],
                 backing: .buffered,
                 defer: false
             )
             window.contentViewController = hostingController
             window.title = "Murmur Settings"
+            window.titleVisibility = .hidden
+            window.titlebarAppearsTransparent = true
+            window.isMovableByWindowBackground = true
+            window.isOpaque = false
+            window.backgroundColor = .clear
             window.isReleasedWhenClosed = false
             window.center()
-            window.setContentSize(NSSize(width: 520, height: 440))
-            window.minSize = NSSize(width: 520, height: 440)
-            window.maxSize = NSSize(width: 520, height: 440)
+            window.setContentSize(NSSize(width: 760, height: 580))
+            window.minSize = NSSize(width: 720, height: 540)
             settingsWindow = window
         }
 
@@ -283,20 +288,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
-        guard !isMissingAPIKeyAlertPresented else { return }
-        isMissingAPIKeyAlertPresented = true
-        defer { isMissingAPIKeyAlertPresented = false }
-
-        let alert = NSAlert()
-        alert.messageText = "Translation requires an OpenAI API key."
-        alert.informativeText = "Open Settings?"
-        alert.alertStyle = .warning
-        alert.addButton(withTitle: "Open Settings")
-        alert.addButton(withTitle: "Cancel")
-
-        if alert.runModal() == .alertFirstButtonReturn {
-            openSettings()
+        let now = Date()
+        if let lastPrompt = lastMissingAPIKeyPromptDate, now.timeIntervalSince(lastPrompt) < 1.0 {
+            return
         }
+        lastMissingAPIKeyPromptDate = now
+
+        openSettings()
     }
 
     private func showErrorNotification(_ error: Error) {

@@ -1,4 +1,5 @@
 import AppKit
+import Carbon.HIToolbox
 import Combine
 import SwiftUI
 
@@ -14,12 +15,15 @@ final class MenuBarController: NSObject {
     private var indicatorPanel: NSPanel?
     private var indicatorHostingView: NSHostingView<RecordingIndicatorView>?
     private let menu = NSMenu()
+    private var statusSummaryItem: NSMenuItem?
     private var toggleRecordingItem: NSMenuItem?
+    private var hotkeyHintItem: NSMenuItem?
     private let settingsModel = SettingsModel.shared
     private var languageItem: NSMenuItem?
-    private var translationOnIndicatorItem: NSMenuItem?
+    private var translationSummaryItem: NSMenuItem?
     private var languageSubmenu: NSMenu?
     private var cancellables = Set<AnyCancellable>()
+    private var currentState: MenuBarState = .idle
 
     override init() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -34,30 +38,53 @@ final class MenuBarController: NSObject {
         statusItem.button?.title = ""
         statusItem.button?.imagePosition = .imageOnly
 
-        let toggleItem = NSMenuItem(title: "Start Recording", action: #selector(AppDelegate.toggleRecordingFromMenu), keyEquivalent: "")
-        toggleItem.target = AppDelegate.shared
-        menu.addItem(toggleItem)
-        toggleRecordingItem = toggleItem
+        let stateItem = NSMenuItem(title: "Ready", action: nil, keyEquivalent: "")
+        stateItem.isEnabled = false
+        stateItem.image = menuSymbol("waveform")
+        menu.addItem(stateItem)
+        statusSummaryItem = stateItem
 
         menu.addItem(.separator())
 
-        let languageMenuItem = NSMenuItem(title: "Speech Language: English", action: nil, keyEquivalent: "")
+        let toggleItem = NSMenuItem(title: "Start Recording", action: #selector(AppDelegate.toggleRecordingFromMenu), keyEquivalent: "")
+        toggleItem.target = AppDelegate.shared
+        toggleItem.image = menuSymbol("mic.fill")
+        menu.addItem(toggleItem)
+        toggleRecordingItem = toggleItem
+
+        let hotkeyItem = NSMenuItem(title: "Shortcut: \(menuHotkeyHint())", action: nil, keyEquivalent: "")
+        hotkeyItem.isEnabled = false
+        menu.addItem(hotkeyItem)
+        hotkeyHintItem = hotkeyItem
+
+        menu.addItem(.separator())
+
+        let languageMenuItem = NSMenuItem(title: "Speech Language", action: nil, keyEquivalent: "")
+        languageMenuItem.image = menuSymbol("character.bubble")
         let submenu = NSMenu(title: "Language")
         languageMenuItem.submenu = submenu
         menu.addItem(languageMenuItem)
         languageItem = languageMenuItem
         languageSubmenu = submenu
 
+        let translationItem = NSMenuItem(title: "Translation: Off", action: nil, keyEquivalent: "")
+        translationItem.isEnabled = false
+        translationItem.image = menuSymbol("globe")
+        menu.addItem(translationItem)
+        translationSummaryItem = translationItem
+
         menu.addItem(.separator())
 
         let settingsItem = NSMenuItem(title: "Settings…", action: #selector(AppDelegate.openSettings), keyEquivalent: "")
         settingsItem.target = AppDelegate.shared
+        settingsItem.image = menuSymbol("gearshape")
         menu.addItem(settingsItem)
 
         menu.addItem(.separator())
 
         let quitItem = NSMenuItem(title: "Quit Murmur", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         quitItem.target = NSApplication.shared
+        quitItem.image = menuSymbol("power")
         menu.addItem(quitItem)
 
         statusItem.menu = menu
@@ -74,7 +101,32 @@ final class MenuBarController: NSObject {
         settingsModel.$translationEnabled
             .removeDuplicates()
             .sink { [weak self] _ in
-                self?.rebuildLanguageSubmenu()
+                guard let self else { return }
+                self.updateMenuItems(isRecording: self.currentState == .recording)
+            }
+            .store(in: &cancellables)
+
+        settingsModel.$targetLanguage
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                guard let self else { return }
+                self.updateMenuItems(isRecording: self.currentState == .recording)
+            }
+            .store(in: &cancellables)
+
+        settingsModel.$hotkeyModifiers
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                guard let self else { return }
+                self.updateMenuItems(isRecording: self.currentState == .recording)
+            }
+            .store(in: &cancellables)
+
+        settingsModel.$hotkeyKeyCode
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                guard let self else { return }
+                self.updateMenuItems(isRecording: self.currentState == .recording)
             }
             .store(in: &cancellables)
     }
@@ -86,12 +138,9 @@ final class MenuBarController: NSObject {
         guard let languageSubmenu else { return }
         languageSubmenu.removeAllItems()
 
-        let indicatorTitle = settingsModel.translationEnabled ? "Translation On" : "Translation Off"
-        let indicatorItem = NSMenuItem(title: indicatorTitle, action: nil, keyEquivalent: "")
-        indicatorItem.isEnabled = false
-        indicatorItem.isHidden = false
-        languageSubmenu.addItem(indicatorItem)
-        translationOnIndicatorItem = indicatorItem
+        let descriptionItem = NSMenuItem(title: "Used for speech recognition input", action: nil, keyEquivalent: "")
+        descriptionItem.isEnabled = false
+        languageSubmenu.addItem(descriptionItem)
 
         languageSubmenu.addItem(.separator())
 
@@ -102,6 +151,8 @@ final class MenuBarController: NSObject {
             item.state = (language == currentLanguage) ? .on : .off
             languageSubmenu.addItem(item)
         }
+
+        updateMenuItems(isRecording: currentState == .recording)
     }
 
     @objc
@@ -127,15 +178,26 @@ final class MenuBarController: NSObject {
 
     func updateMenuItems(isRecording: Bool) {
         toggleRecordingItem?.title = isRecording ? "Stop Recording" : "Start Recording"
-        translationOnIndicatorItem?.title = settingsModel.translationEnabled ? "Translation On" : "Translation Off"
-        translationOnIndicatorItem?.isHidden = false
+        toggleRecordingItem?.image = menuSymbol(isRecording ? "stop.circle.fill" : "mic.fill")
+        hotkeyHintItem?.title = "Shortcut: \(menuHotkeyHint())"
+        hotkeyHintItem?.isHidden = isRecording
+
+        if settingsModel.translationEnabled {
+            translationSummaryItem?.title = "Translation: On (\(settingsModel.targetLanguage.displayName))"
+        } else {
+            translationSummaryItem?.title = "Translation: Off"
+        }
+
+        statusSummaryItem?.title = menuStateTitle(for: currentState)
+        statusSummaryItem?.image = menuStateSymbol(for: currentState)
     }
 
     func showIndicator(for state: MenuBarState) {
+        let indicatorView = RecordingIndicatorView(state: state, hotkeyHint: menuHotkeyHint())
         if indicatorPanel == nil || indicatorHostingView == nil {
-            let hostingView = NSHostingView(rootView: RecordingIndicatorView(state: state))
+            let hostingView = NSHostingView(rootView: indicatorView)
             let panel = NSPanel(
-                contentRect: NSRect(x: 0, y: 0, width: 300, height: 44),
+                contentRect: NSRect(x: 0, y: 0, width: 320, height: 56),
                 styleMask: [.borderless, .nonactivatingPanel],
                 backing: .buffered,
                 defer: false
@@ -152,7 +214,7 @@ final class MenuBarController: NSObject {
             indicatorPanel = panel
             indicatorHostingView = hostingView
         } else {
-            indicatorHostingView?.rootView = RecordingIndicatorView(state: state)
+            indicatorHostingView?.rootView = indicatorView
         }
 
         guard let panel = indicatorPanel else { return }
@@ -192,18 +254,8 @@ final class MenuBarController: NSObject {
         panel.setFrameOrigin(NSPoint(x: x, y: y))
     }
 
-    private func statusTitle(for state: MenuBarState) -> String {
-        switch state {
-        case .idle:
-            return ""
-        case .recording:
-            return " REC"
-        case .processing:
-            return " ..."
-        }
-    }
-
     private func applyState(_ state: MenuBarState) {
+        currentState = state
         let iconName: String
         let fallbackSymbol: String
         let isRecording: Bool
@@ -230,8 +282,72 @@ final class MenuBarController: NSObject {
             ?? NSImage(systemSymbolName: fallbackSymbol, accessibilityDescription: "Murmur")
         image?.isTemplate = true
         statusItem.button?.image = image
-        statusItem.button?.title = statusTitle(for: state)
-        statusItem.button?.imagePosition = statusTitle(for: state).isEmpty ? .imageOnly : .imageLeading
+        statusItem.button?.toolTip = menuStateTitle(for: state)
+        statusItem.button?.title = ""
+        statusItem.button?.imagePosition = .imageOnly
         updateMenuItems(isRecording: isRecording)
+    }
+
+    private func menuStateTitle(for state: MenuBarState) -> String {
+        switch state {
+        case .idle:
+            return "Ready"
+        case .recording:
+            return "Recording in progress"
+        case .processing:
+            return "Processing audio"
+        }
+    }
+
+    private func menuStateSymbol(for state: MenuBarState) -> NSImage? {
+        switch state {
+        case .idle:
+            return menuSymbol("checkmark.circle.fill")
+        case .recording:
+            return menuSymbol("record.circle.fill")
+        case .processing:
+            return menuSymbol("hourglass.circle.fill")
+        }
+    }
+
+    private func menuSymbol(_ name: String) -> NSImage? {
+        let image = NSImage(systemSymbolName: name, accessibilityDescription: nil)
+        image?.isTemplate = true
+        return image
+    }
+
+    private func menuHotkeyHint() -> String {
+        let modifiers = UInt32(settingsModel.hotkeyModifiers)
+        let keyCode = UInt32(settingsModel.hotkeyKeyCode)
+        return hotkeyDisplayString(modifiers: modifiers, keyCode: keyCode)
+    }
+
+    private func hotkeyDisplayString(modifiers: UInt32, keyCode: UInt32) -> String {
+        let normalized = modifiers & UInt32(cmdKey | optionKey | controlKey | shiftKey)
+        var symbols = ""
+
+        if normalized & UInt32(controlKey) != 0 { symbols.append("⌃") }
+        if normalized & UInt32(optionKey) != 0 { symbols.append("⌥") }
+        if normalized & UInt32(shiftKey) != 0 { symbols.append("⇧") }
+        if normalized & UInt32(cmdKey) != 0 { symbols.append("⌘") }
+
+        let keyName = keyName(for: keyCode)
+        return symbols + keyName
+    }
+
+    private func keyName(for keyCode: UInt32) -> String {
+        switch keyCode {
+        case UInt32(kVK_Space): return "Space"
+        case UInt32(kVK_Return): return "Return"
+        case UInt32(kVK_Tab): return "Tab"
+        case UInt32(kVK_Delete): return "Delete"
+        case UInt32(kVK_Escape): return "Esc"
+        case UInt32(kVK_LeftArrow): return "Left"
+        case UInt32(kVK_RightArrow): return "Right"
+        case UInt32(kVK_DownArrow): return "Down"
+        case UInt32(kVK_UpArrow): return "Up"
+        default:
+            return "Key \(keyCode)"
+        }
     }
 }
