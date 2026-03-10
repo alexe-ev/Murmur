@@ -172,9 +172,8 @@ struct SettingsView: View {
     }
 
     private func refreshAPIKeyState() {
-        let loadedKey = KeychainManager.load()?.trimmingCharacters(in: .whitespacesAndNewlines)
-        hasSavedAPIKey = (loadedKey?.isEmpty == false)
-        maskedAPIKeyPreview = loadedKey.flatMap(maskAPIKey)
+        hasSavedAPIKey = KeychainManager.hasStoredAPIKey()
+        maskedAPIKeyPreview = hasSavedAPIKey ? "sk-••••••••••••" : nil
     }
 
     private func saveAPIKey() {
@@ -203,19 +202,6 @@ struct SettingsView: View {
             apiKeySaveSucceeded = false
             apiKeyMessage = "Failed to remove API key"
         }
-    }
-
-    private func maskAPIKey(_ key: String) -> String {
-        guard !key.isEmpty else { return "" }
-
-        let prefixCount = min(4, key.count)
-        let suffixCount = min(4, max(0, key.count - prefixCount))
-        let maskedCount = max(6, key.count - prefixCount - suffixCount)
-
-        let prefix = String(key.prefix(prefixCount))
-        let suffix = String(key.suffix(suffixCount))
-        let masked = String(repeating: "•", count: maskedCount)
-        return "\(prefix)\(masked)\(suffix)"
     }
 
     private func startHotkeyCapture() {

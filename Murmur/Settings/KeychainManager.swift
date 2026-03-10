@@ -40,10 +40,13 @@ final class KeychainManager {
         throw KeychainError.saveFailed(updateStatus)
     }
 
-    static func load() -> String? {
+    static func load(allowAuthenticationUI: Bool = true) -> String? {
         var query = baseQuery()
         query[kSecReturnData as String] = true
         query[kSecMatchLimit as String] = kSecMatchLimitOne
+        if !allowAuthenticationUI {
+            query[kSecUseAuthenticationUI as String] = kSecUseAuthenticationUIFail
+        }
 
         var item: CFTypeRef?
         let status = SecItemCopyMatching(query as CFDictionary, &item)
@@ -61,9 +64,20 @@ final class KeychainManager {
         return apiKey
     }
 
+    static func hasStoredAPIKey() -> Bool {
+        var query = baseQuery()
+        query[kSecReturnAttributes as String] = true
+        query[kSecMatchLimit as String] = kSecMatchLimitOne
+        query[kSecUseAuthenticationUI as String] = kSecUseAuthenticationUIFail
+
+        var item: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        return status == errSecSuccess
+    }
+
     static func hasValidAPIKey() -> Bool {
         guard
-            let apiKey = load(),
+            let apiKey = load(allowAuthenticationUI: false),
             !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         else {
             return false

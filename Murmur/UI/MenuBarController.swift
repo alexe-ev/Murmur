@@ -140,7 +140,7 @@ final class MenuBarController: NSObject {
             panel.contentView = hostingView
             panel.isOpaque = false
             panel.backgroundColor = .clear
-            panel.level = .floating
+            panel.level = .statusBar
             panel.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
             panel.ignoresMouseEvents = true
             panel.hasShadow = false
@@ -161,11 +161,14 @@ final class MenuBarController: NSObject {
 
     private func positionIndicator(_ panel: NSPanel) {
         let margin: CGFloat = 20
-        let targetScreen = NSScreen.main ?? NSScreen.screens.first
+        let mouseLocation = NSEvent.mouseLocation
+        let targetScreen = NSScreen.screens.first { NSMouseInRect(mouseLocation, $0.frame, false) }
+            ?? NSScreen.main
+            ?? NSScreen.screens.first
         guard let screen = targetScreen else { return }
 
         let frame = screen.visibleFrame
-        let x = frame.maxX - panel.frame.width - margin
+        let x = frame.midX - panel.frame.width / 2
         let y = frame.maxY - panel.frame.height - margin
         panel.setFrameOrigin(NSPoint(x: x, y: y))
     }
