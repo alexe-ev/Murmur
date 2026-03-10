@@ -24,6 +24,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var settingsWindow: NSWindow?
     private var didEnterMainFlow = false
     private var isMissingAPIKeyAlertPresented = false
+    private var hasPresentedHotkeyIssueAlert = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Self.shared = self
@@ -125,7 +126,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         hotkeyManager.unregister()
-        hotkeyManager.register(keyCode: keyCode, modifiers: modifiers)
+        if hotkeyManager.register(keyCode: keyCode, modifiers: modifiers) {
+            return
+        }
+
+        for candidate in fallbackHotkeyCandidates(primaryKeyCode: keyCode, primaryModifiers: modifiers) {
+            if hotkeyManager.register(keyCode: candidate.keyCode, modifiers: candidate.modifiers) {
+                let fallbackDisplay = hotkeyDisplayString(keyCode: candidate.keyCode, modifiers: candidate.modifiers)
+                presentHotkeyIssueAlert(
+                    title: "Selected hotkey is unavailable.",
+                    message: "Murmur temporarily switched to \(fallbackDisplay). Open Settings to choose another shortcut."
+                )
+                return
+            }
+        }
+
+        presentHotkeyIssueAlert(
+            title: "Failed to register global hotkey.",
+            message: "Open Settings and choose a different hotkey."
+        )
     }
 
     private func configureRecordingFlowCoordinator() {
@@ -191,6 +210,71 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return true
         default:
             return false
+        }
+    }
+
+    private func fallbackHotkeyCandidates(primaryKeyCode: UInt32, primaryModifiers: UInt32) -> [(keyCode: UInt32, modifiers: UInt32)] {
+        let optionControl = UInt32(optionKey | controlKey)
+        let optionControlCommand = UInt32(optionKey | controlKey | cmdKey)
+
+        let preferred: [(UInt32, UInt32)] = [
+            (primaryKeyCode, optionControl),
+            (primaryKeyCode, optionControlCommand),
+            (UInt32(kVK_Space), optionControl),
+            (UInt32(kVK_ANSI_Grave), optionControl)
+        ]
+
+        var unique: [(UInt32, UInt32)] = []
+        for candidate in preferred {
+            if candidate.0 == primaryKeyCode && candidate.1 == primaryModifiers {
+                continue
+            }
+            if unique.contains(where: { $0.0 == candidate.0 && $0.1 == candidate.1 }) {
+                continue
+            }
+            unique.append(candidate)
+        }
+        return unique
+    }
+
+    private func hotkeyDisplayString(keyCode: UInt32, modifiers: UInt32) -> String {
+        let normalized = modifiers & UInt32(cmdKey | optionKey | controlKey | shiftKey)
+        var symbols = ""
+
+        if normalized & UInt32(controlKey) != 0 { symbols.append("⌃") }
+        if normalized & UInt32(optionKey) != 0 { symbols.append("⌥") }
+        if normalized & UInt32(shiftKey) != 0 { symbols.append("⇧") }
+        if normalized & UInt32(cmdKey) != 0 { symbols.append("⌘") }
+
+        let keyName: String
+        switch keyCode {
+        case UInt32(kVK_Space):
+            keyName = "Space"
+        case UInt32(kVK_ANSI_Grave):
+            keyName = "`"
+        case UInt32(kVK_Tab):
+            keyName = "Tab"
+        default:
+            keyName = "Key \(keyCode)"
+        }
+
+        return symbols + keyName
+    }
+
+    private func presentHotkeyIssueAlert(title: String, message: String) {
+        guard !hasPresentedHotkeyIssueAlert else { return }
+        hasPresentedHotkeyIssueAlert = true
+
+        let alert = NSAlert()
+        alert.messageText = title
+        alert.informativeText = message
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "Open Settings")
+        alert.addButton(withTitle: "OK")
+
+        NSApp.activate(ignoringOtherApps: true)
+        if alert.runModal() == .alertFirstButtonReturn {
+            openSettings()
         }
     }
 
