@@ -13,7 +13,7 @@ final class OpenAIWhisperService: TranscriptionService {
     }
 
     var isAvailable: Bool {
-        KeychainManager.load() != nil
+        KeychainManager.hasStoredAPIKey()
     }
 
     func transcribe(audioURL: URL, request: TranscriptionRequest) async throws -> String {
