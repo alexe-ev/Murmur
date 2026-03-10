@@ -30,6 +30,7 @@ final class TranscriptionCoordinator {
         }
 
         let request = TranscriptionRequest(
+            sourceLanguage: settingsModel.speechLanguage.rawValue,
             targetLanguage: translationConfig.targetLanguage.rawValue,
             isTranslationEnabled: translationConfig.isEnabled
         )

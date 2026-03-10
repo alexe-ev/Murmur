@@ -26,18 +26,27 @@ final class OpenAIWhisperService: TranscriptionService {
         }
 
         do {
-            let normalizedLanguage = request.targetLanguage?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            let normalizedSourceLanguage = request.sourceLanguage?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            let normalizedTargetLanguage = request.targetLanguage?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
             let result: String
 
-            if request.isTranslationEnabled, normalizedLanguage == "en" {
+            if request.isTranslationEnabled, normalizedTargetLanguage == "en" {
                 let apiRequest = try buildTranslationRequest(audioURL: audioURL, apiKey: apiKey)
                 result = try await performTextRequest(apiRequest)
-            } else if request.isTranslationEnabled, let targetLanguage = normalizedLanguage, !targetLanguage.isEmpty, targetLanguage != "en" {
-                let transcriptionRequest = try buildTranscriptionRequest(audioURL: audioURL, targetLanguage: nil, apiKey: apiKey)
+            } else if request.isTranslationEnabled, let targetLanguage = normalizedTargetLanguage, !targetLanguage.isEmpty, targetLanguage != "en" {
+                let transcriptionRequest = try buildTranscriptionRequest(
+                    audioURL: audioURL,
+                    sourceLanguage: normalizedSourceLanguage,
+                    apiKey: apiKey
+                )
                 let transcribedText = try await performTextRequest(transcriptionRequest)
                 result = try await chatTranslate(transcribedText, to: targetLanguage, apiKey: apiKey)
             } else {
-                let apiRequest = try buildTranscriptionRequest(audioURL: audioURL, targetLanguage: normalizedLanguage, apiKey: apiKey)
+                let apiRequest = try buildTranscriptionRequest(
+                    audioURL: audioURL,
+                    sourceLanguage: normalizedSourceLanguage,
+                    apiKey: apiKey
+                )
                 result = try await performTextRequest(apiRequest)
             }
 
@@ -136,7 +145,7 @@ final class OpenAIWhisperService: TranscriptionService {
         return request
     }
 
-    private func buildTranscriptionRequest(audioURL: URL, targetLanguage: String?, apiKey: String) throws -> URLRequest {
+    private func buildTranscriptionRequest(audioURL: URL, sourceLanguage: String?, apiKey: String) throws -> URLRequest {
         let boundary = "Boundary-\(UUID().uuidString)"
         var request = URLRequest(url: transcriptionsEndpointURL)
         request.httpMethod = "POST"
@@ -147,7 +156,7 @@ final class OpenAIWhisperService: TranscriptionService {
             audioURL: audioURL,
             boundary: boundary,
             includeLanguageField: true,
-            targetLanguage: targetLanguage
+            targetLanguage: sourceLanguage
         )
         return request
     }

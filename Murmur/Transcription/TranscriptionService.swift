@@ -1,6 +1,7 @@
 import Foundation
 
 struct TranscriptionRequest {
+    let sourceLanguage: String?
     let targetLanguage: String?
     let isTranslationEnabled: Bool
 }

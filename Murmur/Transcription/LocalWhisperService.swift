@@ -69,7 +69,7 @@ final class LocalWhisperService: TranscriptionService {
 
 #if arch(arm64)
     private func decodingOptions(for request: TranscriptionRequest) -> DecodingOptions {
-        let normalizedLanguage = request.targetLanguage?
+        let normalizedLanguage = request.sourceLanguage?
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .lowercased()
 

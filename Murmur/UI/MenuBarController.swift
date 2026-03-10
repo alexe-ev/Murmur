@@ -15,7 +15,6 @@ final class MenuBarController: NSObject {
     private let menu = NSMenu()
     private var toggleRecordingItem: NSMenuItem?
     private let settingsModel = SettingsModel.shared
-    private let translationConfig = TranslationConfig.shared
     private var languageItem: NSMenuItem?
     private var translationOnIndicatorItem: NSMenuItem?
     private var languageSubmenu: NSMenu?
@@ -25,7 +24,7 @@ final class MenuBarController: NSObject {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         super.init()
         configureStatusItem()
-        observeTranslationSettings()
+        observeSettings()
         rebuildLanguageSubmenu()
         setState(.idle)
     }
@@ -38,7 +37,7 @@ final class MenuBarController: NSObject {
 
         menu.addItem(.separator())
 
-        let languageMenuItem = NSMenuItem(title: "Target Language: English", action: nil, keyEquivalent: "")
+        let languageMenuItem = NSMenuItem(title: "Speech Language: English", action: nil, keyEquivalent: "")
         let submenu = NSMenu(title: "Language")
         languageMenuItem.submenu = submenu
         menu.addItem(languageMenuItem)
@@ -60,15 +59,15 @@ final class MenuBarController: NSObject {
         statusItem.menu = menu
     }
 
-    private func observeTranslationSettings() {
-        translationConfig.$targetLanguage
+    private func observeSettings() {
+        settingsModel.$speechLanguage
             .removeDuplicates()
             .sink { [weak self] _ in
                 self?.rebuildLanguageSubmenu()
             }
             .store(in: &cancellables)
 
-        translationConfig.$isEnabled
+        settingsModel.$translationEnabled
             .removeDuplicates()
             .sink { [weak self] _ in
                 self?.rebuildLanguageSubmenu()
@@ -77,8 +76,8 @@ final class MenuBarController: NSObject {
     }
 
     private func rebuildLanguageSubmenu() {
-        let currentLanguage = settingsModel.targetLanguage
-        languageItem?.title = "Target Language: \(currentLanguage.displayName)"
+        let currentLanguage = settingsModel.speechLanguage
+        languageItem?.title = "Speech Language: \(currentLanguage.displayName)"
 
         guard let languageSubmenu else { return }
         languageSubmenu.removeAllItems()
@@ -109,7 +108,7 @@ final class MenuBarController: NSObject {
         else {
             return
         }
-        settingsModel.targetLanguage = language
+        settingsModel.speechLanguage = language
     }
 
     func setState(_ state: MenuBarState) {

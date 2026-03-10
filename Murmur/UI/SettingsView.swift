@@ -70,7 +70,19 @@ struct SettingsView: View {
                 .pickerStyle(.segmented)
             }
 
-            if settings.whisperBackend == .api {
+            Picker("Speech Language", selection: $settings.speechLanguage) {
+                ForEach(SettingsModel.TargetLanguage.allCases) { language in
+                    Text(language.displayName).tag(language)
+                }
+            }
+
+            if settings.translationEnabled && settings.whisperBackend == .local {
+                Text("Translation uses OpenAI API key even when local engine is selected.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            if shouldShowAPIKeySection {
                 SecureField("sk-...", text: $apiKeyInput)
                     .textFieldStyle(.roundedBorder)
 
@@ -99,14 +111,14 @@ struct SettingsView: View {
         Section("Translation") {
             Toggle("Enable Translation", isOn: $settings.translationEnabled)
 
-            Picker("Target Language", selection: $settings.targetLanguage) {
+            Picker("Output Language", selection: $settings.targetLanguage) {
                 ForEach(SettingsModel.TargetLanguage.allCases) { language in
                     Text(language.displayName).tag(language)
                 }
             }
             .disabled(!settings.translationEnabled)
 
-            Text("Target language is applied only when translation is enabled.")
+            Text("Output language is applied only when translation is enabled.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -137,6 +149,10 @@ struct SettingsView: View {
         let shortVersion = (info?["CFBundleShortVersionString"] as? String) ?? "1.0"
         let build = (info?["CFBundleVersion"] as? String) ?? "1"
         return "\(shortVersion) (\(build))"
+    }
+
+    private var shouldShowAPIKeySection: Bool {
+        settings.whisperBackend == .api || settings.translationEnabled
     }
 
     private func refreshAPIKeyState() {
