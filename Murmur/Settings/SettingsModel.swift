@@ -88,6 +88,7 @@ final class SettingsModel: ObservableObject {
         static let hotkeyKeyCode = "hotkeyKeyCode"
         static let hotkeyModifiers = "hotkeyModifiers"
         static let translationEnabled = "translationEnabled"
+        static let speechLanguage = "speechLanguage"
         static let targetLanguage = "targetLanguage"
         static let whisperBackend = "whisperBackend"
         static let whisperModel = "whisperModel"
@@ -99,6 +100,7 @@ final class SettingsModel: ObservableObject {
         static let hotkeyKeyCode = 49
         static let hotkeyModifiers = Int(optionKey)
         static let translationEnabled = false
+        static let speechLanguage: TargetLanguage = .en
         static let targetLanguage: TargetLanguage = .en
         static let whisperBackend: WhisperBackend = .local
         static let whisperModel: WhisperModel = .base
@@ -147,6 +149,10 @@ final class SettingsModel: ObservableObject {
         didSet { userDefaults.set(translationEnabled, forKey: Keys.translationEnabled) }
     }
 
+    @Published var speechLanguage: TargetLanguage {
+        didSet { userDefaults.set(speechLanguage.rawValue, forKey: Keys.speechLanguage) }
+    }
+
     @Published var targetLanguage: TargetLanguage {
         didSet { userDefaults.set(targetLanguage.rawValue, forKey: Keys.targetLanguage) }
     }
@@ -176,7 +182,10 @@ final class SettingsModel: ObservableObject {
         hotkeyKeyCode = userDefaults.object(forKey: Keys.hotkeyKeyCode) as? Int ?? Defaults.hotkeyKeyCode
         hotkeyModifiers = userDefaults.object(forKey: Keys.hotkeyModifiers) as? Int ?? Defaults.hotkeyModifiers
         translationEnabled = userDefaults.object(forKey: Keys.translationEnabled) as? Bool ?? Defaults.translationEnabled
-        targetLanguage = TargetLanguage.fromPersisted(userDefaults.string(forKey: Keys.targetLanguage))
+        let persistedTargetLanguage = TargetLanguage.fromPersisted(userDefaults.string(forKey: Keys.targetLanguage))
+        targetLanguage = persistedTargetLanguage
+        let persistedSpeechLanguageRaw = userDefaults.string(forKey: Keys.speechLanguage) ?? persistedTargetLanguage.rawValue
+        speechLanguage = TargetLanguage.fromPersisted(persistedSpeechLanguageRaw)
         whisperBackend = WhisperBackend.fromPersisted(userDefaults.string(forKey: Keys.whisperBackend))
         whisperModel = WhisperModel.fromPersisted(userDefaults.string(forKey: Keys.whisperModel))
         launchAtLogin = userDefaults.object(forKey: Keys.launchAtLogin) as? Bool ?? Defaults.launchAtLogin
@@ -190,6 +199,7 @@ final class SettingsModel: ObservableObject {
         hotkeyKeyCode = Defaults.hotkeyKeyCode
         hotkeyModifiers = Defaults.hotkeyModifiers
         translationEnabled = Defaults.translationEnabled
+        speechLanguage = Defaults.speechLanguage
         targetLanguage = Defaults.targetLanguage
         whisperBackend = Defaults.whisperBackend
         whisperModel = Defaults.whisperModel
@@ -200,6 +210,7 @@ final class SettingsModel: ObservableObject {
     private func persistNormalizedConfigurationValues() {
         userDefaults.set(hotkeyKeyCode, forKey: Keys.hotkeyKeyCode)
         userDefaults.set(hotkeyModifiers, forKey: Keys.hotkeyModifiers)
+        userDefaults.set(speechLanguage.rawValue, forKey: Keys.speechLanguage)
         userDefaults.set(targetLanguage.rawValue, forKey: Keys.targetLanguage)
         userDefaults.set(whisperBackend.rawValue, forKey: Keys.whisperBackend)
         userDefaults.set(whisperModel.rawValue, forKey: Keys.whisperModel)
