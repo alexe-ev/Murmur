@@ -12,6 +12,7 @@ enum MenuBarState {
 final class MenuBarController: NSObject {
     private let statusItem: NSStatusItem
     private var indicatorPanel: NSPanel?
+    private var indicatorHostingView: NSHostingView<RecordingIndicatorView>?
     private let menu = NSMenu()
     private var toggleRecordingItem: NSMenuItem?
     private let settingsModel = SettingsModel.shared
@@ -127,11 +128,11 @@ final class MenuBarController: NSObject {
         translationOnIndicatorItem?.isHidden = false
     }
 
-    func showIndicator() {
-        if indicatorPanel == nil {
-            let hostingView = NSHostingView(rootView: RecordingIndicatorView())
+    func showIndicator(for state: MenuBarState) {
+        if indicatorPanel == nil || indicatorHostingView == nil {
+            let hostingView = NSHostingView(rootView: RecordingIndicatorView(state: state))
             let panel = NSPanel(
-                contentRect: NSRect(x: 0, y: 0, width: 160, height: 44),
+                contentRect: NSRect(x: 0, y: 0, width: 300, height: 44),
                 styleMask: [.borderless],
                 backing: .buffered,
                 defer: false
@@ -144,6 +145,9 @@ final class MenuBarController: NSObject {
             panel.ignoresMouseEvents = true
             panel.hasShadow = false
             indicatorPanel = panel
+            indicatorHostingView = hostingView
+        } else {
+            indicatorHostingView?.rootView = RecordingIndicatorView(state: state)
         }
 
         guard let panel = indicatorPanel else { return }
@@ -162,7 +166,7 @@ final class MenuBarController: NSObject {
 
         let frame = screen.visibleFrame
         let x = frame.maxX - panel.frame.width - margin
-        let y = frame.minY + margin
+        let y = frame.maxY - panel.frame.height - margin
         panel.setFrameOrigin(NSPoint(x: x, y: y))
     }
 
@@ -181,12 +185,12 @@ final class MenuBarController: NSObject {
             iconName = "icon-recording"
             fallbackSymbol = "mic.fill"
             isRecording = true
-            showIndicator()
+            showIndicator(for: .recording)
         case .processing:
             iconName = "icon-processing"
             fallbackSymbol = "hourglass"
             isRecording = false
-            hideIndicator()
+            showIndicator(for: .processing)
         }
 
         let image = NSImage(named: iconName)
