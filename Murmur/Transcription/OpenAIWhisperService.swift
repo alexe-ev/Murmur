@@ -82,7 +82,12 @@ final class OpenAIWhisperService: TranscriptionService {
 
     private func chatTranslate(_ text: String, to targetLanguage: String, apiKey: String) async throws -> String {
         let languageName = TranslationConfig.supportedLanguages.first { $0.code == targetLanguage }?.name ?? targetLanguage
-        let systemPrompt = "You are a translator. Translate the user's text to \(languageName). Return only the translated text, no explanation."
+        let systemPrompt = """
+            You are a professional translator. Translate the text naturally into \(languageName). \
+            Adapt idioms, filler words, and colloquial expressions to sound native in the target language. \
+            Do not translate literally: convey the meaning, not word-for-word structure. \
+            Return only the translated text, no explanation.
+            """
 
         let payload: [String: Any] = [
             "model": "gpt-4o-mini",
