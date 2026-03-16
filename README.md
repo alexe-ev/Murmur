@@ -37,20 +37,31 @@ That's it. No windows to switch to, no copy-paste dance.
 
 ## Getting Started
 
+### Install from Release
+
+Download the latest `Murmur.app.zip` from [Releases](https://github.com/alexe-ev/Murmur/releases), unzip, and move `Murmur.app` to `/Applications`.
+
+> The app is not notarized, so on first launch you may need to right-click -> Open (or allow it in System Settings -> Privacy & Security).
+
 ### Build from Source
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/alexe-ev/Murmur.git
-   cd Murmur
-   ```
+Requires Xcode 16+ (or just the Command Line Tools with `xcodebuild`).
 
-2. Open in Xcode 16+:
-   ```bash
-   open Murmur.xcodeproj
-   ```
+```bash
+git clone https://github.com/alexe-ev/Murmur.git
+cd Murmur
 
-3. Build and run (`Cmd + R`). The app appears in the menu bar.
+# Build
+xcodebuild -scheme Murmur -configuration Release -derivedDataPath build
+
+# The app bundle is at:
+# build/Build/Products/Release/Murmur.app
+
+# Copy to Applications (optional)
+cp -R build/Build/Products/Release/Murmur.app /Applications/
+```
+
+Or open `Murmur.xcodeproj` in Xcode and press `Cmd + R`.
 
 ### First Launch
 

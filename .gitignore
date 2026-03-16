@@ -1,0 +1,30 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode
+build/
+DerivedData/
+.derivedData/
+*.xcuserstate
+xcuserdata/
+*.xccheckout
+*.xcscmblueprint
+
+# Swift Package Manager
+.build/
+Packages/
+Package.resolved
+
+# CocoaPods (if ever used)
+Pods/
+
+# Archives & exports
+*.xcarchive
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Crash logs
+*.crash
