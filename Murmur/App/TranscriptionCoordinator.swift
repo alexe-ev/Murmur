@@ -33,7 +33,7 @@ final class TranscriptionCoordinator {
         let request = TranscriptionRequest(
             sourceLanguage: settingsModel.speechLanguage.rawValue,
             targetLanguage: translationConfig.targetLanguage.rawValue,
-            isTranslationEnabled: translationConfig.isEnabled
+            outputMode: translationConfig.outputMode
         )
         return try await service.transcribe(audioURL: audioURL, request: request)
     }
@@ -49,7 +49,7 @@ final class TranscriptionCoordinator {
     }
 
     private func observeTranslationConfigChanges() {
-        translationConfig.$isEnabled
+        translationConfig.$outputMode
             .removeDuplicates()
             .dropFirst()
             .sink { [weak self] _ in

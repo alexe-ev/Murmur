@@ -9,15 +9,11 @@ final class TranslationConfig: ObservableObject {
             (language.rawValue, language.displayName)
         }
 
-    @Published private(set) var isEnabled: Bool
+    @Published private(set) var outputMode: SettingsModel.OutputMode
     @Published private(set) var targetLanguage: SettingsModel.TargetLanguage
 
     var requiresAPI: Bool {
-        isEnabled
-    }
-
-    var targetIsEnglish: Bool {
-        targetLanguage == .en
+        outputMode != .transcription
     }
 
     private let settings: SettingsModel
@@ -25,13 +21,13 @@ final class TranslationConfig: ObservableObject {
 
     private init(settings: SettingsModel = .shared) {
         self.settings = settings
-        isEnabled = settings.translationEnabled
+        outputMode = settings.outputMode
         targetLanguage = settings.targetLanguage
 
-        settings.$translationEnabled
+        settings.$outputMode
             .receive(on: RunLoop.main)
             .sink { [weak self] value in
-                self?.isEnabled = value
+                self?.outputMode = value
             }
             .store(in: &cancellables)
 

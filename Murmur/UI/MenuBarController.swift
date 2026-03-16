@@ -20,7 +20,8 @@ final class MenuBarController: NSObject {
     private var hotkeyHintItem: NSMenuItem?
     private let settingsModel = SettingsModel.shared
     private var languageItem: NSMenuItem?
-    private var translationSummaryItem: NSMenuItem?
+    private var outputModeItem: NSMenuItem?
+    private var outputModeSubmenu: NSMenu?
     private var languageSubmenu: NSMenu?
     private var cancellables = Set<AnyCancellable>()
     private var currentState: MenuBarState = .idle
@@ -67,11 +68,14 @@ final class MenuBarController: NSObject {
         languageItem = languageMenuItem
         languageSubmenu = submenu
 
-        let translationItem = NSMenuItem(title: "Translation: Off", action: nil, keyEquivalent: "")
-        translationItem.isEnabled = false
-        translationItem.image = menuSymbol("globe")
-        menu.addItem(translationItem)
-        translationSummaryItem = translationItem
+        let modeMenuItem = NSMenuItem(title: "Output Mode", action: nil, keyEquivalent: "")
+        modeMenuItem.image = menuSymbol("globe")
+        let modeSubmenu = NSMenu(title: "Output Mode")
+        modeMenuItem.submenu = modeSubmenu
+        menu.addItem(modeMenuItem)
+        outputModeItem = modeMenuItem
+        outputModeSubmenu = modeSubmenu
+        rebuildOutputModeSubmenu()
 
         menu.addItem(.separator())
 
@@ -98,18 +102,22 @@ final class MenuBarController: NSObject {
             }
             .store(in: &cancellables)
 
-        settingsModel.$translationEnabled
+        settingsModel.$outputMode
+            .receive(on: RunLoop.main)
             .removeDuplicates()
             .sink { [weak self] _ in
                 guard let self else { return }
+                self.rebuildOutputModeSubmenu()
                 self.updateMenuItems(isRecording: self.currentState == .recording)
             }
             .store(in: &cancellables)
 
         settingsModel.$targetLanguage
+            .receive(on: RunLoop.main)
             .removeDuplicates()
             .sink { [weak self] _ in
                 guard let self else { return }
+                self.rebuildOutputModeSubmenu()
                 self.updateMenuItems(isRecording: self.currentState == .recording)
             }
             .store(in: &cancellables)
@@ -166,6 +174,70 @@ final class MenuBarController: NSObject {
         settingsModel.speechLanguage = language
     }
 
+    private func rebuildOutputModeSubmenu() {
+        let currentMode = settingsModel.outputMode
+        let suffix: String
+        switch currentMode {
+        case .transcription:
+            suffix = "Transcription"
+        case .cleanup:
+            suffix = "Clean-up"
+        case .translation:
+            suffix = "Translation (\(settingsModel.targetLanguage.displayName))"
+        }
+        outputModeItem?.title = "Output: \(suffix)"
+
+        guard let outputModeSubmenu else { return }
+        outputModeSubmenu.removeAllItems()
+
+        for mode in SettingsModel.OutputMode.allCases {
+            let item = NSMenuItem(title: mode.displayName, action: #selector(selectOutputMode(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = mode.rawValue
+            item.state = (mode == currentMode) ? .on : .off
+            outputModeSubmenu.addItem(item)
+        }
+
+        if currentMode == .translation {
+            outputModeSubmenu.addItem(.separator())
+
+            let headerItem = NSMenuItem(title: "Target Language", action: nil, keyEquivalent: "")
+            headerItem.isEnabled = false
+            outputModeSubmenu.addItem(headerItem)
+
+            let currentTarget = settingsModel.targetLanguage
+            for language in SettingsModel.TargetLanguage.allCases {
+                let item = NSMenuItem(title: language.displayName, action: #selector(selectTargetLanguage(_:)), keyEquivalent: "")
+                item.target = self
+                item.representedObject = language.rawValue
+                item.state = (language == currentTarget) ? .on : .off
+                outputModeSubmenu.addItem(item)
+            }
+        }
+    }
+
+    @objc
+    private func selectOutputMode(_ sender: NSMenuItem) {
+        guard
+            let modeRaw = sender.representedObject as? String,
+            let mode = SettingsModel.OutputMode(rawValue: modeRaw)
+        else {
+            return
+        }
+        settingsModel.outputMode = mode
+    }
+
+    @objc
+    private func selectTargetLanguage(_ sender: NSMenuItem) {
+        guard
+            let languageCode = sender.representedObject as? String,
+            let language = SettingsModel.TargetLanguage(rawValue: languageCode)
+        else {
+            return
+        }
+        settingsModel.targetLanguage = language
+    }
+
     func setState(_ state: MenuBarState) {
         if Thread.isMainThread {
             applyState(state)
@@ -182,11 +254,7 @@ final class MenuBarController: NSObject {
         hotkeyHintItem?.title = "Shortcut: \(menuHotkeyHint())"
         hotkeyHintItem?.isHidden = isRecording
 
-        if settingsModel.translationEnabled {
-            translationSummaryItem?.title = "Translation: On (\(settingsModel.targetLanguage.displayName))"
-        } else {
-            translationSummaryItem?.title = "Translation: Off"
-        }
+        rebuildOutputModeSubmenu()
 
         statusSummaryItem?.title = menuStateTitle(for: currentState)
         statusSummaryItem?.image = menuStateSymbol(for: currentState)
