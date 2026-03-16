@@ -27,7 +27,7 @@ struct SettingsView: View {
             switch self {
             case .recording: return "Recording"
             case .transcription: return "Transcription"
-            case .translation: return "Translation"
+            case .translation: return "Output"
             case .general: return "General"
             }
         }
@@ -39,7 +39,7 @@ struct SettingsView: View {
             case .transcription:
                 return "Select engine, model, speech language, and OpenAI API key."
             case .translation:
-                return "Translate transcription output into the selected language."
+                return "Choose output mode: raw transcription, clean-up, or translation."
             case .general:
                 return "Configure startup and clipboard behavior."
             }
@@ -223,8 +223,8 @@ struct SettingsView: View {
                 }
             }
 
-            if settings.translationEnabled && settings.whisperBackend == .local {
-                Label("Translation still uses OpenAI API key.", systemImage: "info.circle")
+            if settings.outputMode != .transcription && settings.whisperBackend == .local {
+                Label("Clean-up and Translation require an OpenAI API key.", systemImage: "info.circle")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -290,27 +290,44 @@ struct SettingsView: View {
 
     private var translationSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Toggle("Enable Translation", isOn: $settings.translationEnabled)
-                .toggleStyle(.switch)
+            pickerRow(title: "Output Mode") {
+                Picker("Output Mode", selection: $settings.outputMode) {
+                    ForEach(SettingsModel.OutputMode.allCases) { mode in
+                        Text(mode.displayName).tag(mode)
+                    }
+                }
+            }
 
-            if settings.translationEnabled && !hasSavedAPIKey {
-                Label("Add OpenAI API key in the Transcription tab to continue.", systemImage: "key.fill")
+            if settings.outputMode != .transcription && !hasSavedAPIKey {
+                Label("Add OpenAI API key in the Transcription tab.", systemImage: "key.fill")
                     .font(.caption)
                     .foregroundStyle(.orange)
             }
 
-            pickerRow(title: "Output Language") {
-                Picker("Output Language", selection: $settings.targetLanguage) {
-                    ForEach(SettingsModel.TargetLanguage.allCases) { language in
-                        Text(language.displayName).tag(language)
+            if settings.outputMode == .translation {
+                pickerRow(title: "Target Language") {
+                    Picker("Target Language", selection: $settings.targetLanguage) {
+                        ForEach(SettingsModel.TargetLanguage.allCases) { language in
+                            Text(language.displayName).tag(language)
+                        }
                     }
                 }
-                .disabled(!settings.translationEnabled)
             }
 
-            Text("Murmur recognizes your speech in Speech Language and translates final text only when translation is enabled.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            switch settings.outputMode {
+            case .transcription:
+                Text("Raw speech-to-text output. No AI processing.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            case .cleanup:
+                Text("Transcribes your speech and cleans up grammar, filler words, and formatting. Same language.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            case .translation:
+                Text("Transcribes your speech and translates it into the selected target language.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 

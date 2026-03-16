@@ -40,6 +40,29 @@ final class SettingsModel: ObservableObject {
         }
     }
 
+    enum OutputMode: String, CaseIterable, Identifiable {
+        case transcription
+        case cleanup
+        case translation
+
+        var id: String { rawValue }
+
+        var displayName: String {
+            switch self {
+            case .transcription: return "Transcription"
+            case .cleanup: return "Clean-up"
+            case .translation: return "Translation"
+            }
+        }
+
+        static func fromPersisted(_ rawValue: String?) -> OutputMode {
+            let cleaned = rawValue?
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .lowercased()
+            return OutputMode(rawValue: cleaned ?? "") ?? .transcription
+        }
+    }
+
     enum TargetLanguage: String, CaseIterable, Identifiable {
         case en
         case es
@@ -87,7 +110,7 @@ final class SettingsModel: ObservableObject {
     private enum Keys {
         static let hotkeyKeyCode = "hotkeyKeyCode"
         static let hotkeyModifiers = "hotkeyModifiers"
-        static let translationEnabled = "translationEnabled"
+        static let outputMode = "outputMode"
         static let speechLanguage = "speechLanguage"
         static let targetLanguage = "targetLanguage"
         static let whisperBackend = "whisperBackend"
@@ -99,7 +122,7 @@ final class SettingsModel: ObservableObject {
     private enum Defaults {
         static let hotkeyKeyCode = 49
         static let hotkeyModifiers = Int(optionKey)
-        static let translationEnabled = false
+        static let outputMode: OutputMode = .transcription
         static let speechLanguage: TargetLanguage = .en
         static let targetLanguage: TargetLanguage = .en
         static let whisperBackend: WhisperBackend = .local
@@ -145,8 +168,8 @@ final class SettingsModel: ObservableObject {
         }
     }
 
-    @Published var translationEnabled: Bool {
-        didSet { userDefaults.set(translationEnabled, forKey: Keys.translationEnabled) }
+    @Published var outputMode: OutputMode {
+        didSet { userDefaults.set(outputMode.rawValue, forKey: Keys.outputMode) }
     }
 
     @Published var speechLanguage: TargetLanguage {
@@ -181,7 +204,16 @@ final class SettingsModel: ObservableObject {
 
         hotkeyKeyCode = userDefaults.object(forKey: Keys.hotkeyKeyCode) as? Int ?? Defaults.hotkeyKeyCode
         hotkeyModifiers = userDefaults.object(forKey: Keys.hotkeyModifiers) as? Int ?? Defaults.hotkeyModifiers
-        translationEnabled = userDefaults.object(forKey: Keys.translationEnabled) as? Bool ?? Defaults.translationEnabled
+        // Migrate from old boolean translationEnabled to outputMode enum.
+        let resolvedMode: OutputMode
+        if let legacyTranslation = userDefaults.object(forKey: "translationEnabled") as? Bool {
+            resolvedMode = legacyTranslation ? .translation : .transcription
+            userDefaults.removeObject(forKey: "translationEnabled")
+            userDefaults.set(resolvedMode.rawValue, forKey: Keys.outputMode)
+        } else {
+            resolvedMode = OutputMode.fromPersisted(userDefaults.string(forKey: Keys.outputMode))
+        }
+        outputMode = resolvedMode
         let persistedTargetLanguage = TargetLanguage.fromPersisted(userDefaults.string(forKey: Keys.targetLanguage))
         targetLanguage = persistedTargetLanguage
         let persistedSpeechLanguageRaw = userDefaults.string(forKey: Keys.speechLanguage) ?? persistedTargetLanguage.rawValue
@@ -198,7 +230,7 @@ final class SettingsModel: ObservableObject {
     func reset() {
         hotkeyKeyCode = Defaults.hotkeyKeyCode
         hotkeyModifiers = Defaults.hotkeyModifiers
-        translationEnabled = Defaults.translationEnabled
+        outputMode = Defaults.outputMode
         speechLanguage = Defaults.speechLanguage
         targetLanguage = Defaults.targetLanguage
         whisperBackend = Defaults.whisperBackend

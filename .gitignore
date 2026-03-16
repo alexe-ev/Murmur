@@ -28,3 +28,9 @@ Pods/
 
 # Crash logs
 *.crash
+
+# Project-internal files (kept locally, not in repo)
+todo/
+PRD.md
+CLAUDE.md
+scripts/
