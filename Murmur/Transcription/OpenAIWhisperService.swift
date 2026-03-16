@@ -4,7 +4,6 @@ final class OpenAIWhisperService: TranscriptionService {
     private let session: URLSession
     private let fileManager: FileManager
     private let transcriptionsEndpointURL = URL(string: "https://api.openai.com/v1/audio/transcriptions")!
-    private let translationsEndpointURL = URL(string: "https://api.openai.com/v1/audio/translations")!
     private let chatCompletionsEndpointURL = URL(string: "https://api.openai.com/v1/chat/completions")!
 
     init(session: URLSession = .shared, fileManager: FileManager = .default) {
@@ -30,10 +29,7 @@ final class OpenAIWhisperService: TranscriptionService {
             let normalizedTargetLanguage = request.targetLanguage?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
             let result: String
 
-            if request.isTranslationEnabled, normalizedTargetLanguage == "en" {
-                let apiRequest = try buildTranslationRequest(audioURL: audioURL, apiKey: apiKey)
-                result = try await performTextRequest(apiRequest)
-            } else if request.isTranslationEnabled, let targetLanguage = normalizedTargetLanguage, !targetLanguage.isEmpty, targetLanguage != "en" {
+            if request.isTranslationEnabled, let targetLanguage = normalizedTargetLanguage, !targetLanguage.isEmpty {
                 let transcriptionRequest = try buildTranscriptionRequest(
                     audioURL: audioURL,
                     sourceLanguage: normalizedSourceLanguage,
@@ -132,22 +128,6 @@ final class OpenAIWhisperService: TranscriptionService {
         }
 
         return translatedText
-    }
-
-    private func buildTranslationRequest(audioURL: URL, apiKey: String) throws -> URLRequest {
-        let boundary = "Boundary-\(UUID().uuidString)"
-        var request = URLRequest(url: translationsEndpointURL)
-        request.httpMethod = "POST"
-        request.timeoutInterval = 30
-        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try makeMultipartBody(
-            audioURL: audioURL,
-            boundary: boundary,
-            includeLanguageField: false,
-            targetLanguage: nil
-        )
-        return request
     }
 
     private func buildTranscriptionRequest(audioURL: URL, sourceLanguage: String?, apiKey: String) throws -> URLRequest {
