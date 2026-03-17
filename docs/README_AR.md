@@ -1,6 +1,16 @@
 # 🎙️ Murmur
 
-<div align="right"><a href="../README.md">🇬🇧</a> <a href="README_RU.md">🇷🇺</a> <a href="README_ES.md">🇪🇸</a> <a href="README_HI.md">🇮🇳</a> <a href="README_ZH.md">🇨🇳</a> <a href="README_AR.md">🇸🇦</a> <a href="README_FR.md">🇫🇷</a> <a href="README_BN.md">🇧🇩</a> <a href="README_PT.md">🇧🇷</a> <a href="README_UR.md">🇵🇰</a></div>
+<p align="center">
+<a href="../README.md"><img src="https://hatscripts.github.io/circle-flags/flags/gb.svg" width="24"></a>&nbsp;
+<a href="README_RU.md"><img src="https://hatscripts.github.io/circle-flags/flags/ru.svg" width="24"></a>&nbsp;
+<a href="README_ES.md"><img src="https://hatscripts.github.io/circle-flags/flags/es.svg" width="24"></a>&nbsp;
+<a href="README_HI.md"><img src="https://hatscripts.github.io/circle-flags/flags/in.svg" width="24"></a>&nbsp;
+<a href="README_ZH.md"><img src="https://hatscripts.github.io/circle-flags/flags/cn.svg" width="24"></a>&nbsp;
+<a href="README_FR.md"><img src="https://hatscripts.github.io/circle-flags/flags/fr.svg" width="24"></a>&nbsp;
+<a href="README_BN.md"><img src="https://hatscripts.github.io/circle-flags/flags/bd.svg" width="24"></a>&nbsp;
+<a href="README_PT.md"><img src="https://hatscripts.github.io/circle-flags/flags/br.svg" width="24"></a>&nbsp;
+<a href="README_UR.md"><img src="https://hatscripts.github.io/circle-flags/flags/pk.svg" width="24"></a>
+</p>
 
 **من الصوت إلى المعنى، وليس من الصوت إلى النص.**
 
