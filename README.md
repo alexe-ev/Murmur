@@ -18,12 +18,6 @@ Speak in your language. Get text in any other.
 
 A macOS menu bar tool that captures your voice and delivers clean, natural text in the language you need. Not a word-by-word translation. Murmur understands what you mean and writes it the way a native speaker would.
 
-<p align="center">
-<a href="https://youtube.com/shorts/4Qr3jkadVsQ">
-<img src="https://img.youtube.com/vi/4Qr3jkadVsQ/maxresdefault.jpg" alt="Murmur Demo" width="300">
-</a>
-</p>
-
 ## 😤 The Problem
 
 Writing in a non-native language is slow. You either:
@@ -54,6 +48,8 @@ Murmur doesn't translate word by word. It takes your spoken thought, removes fil
 4. **Press the hotkey again**. Text appears where you need it.
 
 No app switching. No copy-paste. No editing.
+
+[Watch the demo (2 min)](https://youtube.com/shorts/4Qr3jkadVsQ)
 
 ## 🔀 Three Modes
 

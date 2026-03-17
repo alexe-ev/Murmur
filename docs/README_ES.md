@@ -18,12 +18,6 @@ Habla en tu idioma. Recibe texto listo en cualquier otro.
 
 Murmur no traduce palabra por palabra: capta lo que quisiste decir y lo escribe como lo diría un nativo.
 
-<p align="center">
-<a href="https://youtube.com/shorts/4Qr3jkadVsQ">
-<img src="https://img.youtube.com/vi/4Qr3jkadVsQ/maxresdefault.jpg" alt="Murmur Demo" width="300">
-</a>
-</p>
-
 ## 😤 El Problema
 
 Escribir en un idioma que no es el tuyo es lento. O bien:
@@ -54,6 +48,8 @@ Murmur no traduce palabra por palabra. Toma tu pensamiento hablado, elimina mule
 4. **Presiona el atajo de nuevo**. El texto aparece donde lo necesitas.
 
 Sin cambiar de app. Sin copiar y pegar. Sin editar.
+
+[Ver la demo (2 min)](https://youtube.com/shorts/4Qr3jkadVsQ)
 
 ## 🔀 Tres Modos
 
