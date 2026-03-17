@@ -1,5 +1,7 @@
 # Murmur
 
+**Voice-to-meaning, not voice-to-text.**
+
 Speak in your language. Get text in any other.
 
 A macOS menu bar tool that captures your voice and delivers clean, natural text in the language you need. Not a word-by-word translation. Murmur understands what you mean and writes it the way a native speaker would.
