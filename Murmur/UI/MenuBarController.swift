@@ -14,6 +14,7 @@ final class MenuBarController: NSObject {
     private let statusItem: NSStatusItem
     private var indicatorPanel: NSPanel?
     private var indicatorHostingView: NSHostingView<RecordingIndicatorView>?
+    private let indicatorState = IndicatorState()
     private let menu = NSMenu()
     private var statusSummaryItem: NSMenuItem?
     private var toggleRecordingItem: NSMenuItem?
@@ -265,21 +266,17 @@ final class MenuBarController: NSObject {
     }
 
     func showIndicator(for state: MenuBarState) {
-        let indicatorView = RecordingIndicatorView(
-            state: state,
-            hotkeyHint: menuHotkeyHint(),
-            onStop: { [weak self] in
-                AppDelegate.shared?.toggleRecordingFromMenu()
-                self?.hideIndicator()
-            },
-            onCancel: { [weak self] in
-                AppDelegate.shared?.cancelRecording()
-                self?.hideIndicator()
-            }
-        )
+        indicatorState.menuBarState = state
         let isInteractive = (state == .recording)
 
         if indicatorPanel == nil || indicatorHostingView == nil {
+            let indicatorView = RecordingIndicatorView(
+                indicatorState: indicatorState,
+                onCancel: { [weak self] in
+                    AppDelegate.shared?.cancelRecording()
+                    self?.hideIndicator()
+                }
+            )
             let hostingView = NSHostingView(rootView: indicatorView)
             let panel = NSPanel(
                 contentRect: NSRect(x: 0, y: 0, width: 200, height: 44),
@@ -292,15 +289,12 @@ final class MenuBarController: NSObject {
             panel.backgroundColor = .clear
             panel.level = .popUpMenu
             panel.collectionBehavior = [.moveToActiveSpace, .fullScreenAuxiliary, .transient]
-            panel.ignoresMouseEvents = !isInteractive
+            panel.ignoresMouseEvents = false
             panel.hasShadow = false
             panel.hidesOnDeactivate = false
             panel.animationBehavior = .utilityWindow
             indicatorPanel = panel
             indicatorHostingView = hostingView
-        } else {
-            indicatorHostingView?.rootView = indicatorView
-            indicatorPanel?.ignoresMouseEvents = !isInteractive
         }
 
         guard let panel = indicatorPanel else { return }
@@ -309,7 +303,11 @@ final class MenuBarController: NSObject {
     }
 
     func hideIndicator() {
+        indicatorState.menuBarState = .idle
         indicatorPanel?.orderOut(nil)
+        indicatorPanel?.contentView = nil
+        indicatorPanel = nil
+        indicatorHostingView = nil
     }
 
     private func positionIndicator(_ panel: NSPanel) {
