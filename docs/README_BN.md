@@ -18,6 +18,12 @@
 
 নিজের ভাষায় যা মনে আসে বলুন, অন্য ভাষায় পরিষ্কার টেক্সট পান। Murmur শব্দে শব্দে অনুবাদ করে না। আপনি কী বোঝাতে চাইছেন সেটা ধরে, তারপর সেই ভাষার মানুষ যেভাবে লেখে সেভাবে লিখে দেয়।
 
+<p align="center">
+<a href="https://youtube.com/shorts/4Qr3jkadVsQ">
+<img src="https://img.youtube.com/vi/4Qr3jkadVsQ/maxresdefault.jpg" alt="Murmur Demo" width="300">
+</a>
+</p>
+
 ## 😤 সমস্যা
 
 নিজের মাতৃভাষা ছাড়া অন্য ভাষায় লেখা ধীর। সাধারণত দুটোর একটা হয়:

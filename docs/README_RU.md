@@ -18,6 +18,12 @@
 
 Murmur не переводит дословно: он берёт то, что ты сказал, и пишет так, как написал бы носитель.
 
+<p align="center">
+<a href="https://youtube.com/shorts/4Qr3jkadVsQ">
+<img src="https://img.youtube.com/vi/4Qr3jkadVsQ/maxresdefault.jpg" alt="Murmur Demo" width="300">
+</a>
+</p>
+
 ## 😤 Проблема
 
 Писать на неродном языке долго. Варианты такие:

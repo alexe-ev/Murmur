@@ -18,6 +18,12 @@
 
 اپنی زبان میں بات کرو، دوسری زبان میں صاف متن ملے گا۔ Murmur لفظ بہ لفظ ترجمہ نہیں کرتا۔ یہ سمجھتا ہے کہ آپ کہنا کیا چاہتے ہیں، اور اسے ایسے لکھتا ہے جیسے اس زبان کا کوئی اپنا بندہ لکھے۔
 
+<p align="center">
+<a href="https://youtube.com/shorts/4Qr3jkadVsQ">
+<img src="https://img.youtube.com/vi/4Qr3jkadVsQ/maxresdefault.jpg" alt="Murmur Demo" width="300">
+</a>
+</p>
+
 ## 😤 مسئلہ
 
 غیر مادری زبان میں لکھنا سست عمل ہے۔ آپ یا تو:

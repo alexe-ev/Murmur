@@ -18,6 +18,12 @@
 
 قل فكرتك بصوتك، وMurmur يحوّلها إلى نص طبيعي باللغة اللي تحتاجها. مو ترجمة حرفية. يفهم إيش تقصد ويكتبها مثل ما يكتبها واحد لغته الأم.
 
+<p align="center">
+<a href="https://youtube.com/shorts/4Qr3jkadVsQ">
+<img src="https://img.youtube.com/vi/4Qr3jkadVsQ/maxresdefault.jpg" alt="Murmur Demo" width="300">
+</a>
+</p>
+
 ## 😤 المشكلة
 
 الكتابة بلغة غير لغتك الأم عملية بطيئة. إما أنك:

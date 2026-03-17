@@ -18,6 +18,12 @@
 
 बात अपनी ज़बान में कहो, टेक्स्ट दूसरी भाषा में मिलेगा। Murmur शब्द-दर-शब्द अनुवाद नहीं करता। यह समझता है कि आप कहना क्या चाहते हैं, और उसे ऐसे लिखता है जैसे उस भाषा का कोई देसी बोलने वाला लिखे।
 
+<p align="center">
+<a href="https://youtube.com/shorts/4Qr3jkadVsQ">
+<img src="https://img.youtube.com/vi/4Qr3jkadVsQ/maxresdefault.jpg" alt="Murmur Demo" width="300">
+</a>
+</p>
+
 ## 😤 समस्या
 
 गैर-मातृभाषा में लिखना धीमा होता है। आप या तो:

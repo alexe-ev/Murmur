@@ -18,6 +18,12 @@
 
 说出你的想法，Murmur 帮你变成地道的目标语言文本。不是逐字翻译，而是真正理解你要表达什么，再用母语者的方式写出来。
 
+<p align="center">
+<a href="https://youtube.com/shorts/4Qr3jkadVsQ">
+<img src="https://img.youtube.com/vi/4Qr3jkadVsQ/maxresdefault.jpg" alt="Murmur Demo" width="300">
+</a>
+</p>
+
 ## 😤 痛点
 
 用非母语写作很慢。你要么：

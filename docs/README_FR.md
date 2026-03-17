@@ -18,6 +18,12 @@ Parlez dans votre langue. Recevez du texte pret a l'emploi dans une autre.
 
 Murmur ne traduit pas mot a mot : il saisit votre pensee et l'ecrit comme le ferait un natif.
 
+<p align="center">
+<a href="https://youtube.com/shorts/4Qr3jkadVsQ">
+<img src="https://img.youtube.com/vi/4Qr3jkadVsQ/maxresdefault.jpg" alt="Murmur Demo" width="300">
+</a>
+</p>
+
 ## 😤 Le probleme
 
 Ecrire dans une langue etrangere, c'est lent. En general, soit vous :
