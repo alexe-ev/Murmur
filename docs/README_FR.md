@@ -59,7 +59,11 @@ Pas de changement d'application. Pas de copier-coller. Pas de retouche.
 
 Telechargez `Murmur.dmg` depuis les [Releases](https://github.com/alexe-ev/Murmur/releases), puis glissez-le dans Applications.
 
-> Non notarise. Au premier lancement : faites un clic droit sur l'application, puis Ouvrir.
+> L'application n'est pas notarisee. macOS la bloquera au premier lancement. Pour corriger, executez dans le Terminal :
+> ```
+> xattr -cr /Applications/Murmur.app
+> ```
+> Ensuite, ouvrez l'application normalement.
 
 ### Compiler depuis les sources
 

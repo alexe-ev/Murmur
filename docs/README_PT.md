@@ -59,7 +59,11 @@ Sem trocar de app. Sem copiar e colar. Sem edição.
 
 Baixe o `Murmur.dmg` em [Releases](https://github.com/alexe-ev/Murmur/releases) e arraste para Aplicativos.
 
-> Não é notarizado. Na primeira execução: clique com o botão direito no app e selecione Abrir.
+> O app não é notarizado. O macOS vai bloqueá-lo na primeira execução. Para resolver, execute no Terminal:
+> ```
+> xattr -cr /Applications/Murmur.app
+> ```
+> Depois abra o app normalmente.
 
 ### Compilar a partir do código-fonte
 

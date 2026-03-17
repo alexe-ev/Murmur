@@ -59,7 +59,11 @@ No app switching. No copy-paste. No editing.
 
 Download `Murmur.dmg` from [Releases](https://github.com/alexe-ev/Murmur/releases), drag to Applications.
 
-> Not notarized. First launch: right-click the app, then Open.
+> The app is not notarized. macOS will block it on first launch. To fix this, run in Terminal:
+> ```
+> xattr -cr /Applications/Murmur.app
+> ```
+> Then open the app normally.
 
 ### Build from Source
 
