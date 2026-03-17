@@ -14,9 +14,9 @@
 
 **De voz a significado, no de voz a texto.**
 
-Habla en tu idioma. Obtén texto en cualquier otro.
+Habla en tu idioma. Recibe texto listo en cualquier otro.
 
-Una herramienta de barra de menú para macOS que captura tu voz y entrega texto limpio y natural en el idioma que necesites. No es una traducción palabra por palabra. Murmur entiende lo que quieres decir y lo escribe como lo haría un hablante nativo.
+Murmur no traduce palabra por palabra: capta lo que quisiste decir y lo escribe como lo diría un nativo.
 
 ## 😤 El Problema
 

@@ -12,11 +12,11 @@
 <a href="README_UR.md"><img src="https://hatscripts.github.io/circle-flags/flags/pk.svg" width="24"></a>
 </p>
 
-**Da voz ao significado, não da voz ao texto.**
+**Entende o que você quer dizer, não só o que você fala.**
 
 Fale no seu idioma. Receba o texto em qualquer outro.
 
-Uma ferramenta na barra de menus do macOS que captura sua voz e entrega um texto limpo e natural no idioma que você precisa. Não é tradução palavra por palavra. O Murmur entende o que você quer dizer e escreve como um falante nativo escreveria.
+Fale o que está pensando e o Murmur transforma em texto natural no idioma que você precisa. Nada de tradução literal. Ele entende a ideia e escreve do jeito que um nativo escreveria.
 
 ## 😤 O Problema
 

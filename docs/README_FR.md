@@ -14,9 +14,9 @@
 
 **De la voix au sens, pas de la voix au texte.**
 
-Parlez dans votre langue. Obtenez du texte dans n'importe quelle autre.
+Parlez dans votre langue. Recevez du texte pret a l'emploi dans une autre.
 
-Un outil macOS dans la barre de menus qui capture votre voix et produit un texte clair et naturel dans la langue de votre choix. Pas une traduction mot a mot. Murmur comprend ce que vous voulez dire et l'ecrit comme le ferait un locuteur natif.
+Murmur ne traduit pas mot a mot : il saisit votre pensee et l'ecrit comme le ferait un natif.
 
 ## 😤 Le probleme
 
