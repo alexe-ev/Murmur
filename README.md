@@ -1,16 +1,4 @@
-<div align="right">
-<a href="docs/README_RU.md">🇷🇺</a>
-<a href="docs/README_ES.md">🇪🇸</a>
-<a href="docs/README_HI.md">🇮🇳</a>
-<a href="docs/README_ZH.md">🇨🇳</a>
-<a href="docs/README_AR.md">🇸🇦</a>
-<a href="docs/README_FR.md">🇫🇷</a>
-<a href="docs/README_BN.md">🇧🇩</a>
-<a href="docs/README_PT.md">🇧🇷</a>
-<a href="docs/README_UR.md">🇵🇰</a>
-</div>
-
-# 🎙️ Murmur
+# 🎙️ Murmur &nbsp;<sub><a href="docs/README_RU.md">🇷🇺</a> <a href="docs/README_ES.md">🇪🇸</a> <a href="docs/README_HI.md">🇮🇳</a> <a href="docs/README_ZH.md">🇨🇳</a> <a href="docs/README_AR.md">🇸🇦</a> <a href="docs/README_FR.md">🇫🇷</a> <a href="docs/README_BN.md">🇧🇩</a> <a href="docs/README_PT.md">🇧🇷</a> <a href="docs/README_UR.md">🇵🇰</a></sub>
 
 **Voice-to-meaning, not voice-to-text.**
 
