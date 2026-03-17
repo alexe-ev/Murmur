@@ -19,7 +19,6 @@ protocol TranscriptionService: AnyObject {
 }
 
 enum TranscriptionError: Error {
-    case modelNotLoaded
     case audioFileNotFound
     case apiError(String)
     case cancelled

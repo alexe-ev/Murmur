@@ -8,38 +8,6 @@ final class SettingsModel: ObservableObject {
     private static let legacyControlModifier = 0x0004_0000
     private static let legacyShiftModifier = 0x0002_0000
 
-    enum WhisperBackend: String, CaseIterable, Identifiable {
-        case local
-        case api
-
-        var id: String { rawValue }
-
-        static func fromPersisted(_ rawValue: String?) -> WhisperBackend {
-            let cleaned = rawValue?
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-                .lowercased()
-
-            return WhisperBackend(rawValue: cleaned ?? "") ?? .local
-        }
-    }
-
-    enum WhisperModel: String, CaseIterable, Identifiable {
-        case tiny
-        case base
-        case small
-
-        var id: String { rawValue }
-
-        static func fromPersisted(_ rawValue: String?) -> WhisperModel {
-            let cleaned = rawValue?
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-                .lowercased()
-                .replacingOccurrences(of: "whisper-", with: "")
-
-            return WhisperModel(rawValue: cleaned ?? "") ?? .base
-        }
-    }
-
     enum OutputMode: String, CaseIterable, Identifiable {
         case transcription
         case cleanup
@@ -64,35 +32,123 @@ final class SettingsModel: ObservableObject {
     }
 
     enum TargetLanguage: String, CaseIterable, Identifiable {
-        case en
-        case es
-        case fr
-        case de
-        case it
-        case pt
-        case zh
-        case ja
-        case ko
-        case ru
-        case ar
-        case hi
+        // Sorted alphabetically by display name
+        case sq, am, ar, hy, az
+        case eu, be, bn, bs, bg
+        case my, ca, zh, hr, cs
+        case da, nl, en, et, fi
+        case fr, gl, ka, de, el
+        case gu, ht, ha, he, hi
+        case hu, `is`, id, it, ja
+        case jw, kn, kk, km, ko
+        case lo, la, lv, ln, lt
+        case lb, mk, mg, ms, ml
+        case mt, mi, mr, mn, ne
+        case no, nn, oc, ps, fa
+        case pl, pt, pa, ro, ru
+        case sa, sd, sr, si, sk
+        case sl, so, es, su, sw
+        case sv, tl, tg, ta, tt
+        case te, th, bo, tr, tk
+        case uk, ur, uz, vi, cy
+        case yi, yo
 
         var id: String { rawValue }
 
         var displayName: String {
             switch self {
-            case .en: return "English"
-            case .es: return "Spanish"
-            case .fr: return "French"
-            case .de: return "German"
-            case .it: return "Italian"
-            case .pt: return "Portuguese"
-            case .zh: return "Chinese"
-            case .ja: return "Japanese"
-            case .ko: return "Korean"
-            case .ru: return "Russian"
+            case .sq: return "Albanian"
+            case .am: return "Amharic"
             case .ar: return "Arabic"
+            case .hy: return "Armenian"
+            case .az: return "Azerbaijani"
+            case .eu: return "Basque"
+            case .be: return "Belarusian"
+            case .bn: return "Bengali"
+            case .bs: return "Bosnian"
+            case .bg: return "Bulgarian"
+            case .my: return "Burmese"
+            case .ca: return "Catalan"
+            case .zh: return "Chinese"
+            case .hr: return "Croatian"
+            case .cs: return "Czech"
+            case .da: return "Danish"
+            case .nl: return "Dutch"
+            case .en: return "English"
+            case .et: return "Estonian"
+            case .fi: return "Finnish"
+            case .fr: return "French"
+            case .gl: return "Galician"
+            case .ka: return "Georgian"
+            case .de: return "German"
+            case .el: return "Greek"
+            case .gu: return "Gujarati"
+            case .ht: return "Haitian Creole"
+            case .ha: return "Hausa"
+            case .he: return "Hebrew"
             case .hi: return "Hindi"
+            case .hu: return "Hungarian"
+            case .is: return "Icelandic"
+            case .id: return "Indonesian"
+            case .it: return "Italian"
+            case .ja: return "Japanese"
+            case .jw: return "Javanese"
+            case .kn: return "Kannada"
+            case .kk: return "Kazakh"
+            case .km: return "Khmer"
+            case .ko: return "Korean"
+            case .lo: return "Lao"
+            case .la: return "Latin"
+            case .lv: return "Latvian"
+            case .ln: return "Lingala"
+            case .lt: return "Lithuanian"
+            case .lb: return "Luxembourgish"
+            case .mk: return "Macedonian"
+            case .mg: return "Malagasy"
+            case .ms: return "Malay"
+            case .ml: return "Malayalam"
+            case .mt: return "Maltese"
+            case .mi: return "Maori"
+            case .mr: return "Marathi"
+            case .mn: return "Mongolian"
+            case .ne: return "Nepali"
+            case .no: return "Norwegian"
+            case .nn: return "Norwegian Nynorsk"
+            case .oc: return "Occitan"
+            case .ps: return "Pashto"
+            case .fa: return "Persian"
+            case .pl: return "Polish"
+            case .pt: return "Portuguese"
+            case .pa: return "Punjabi"
+            case .ro: return "Romanian"
+            case .ru: return "Russian"
+            case .sa: return "Sanskrit"
+            case .sd: return "Sindhi"
+            case .sr: return "Serbian"
+            case .si: return "Sinhala"
+            case .sk: return "Slovak"
+            case .sl: return "Slovenian"
+            case .so: return "Somali"
+            case .es: return "Spanish"
+            case .su: return "Sundanese"
+            case .sw: return "Swahili"
+            case .sv: return "Swedish"
+            case .tl: return "Tagalog"
+            case .tg: return "Tajik"
+            case .ta: return "Tamil"
+            case .tt: return "Tatar"
+            case .te: return "Telugu"
+            case .th: return "Thai"
+            case .bo: return "Tibetan"
+            case .tr: return "Turkish"
+            case .tk: return "Turkmen"
+            case .uk: return "Ukrainian"
+            case .ur: return "Urdu"
+            case .uz: return "Uzbek"
+            case .vi: return "Vietnamese"
+            case .cy: return "Welsh"
+            case .yi: return "Yiddish"
+            case .yo: return "Yoruba"
             }
         }
 
@@ -113,8 +169,6 @@ final class SettingsModel: ObservableObject {
         static let outputMode = "outputMode"
         static let speechLanguage = "speechLanguage"
         static let targetLanguage = "targetLanguage"
-        static let whisperBackend = "whisperBackend"
-        static let whisperModel = "whisperModel"
         static let launchAtLogin = "launchAtLogin"
         static let restoreClipboardAfterPaste = "restoreClipboardAfterPaste"
     }
@@ -125,8 +179,6 @@ final class SettingsModel: ObservableObject {
         static let outputMode: OutputMode = .transcription
         static let speechLanguage: TargetLanguage = .en
         static let targetLanguage: TargetLanguage = .en
-        static let whisperBackend: WhisperBackend = .local
-        static let whisperModel: WhisperModel = .base
         static let launchAtLogin = false
         static let restoreClipboardAfterPaste = true
     }
@@ -180,14 +232,6 @@ final class SettingsModel: ObservableObject {
         didSet { userDefaults.set(targetLanguage.rawValue, forKey: Keys.targetLanguage) }
     }
 
-    @Published var whisperBackend: WhisperBackend {
-        didSet { userDefaults.set(whisperBackend.rawValue, forKey: Keys.whisperBackend) }
-    }
-
-    @Published var whisperModel: WhisperModel {
-        didSet { userDefaults.set(whisperModel.rawValue, forKey: Keys.whisperModel) }
-    }
-
     @Published var launchAtLogin: Bool {
         didSet {
             userDefaults.set(launchAtLogin, forKey: Keys.launchAtLogin)
@@ -218,8 +262,6 @@ final class SettingsModel: ObservableObject {
         targetLanguage = persistedTargetLanguage
         let persistedSpeechLanguageRaw = userDefaults.string(forKey: Keys.speechLanguage) ?? persistedTargetLanguage.rawValue
         speechLanguage = TargetLanguage.fromPersisted(persistedSpeechLanguageRaw)
-        whisperBackend = WhisperBackend.fromPersisted(userDefaults.string(forKey: Keys.whisperBackend))
-        whisperModel = WhisperModel.fromPersisted(userDefaults.string(forKey: Keys.whisperModel))
         launchAtLogin = userDefaults.object(forKey: Keys.launchAtLogin) as? Bool ?? Defaults.launchAtLogin
         restoreClipboardAfterPaste = userDefaults.object(forKey: Keys.restoreClipboardAfterPaste) as? Bool ?? Defaults.restoreClipboardAfterPaste
 
@@ -233,8 +275,6 @@ final class SettingsModel: ObservableObject {
         outputMode = Defaults.outputMode
         speechLanguage = Defaults.speechLanguage
         targetLanguage = Defaults.targetLanguage
-        whisperBackend = Defaults.whisperBackend
-        whisperModel = Defaults.whisperModel
         launchAtLogin = Defaults.launchAtLogin
         restoreClipboardAfterPaste = Defaults.restoreClipboardAfterPaste
     }
@@ -244,8 +284,6 @@ final class SettingsModel: ObservableObject {
         userDefaults.set(hotkeyModifiers, forKey: Keys.hotkeyModifiers)
         userDefaults.set(speechLanguage.rawValue, forKey: Keys.speechLanguage)
         userDefaults.set(targetLanguage.rawValue, forKey: Keys.targetLanguage)
-        userDefaults.set(whisperBackend.rawValue, forKey: Keys.whisperBackend)
-        userDefaults.set(whisperModel.rawValue, forKey: Keys.whisperModel)
     }
 
     private func normalizeHotkeyConfigurationIfNeeded() {

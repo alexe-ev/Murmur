@@ -96,6 +96,7 @@ final class MenuBarController: NSObject {
 
     private func observeSettings() {
         settingsModel.$speechLanguage
+            .receive(on: RunLoop.main)
             .removeDuplicates()
             .sink { [weak self] _ in
                 self?.rebuildLanguageSubmenu()
@@ -172,6 +173,7 @@ final class MenuBarController: NSObject {
             return
         }
         settingsModel.speechLanguage = language
+        rebuildLanguageSubmenu()
     }
 
     private func rebuildOutputModeSubmenu() {
@@ -225,6 +227,7 @@ final class MenuBarController: NSObject {
             return
         }
         settingsModel.outputMode = mode
+        rebuildOutputModeSubmenu()
     }
 
     @objc
@@ -236,6 +239,7 @@ final class MenuBarController: NSObject {
             return
         }
         settingsModel.targetLanguage = language
+        rebuildOutputModeSubmenu()
     }
 
     func setState(_ state: MenuBarState) {
@@ -261,11 +265,24 @@ final class MenuBarController: NSObject {
     }
 
     func showIndicator(for state: MenuBarState) {
-        let indicatorView = RecordingIndicatorView(state: state, hotkeyHint: menuHotkeyHint())
+        let indicatorView = RecordingIndicatorView(
+            state: state,
+            hotkeyHint: menuHotkeyHint(),
+            onStop: { [weak self] in
+                AppDelegate.shared?.toggleRecordingFromMenu()
+                self?.hideIndicator()
+            },
+            onCancel: { [weak self] in
+                AppDelegate.shared?.cancelRecording()
+                self?.hideIndicator()
+            }
+        )
+        let isInteractive = (state == .recording)
+
         if indicatorPanel == nil || indicatorHostingView == nil {
             let hostingView = NSHostingView(rootView: indicatorView)
             let panel = NSPanel(
-                contentRect: NSRect(x: 0, y: 0, width: 320, height: 56),
+                contentRect: NSRect(x: 0, y: 0, width: 200, height: 44),
                 styleMask: [.borderless, .nonactivatingPanel],
                 backing: .buffered,
                 defer: false
@@ -275,7 +292,7 @@ final class MenuBarController: NSObject {
             panel.backgroundColor = .clear
             panel.level = .popUpMenu
             panel.collectionBehavior = [.moveToActiveSpace, .fullScreenAuxiliary, .transient]
-            panel.ignoresMouseEvents = true
+            panel.ignoresMouseEvents = !isInteractive
             panel.hasShadow = false
             panel.hidesOnDeactivate = false
             panel.animationBehavior = .utilityWindow
@@ -283,6 +300,7 @@ final class MenuBarController: NSObject {
             indicatorHostingView = hostingView
         } else {
             indicatorHostingView?.rootView = indicatorView
+            indicatorPanel?.ignoresMouseEvents = !isInteractive
         }
 
         guard let panel = indicatorPanel else { return }
@@ -414,6 +432,53 @@ final class MenuBarController: NSObject {
         case UInt32(kVK_RightArrow): return "Right"
         case UInt32(kVK_DownArrow): return "Down"
         case UInt32(kVK_UpArrow): return "Up"
+        case UInt32(kVK_ANSI_A): return "A"
+        case UInt32(kVK_ANSI_B): return "B"
+        case UInt32(kVK_ANSI_C): return "C"
+        case UInt32(kVK_ANSI_D): return "D"
+        case UInt32(kVK_ANSI_E): return "E"
+        case UInt32(kVK_ANSI_F): return "F"
+        case UInt32(kVK_ANSI_G): return "G"
+        case UInt32(kVK_ANSI_H): return "H"
+        case UInt32(kVK_ANSI_I): return "I"
+        case UInt32(kVK_ANSI_J): return "J"
+        case UInt32(kVK_ANSI_K): return "K"
+        case UInt32(kVK_ANSI_L): return "L"
+        case UInt32(kVK_ANSI_M): return "M"
+        case UInt32(kVK_ANSI_N): return "N"
+        case UInt32(kVK_ANSI_O): return "O"
+        case UInt32(kVK_ANSI_P): return "P"
+        case UInt32(kVK_ANSI_Q): return "Q"
+        case UInt32(kVK_ANSI_R): return "R"
+        case UInt32(kVK_ANSI_S): return "S"
+        case UInt32(kVK_ANSI_T): return "T"
+        case UInt32(kVK_ANSI_U): return "U"
+        case UInt32(kVK_ANSI_V): return "V"
+        case UInt32(kVK_ANSI_W): return "W"
+        case UInt32(kVK_ANSI_X): return "X"
+        case UInt32(kVK_ANSI_Y): return "Y"
+        case UInt32(kVK_ANSI_Z): return "Z"
+        case UInt32(kVK_ANSI_0): return "0"
+        case UInt32(kVK_ANSI_1): return "1"
+        case UInt32(kVK_ANSI_2): return "2"
+        case UInt32(kVK_ANSI_3): return "3"
+        case UInt32(kVK_ANSI_4): return "4"
+        case UInt32(kVK_ANSI_5): return "5"
+        case UInt32(kVK_ANSI_6): return "6"
+        case UInt32(kVK_ANSI_7): return "7"
+        case UInt32(kVK_ANSI_8): return "8"
+        case UInt32(kVK_ANSI_9): return "9"
+        case UInt32(kVK_ANSI_Minus): return "-"
+        case UInt32(kVK_ANSI_Equal): return "="
+        case UInt32(kVK_ANSI_LeftBracket): return "["
+        case UInt32(kVK_ANSI_RightBracket): return "]"
+        case UInt32(kVK_ANSI_Backslash): return "\\"
+        case UInt32(kVK_ANSI_Semicolon): return ";"
+        case UInt32(kVK_ANSI_Quote): return "'"
+        case UInt32(kVK_ANSI_Comma): return ","
+        case UInt32(kVK_ANSI_Period): return "."
+        case UInt32(kVK_ANSI_Slash): return "/"
+        case UInt32(kVK_ANSI_Grave): return "`"
         default:
             return "Key \(keyCode)"
         }

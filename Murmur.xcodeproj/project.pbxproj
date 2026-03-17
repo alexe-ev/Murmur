@@ -17,10 +17,7 @@
 		A10000000000000000000020 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000021 /* MenuBarController.swift */; };
 		A10000000000000000000022 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000023 /* Assets.xcassets */; };
 		A10000000000000000000024 /* RecordingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000025 /* RecordingIndicatorView.swift */; };
-		A10000000000000000000026 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000027 /* WhisperKit */; };
-		A1000000000000000000002A /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002B /* ModelManager.swift */; };
 		A1000000000000000000002C /* TranscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002D /* TranscriptionService.swift */; };
-		A1000000000000000000002E /* LocalWhisperService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002F /* LocalWhisperService.swift */; };
 		A10000000000000000000030 /* PasteController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000031 /* PasteController.swift */; };
 		A10000000000000000000032 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000033 /* KeychainManager.swift */; };
 		A10000000000000000000034 /* OpenAIWhisperService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000035 /* OpenAIWhisperService.swift */; };
@@ -56,9 +53,7 @@
 		A10000000000000000000021 /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/UI/MenuBarController.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000023 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Murmur/UI/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000025 /* RecordingIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/UI/RecordingIndicatorView.swift; sourceTree = SOURCE_ROOT; };
-		A1000000000000000000002B /* ModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/Transcription/ModelManager.swift; sourceTree = SOURCE_ROOT; };
 		A1000000000000000000002D /* TranscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/Transcription/TranscriptionService.swift; sourceTree = SOURCE_ROOT; };
-		A1000000000000000000002F /* LocalWhisperService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/Transcription/LocalWhisperService.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000031 /* PasteController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/Core/PasteController.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000033 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/Settings/KeychainManager.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000035 /* OpenAIWhisperService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Murmur/Transcription/OpenAIWhisperService.swift; sourceTree = SOURCE_ROOT; };
@@ -76,7 +71,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A10000000000000000000026 /* WhisperKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -131,9 +125,7 @@
 				A10000000000000000000021 /* MenuBarController.swift */,
 				A10000000000000000000025 /* RecordingIndicatorView.swift */,
 				A10000000000000000000037 /* SettingsView.swift */,
-				A1000000000000000000002B /* ModelManager.swift */,
 				A1000000000000000000002D /* TranscriptionService.swift */,
-				A1000000000000000000002F /* LocalWhisperService.swift */,
 				A10000000000000000000035 /* OpenAIWhisperService.swift */,
 				A10000000000000000000039 /* TranslationConfig.swift */,
 				A10000000000000000000031 /* PasteController.swift */,
@@ -163,7 +155,6 @@
 			);
 			name = Murmur;
 			packageProductDependencies = (
-				A10000000000000000000027 /* WhisperKit */,
 			);
 			productName = Murmur;
 			productReference = A10000000000000000000001 /* Murmur.app */;
@@ -218,7 +209,6 @@
 			);
 			mainGroup = A10000000000000000000005;
 			packageReferences = (
-				A10000000000000000000028 /* XCRemoteSwiftPackageReference "WhisperKit" */,
 			);
 			productRefGroup = A10000000000000000000007 /* Products */;
 			projectDirPath = "";
@@ -265,9 +255,7 @@
 				A10000000000000000000020 /* MenuBarController.swift in Sources */,
 				A10000000000000000000024 /* RecordingIndicatorView.swift in Sources */,
 				A10000000000000000000036 /* SettingsView.swift in Sources */,
-				A1000000000000000000002A /* ModelManager.swift in Sources */,
 				A1000000000000000000002C /* TranscriptionService.swift in Sources */,
-				A1000000000000000000002E /* LocalWhisperService.swift in Sources */,
 				A10000000000000000000034 /* OpenAIWhisperService.swift in Sources */,
 				A10000000000000000000038 /* TranslationConfig.swift in Sources */,
 				A10000000000000000000030 /* PasteController.swift in Sources */,
@@ -293,17 +281,6 @@
 			targetProxy = A1000000000000000000004D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		A10000000000000000000028 /* XCRemoteSwiftPackageReference "WhisperKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/argmaxinc/WhisperKit";
-			requirement = {
-				kind = exactVersion;
-				version = 0.16.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCBuildConfiguration section */
 		A1000000000000000000000E /* Debug */ = {
@@ -489,13 +466,6 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCSwiftPackageProductDependency section */
-		A10000000000000000000027 /* WhisperKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A10000000000000000000028 /* XCRemoteSwiftPackageReference "WhisperKit" */;
-			productName = WhisperKit;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A1000000000000000000000C /* Project object */;
 }

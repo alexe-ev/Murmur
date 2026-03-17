@@ -25,6 +25,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var didEnterMainFlow = false
     private var hasPresentedHotkeyIssueAlert = false
     private var lastMissingAPIKeyPromptDate: Date?
+    private var escMonitor: Any?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Self.shared = self
@@ -37,7 +38,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         transcriptionCoordinator.onMissingAPIKey = { [weak self] in
             self?.promptForMissingAPIKey()
         }
-        transcriptionCoordinator.start()
         applyLaunchAtLogin(settingsModel.launchAtLogin)
         requestNotificationAuthorization()
 
@@ -74,7 +74,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let hostingController = NSHostingController(rootView: onboardingView)
 
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 640, height: 420),
+            contentRect: NSRect(x: 0, y: 0, width: 480, height: 340),
             styleMask: [.titled],
             backing: .buffered,
             defer: false
@@ -82,7 +82,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         window.contentViewController = hostingController
         window.title = "Murmur Permissions"
         window.center()
-        window.minSize = NSSize(width: 620, height: 400)
+        window.minSize = NSSize(width: 480, height: 340)
         window.isReleasedWhenClosed = false
         window.level = .normal
         window.makeKeyAndOrderFront(nil)
@@ -167,6 +167,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func toggleRecordingFromHotkey() {
         recordingFlowCoordinator?.toggleRecording()
+        updateEscMonitor()
+    }
+
+    @objc
+    func cancelRecording() {
+        recordingFlowCoordinator?.cancelRecording()
+        updateEscMonitor()
     }
 
     @objc
@@ -174,27 +181,40 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         toggleRecordingFromHotkey()
     }
 
+    private func updateEscMonitor() {
+        let isRecording = recordingFlowCoordinator?.isRecordingFlowActive == true
+
+        if isRecording && escMonitor == nil {
+            escMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+                if event.keyCode == UInt16(kVK_Escape) {
+                    self?.cancelRecording()
+                    return nil
+                }
+                return event
+            }
+        } else if !isRecording, let monitor = escMonitor {
+            NSEvent.removeMonitor(monitor)
+            escMonitor = nil
+        }
+    }
+
     @objc
     func openSettings() {
         if settingsWindow == nil {
             let hostingController = NSHostingController(rootView: SettingsView())
             let window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 760, height: 580),
-                styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],
+                contentRect: NSRect(x: 0, y: 0, width: 620, height: 440),
+                styleMask: [.titled, .closable, .miniaturizable],
                 backing: .buffered,
                 defer: false
             )
             window.contentViewController = hostingController
             window.title = "Murmur Settings"
-            window.titleVisibility = .hidden
-            window.titlebarAppearsTransparent = true
-            window.isMovableByWindowBackground = true
-            window.isOpaque = false
-            window.backgroundColor = .clear
+            window.titleVisibility = .visible
             window.isReleasedWhenClosed = false
             window.center()
-            window.setContentSize(NSSize(width: 760, height: 580))
-            window.minSize = NSSize(width: 720, height: 540)
+            window.setContentSize(NSSize(width: 620, height: 440))
+            window.minSize = NSSize(width: 560, height: 400)
             settingsWindow = window
         }
 
@@ -337,8 +357,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func notificationMessage(for error: Error) -> String {
         if let transcriptionError = error as? TranscriptionError {
             switch transcriptionError {
-            case .modelNotLoaded:
-                return "Whisper model is not ready yet. Please wait."
             case .audioFileNotFound:
                 return "Recording file was missing. Please try again."
             case .apiError:
