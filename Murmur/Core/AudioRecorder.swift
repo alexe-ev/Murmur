@@ -48,6 +48,12 @@ final class AudioRecorder {
     private var currentTempURL: URL?
     private var lastCompletedURL: URL?
     private var isRecording = false
+    private var peakRMS: Float = 0
+    private static let speechThreshold: Float = 0.01
+
+    var hasDetectedSpeech: Bool {
+        peakRMS > Self.speechThreshold
+    }
 
     private var outputFormat: AVAudioFormat {
         AVAudioFormat(commonFormat: .pcmFormatInt16, sampleRate: 16_000, channels: 1, interleaved: true)!
@@ -91,6 +97,7 @@ final class AudioRecorder {
         self.converter = converter
         self.outputFile = file
         self.currentTempURL = tempURL
+        self.peakRMS = 0
         ioLock.unlock()
 
         inputNode.removeTap(onBus: 0)
@@ -165,6 +172,21 @@ final class AudioRecorder {
     }
 
     private func processInputBuffer(_ buffer: AVAudioPCMBuffer, inputFormat: AVAudioFormat) {
+        // Compute RMS to detect speech
+        if let channelData = buffer.floatChannelData {
+            let frames = Int(buffer.frameLength)
+            let samples = channelData[0]
+            var sumOfSquares: Float = 0
+            for i in 0..<frames {
+                let sample = samples[i]
+                sumOfSquares += sample * sample
+            }
+            let rms = sqrtf(sumOfSquares / Float(max(frames, 1)))
+            if rms > peakRMS {
+                peakRMS = rms
+            }
+        }
+
         ioLock.lock()
         defer { ioLock.unlock() }
 

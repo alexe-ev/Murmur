@@ -12,11 +12,11 @@ final class OpenAIWhisperService: TranscriptionService {
     }
 
     var isAvailable: Bool {
-        KeychainManager.hasStoredAPIKey()
+        APIKeyStorage.hasStoredAPIKey()
     }
 
     func transcribe(audioURL: URL, request: TranscriptionRequest) async throws -> String {
-        guard let apiKey = KeychainManager.load(), !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+        guard let apiKey = APIKeyStorage.load(), !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw TranscriptionError.apiError("No API key")
         }
 

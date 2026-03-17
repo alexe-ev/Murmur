@@ -12,7 +12,7 @@ Murmur is a native macOS menu bar application. Its core job is to:
 
 1. Listen for a global hotkey system-wide
 2. Capture microphone audio
-3. Send audio to a Whisper model (local or API) for transcription/translation
+3. Send audio to OpenAI Whisper API for transcription/translation
 4. Paste the resulting text into the currently focused input field
 
 The architecture is intentionally minimal. There is no server, no database, no account system. Everything runs on the user's machine.
@@ -26,8 +26,7 @@ The architecture is intentionally minimal. There is no server, no database, no a
 | Language | **Swift** | Native macOS, best access to system APIs |
 | UI Framework | **SwiftUI + AppKit** | SwiftUI for settings UI; AppKit for menu bar (`NSStatusItem`) |
 | Audio capture | **AVFoundation** | Native macOS audio recording API |
-| Transcription (local) | **WhisperKit** | Swift-native Whisper inference, runs fully on-device via Core ML |
-| Transcription (API) | **OpenAI Whisper API** | Fallback/option for users who prefer cloud; supports translation natively |
+| Transcription | **OpenAI Whisper API** | Cloud transcription, cleanup, and translation |
 | Global hotkey | **Carbon / CGEvent tap** | Required for system-wide key event listening |
 | Paste mechanism | **NSPasteboard + CGEvent (Cmd+V)** | Write text to clipboard, simulate Cmd+V into focused app |
 | Accessibility | **AXUIElement (Accessibility API)** | Identify and target the focused UI element |
@@ -47,9 +46,8 @@ Murmur.app
 ├── MenuBarController            # NSStatusItem, icon state management, dropdown menu
 ├── HotkeyManager                # Global hotkey registration and event handling (Carbon)
 ├── AudioRecorder                # AVFoundation microphone capture, 16kHz mono WAV, temp file
-├── TranscriptionService         # Protocol + implementations: LocalWhisperService, OpenAIWhisperService
-├── ModelManager                 # WhisperKit model download, storage, selection
-├── TranslationConfig            # Target language selection, translation mode toggle, auto-backend enforcement
+├── TranscriptionService         # Protocol + OpenAIWhisperService implementation
+├── TranslationConfig            # Target language selection, output mode configuration
 ├── PasteController              # Clipboard write + Cmd+V simulation via CGEvent
 ├── PermissionsManager           # Microphone + Accessibility permission check/request
 ├── KeychainManager              # OpenAI API key secure storage (Keychain)
@@ -75,11 +73,9 @@ Murmur/
     │   └── PermissionsManager.swift    # Microphone + Accessibility check/request, polling
     ├── Transcription/
     │   ├── TranscriptionService.swift  # Protocol: transcribe(audioURL:request:) async throws -> String
-    │   ├── LocalWhisperService.swift   # WhisperKit on-device implementation
-    │   ├── OpenAIWhisperService.swift  # OpenAI API implementation (/transcriptions + /translations + chat)
-    │   └── ModelManager.swift          # WhisperKit model download, ~/Library/Application Support/Murmur/
+    │   └── OpenAIWhisperService.swift  # OpenAI API implementation (/transcriptions + chat completions)
     ├── Translation/
-    │   └── TranslationConfig.swift     # Translation toggle, language selection, requiresAPI, supportedLanguages
+    │   └── TranslationConfig.swift     # Output mode, language selection, supportedLanguages
     ├── Settings/
     │   ├── SettingsModel.swift         # UserDefaults wrapper — all 7 preference keys with defaults
     │   └── KeychainManager.swift       # OpenAI API key secure storage (kSecClassGenericPassword)
@@ -114,8 +110,7 @@ Murmur/
         ▼
   TranscriptionService.transcribe(audio, request)
         │         │
-        │         ├─ LocalWhisper (WhisperKit, on-device)
-        │         └─ OpenAIWhisper (API call, requires network)
+        │         └─ OpenAIWhisperService (API call)
         │
         ▼
   PasteController.paste(text)
@@ -147,22 +142,14 @@ Murmur/
 
 ## 7. Transcription & Translation
 
-### Local (default for transcription)
+All transcription uses **OpenAI Whisper API** (`/v1/audio/transcriptions`). API key is required and stored securely in **macOS Keychain**.
 
-- Uses **WhisperKit** — a Swift package that runs Whisper models natively via Core ML
-- Model is downloaded once and stored in `~/Library/Application Support/Murmur/`
-- **Default model**: `whisper-base` — good balance of speed (~1s on M1) and accuracy
-- **User-selectable**: `tiny` (fastest, ~0.5s, lower accuracy) / `base` (default) / `small` (~2-3s, best accuracy)
-- Local mode supports **transcription only** — output language = spoken language
-- Translation in local mode: WhisperKit can translate any language → English via Whisper's built-in translation task; non-English target languages are **not supported locally** (use API)
+Three output modes:
+- **Transcription**: raw speech-to-text output
+- **Clean-up**: transcribes then cleans up grammar, filler words via GPT-4o
+- **Translation**: transcribes then translates to a target language via GPT-4o
 
-### API (required for translation to non-English; optional for transcription)
-
-- Calls **OpenAI Whisper API** (`/v1/audio/transcriptions` or `/v1/audio/translations`)
-- The `/translations` endpoint outputs English from any input language
-- For non-English target languages: chain Whisper transcription with an OpenAI Chat Completions call for translation
-- API key stored securely in **macOS Keychain**
-- **v1 rule**: if translation mode is enabled with a non-English target language, API backend is required; the app will prompt the user to enter an API key if one is not set
+If no API key is configured, the app prompts the user to add one in Settings.
 
 ---
 
@@ -197,11 +184,11 @@ All user preferences stored in `UserDefaults`:
 |---|---|---|
 | `hotkeyKeyCode` | Int | 49 (Space) |
 | `hotkeyModifiers` | Int | optionKey (0x00080000) |
-| `translationEnabled` | Bool | false |
+| `outputMode` | String | "transcription" |
+| `speechLanguage` | String | "en" |
 | `targetLanguage` | String | "en" |
-| `whisperBackend` | String | "local" |
-| `whisperModel` | String | "base" |
 | `launchAtLogin` | Bool | false |
+| `restoreClipboardAfterPaste` | Bool | true |
 
 OpenAI API key stored in **Keychain** (never in UserDefaults).
 
@@ -212,8 +199,7 @@ OpenAI API key stored in **Keychain** (never in UserDefaults).
 | Question | Decision |
 |---|---|
 | Default hotkey | Option + Space (keyCode 49, optionKey modifier) |
-| Local translation to non-English | **Not supported in v1** — API required for non-English target languages |
-| Default Whisper model | **`whisper-base`** — ~1s on M1, good accuracy; user can select `tiny`/`base`/`small` in Settings |
-| App toolchain baseline | **Swift 5 language mode + Xcode 16+ toolchain**. The app target stays on Swift language mode 5.0, while Xcode 16+ is required for current package graph/tooling compatibility. |
-| Target architectures | **arm64 only** for local development and CI to avoid x86_64 slice ambiguity with transitive ML dependencies. |
+| Transcription backend | **OpenAI API only**. Local WhisperKit was removed: worked poorly and all valuable features (cleanup, translation) required API anyway. |
+| App toolchain baseline | **Swift 5 language mode + Xcode 16+ toolchain**. |
+| Target architectures | **arm64 only**. |
 | Streaming transcription | Not in scope for v1; evaluate for v2 |

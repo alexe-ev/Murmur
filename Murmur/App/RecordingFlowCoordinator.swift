@@ -12,7 +12,7 @@ final class RecordingFlowCoordinator {
     private let transcriptionHandler: TranscriptionHandler
     private let errorHandler: ErrorHandler
 
-    private var isRecordingFlowActive = false
+    private(set) var isRecordingFlowActive = false
 
     init(
         audioRecorder: AudioRecorder,
@@ -34,6 +34,19 @@ final class RecordingFlowCoordinator {
         } else {
             startRecordingFlow()
         }
+    }
+
+    func cancelRecording() {
+        guard isRecordingFlowActive else { return }
+
+        isRecordingFlowActive = false
+
+        if let audioURL = audioRecorder.stopRecording() {
+            cleanupTemporaryAudioFile(at: audioURL)
+        }
+
+        menuBarProvider()?.setState(.idle)
+        print("cancelRecordingFlow")
     }
 
     private func startRecordingFlow() {
@@ -61,6 +74,14 @@ final class RecordingFlowCoordinator {
         guard let audioURL = audioRecorder.stopRecording() else {
             menuBarProvider()?.setState(.idle)
             errorHandler(TranscriptionError.audioFileNotFound)
+            return
+        }
+
+        // Skip transcription if no speech was detected (silence only)
+        guard audioRecorder.hasDetectedSpeech else {
+            cleanupTemporaryAudioFile(at: audioURL)
+            menuBarProvider()?.setState(.idle)
+            print("stopRecordingFlow: no speech detected, skipping transcription")
             return
         }
 

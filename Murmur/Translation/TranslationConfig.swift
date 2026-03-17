@@ -12,10 +12,6 @@ final class TranslationConfig: ObservableObject {
     @Published private(set) var outputMode: SettingsModel.OutputMode
     @Published private(set) var targetLanguage: SettingsModel.TargetLanguage
 
-    var requiresAPI: Bool {
-        outputMode != .transcription
-    }
-
     private let settings: SettingsModel
     private var cancellables = Set<AnyCancellable>()
 

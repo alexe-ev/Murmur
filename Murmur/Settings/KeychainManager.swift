@@ -1,176 +1,55 @@
 import Foundation
-import LocalAuthentication
-import Security
 
-enum KeychainError: Error {
-    case saveFailed(OSStatus)
-    case loadFailed
-    case deleteFailed(OSStatus)
+enum APIKeyError: Error {
+    case saveFailed(String)
+    case deleteFailed(String)
 }
 
-final class KeychainManager {
-    private static let service = "com.murmur.app"
-    private static let account = "openai-api-key"
-    // Keep the API key on this device and available after first user unlock.
-    private static let accessibilityPolicy = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+final class APIKeyStorage {
+    private static let fileName = ".api-key"
     private static let cacheLock = NSLock()
     private static var cachedAPIKey: String?
 
-    static func save(apiKey: String) throws {
-        let data = Data(apiKey.utf8)
-        let dataProtectionStatus = upsert(data: data, useDataProtectionKeychain: true)
-        if dataProtectionStatus == errSecSuccess {
-            _ = deleteFromKeychain(useDataProtectionKeychain: false)
-            setCachedAPIKey(apiKey)
-            return
-        }
-
-        // Legacy fallback for environments where Data Protection Keychain is unavailable.
-        let legacyStatus = upsert(data: data, useDataProtectionKeychain: false)
-        if legacyStatus == errSecSuccess {
-            setCachedAPIKey(apiKey)
-            return
-        }
-
-        throw KeychainError.saveFailed(legacyStatus)
+    private static var storageURL: URL {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        return appSupport.appendingPathComponent("Murmur").appendingPathComponent(fileName)
     }
 
-    static func load(allowAuthenticationUI: Bool = true) -> String? {
-        if let cached = getCachedAPIKey(), !cached.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+    static func save(apiKey: String) throws {
+        let directory = storageURL.deletingLastPathComponent()
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        try apiKey.write(to: storageURL, atomically: true, encoding: .utf8)
+        setCachedAPIKey(apiKey)
+    }
+
+    static func load() -> String? {
+        if let cached = getCachedAPIKey(), !cached.isEmpty {
             return cached
         }
 
-        if let apiKey = loadFromKeychain(useDataProtectionKeychain: true, allowAuthenticationUI: allowAuthenticationUI) {
-            setCachedAPIKey(apiKey)
-            return apiKey
-        }
-
-        // One-time migration path for legacy login-keychain items created by older builds.
-        guard let legacyAPIKey = loadFromKeychain(useDataProtectionKeychain: false, allowAuthenticationUI: allowAuthenticationUI) else {
-            setCachedAPIKey(nil)
+        guard let content = try? String(contentsOf: storageURL, encoding: .utf8) else {
             return nil
         }
 
-        try? save(apiKey: legacyAPIKey)
-        if hasItemInKeychain(useDataProtectionKeychain: true) {
-            _ = deleteFromKeychain(useDataProtectionKeychain: false)
-        }
-        setCachedAPIKey(legacyAPIKey)
-        return legacyAPIKey
+        let trimmed = content.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        setCachedAPIKey(trimmed)
+        return trimmed
     }
 
     static func hasStoredAPIKey() -> Bool {
-        if let cached = getCachedAPIKey(), !cached.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        if let cached = getCachedAPIKey(), !cached.isEmpty {
             return true
         }
-
-        if hasItemInKeychain(useDataProtectionKeychain: true) {
-            return true
-        }
-
-        return hasItemInKeychain(useDataProtectionKeychain: false)
-    }
-
-    static func hasValidAPIKey() -> Bool {
-        guard
-            let apiKey = load(allowAuthenticationUI: false),
-            !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        else {
-            return false
-        }
-        return true
+        return load() != nil
     }
 
     static func delete() throws {
-        let dataProtectionStatus = deleteFromKeychain(useDataProtectionKeychain: true)
-        let legacyStatus = deleteFromKeychain(useDataProtectionKeychain: false)
-
-        let dataProtectionDeleted = (dataProtectionStatus == errSecSuccess || dataProtectionStatus == errSecItemNotFound)
-        let legacyDeleted = (legacyStatus == errSecSuccess || legacyStatus == errSecItemNotFound)
-
-        if dataProtectionDeleted && legacyDeleted {
-            setCachedAPIKey(nil)
-            return
+        let fm = FileManager.default
+        if fm.fileExists(atPath: storageURL.path) {
+            try fm.removeItem(at: storageURL)
         }
-
-        if dataProtectionStatus != errSecSuccess && dataProtectionStatus != errSecItemNotFound {
-            throw KeychainError.deleteFailed(dataProtectionStatus)
-        }
-        throw KeychainError.deleteFailed(legacyStatus)
-    }
-
-    private static func baseQuery(useDataProtectionKeychain: Bool) -> [String: Any] {
-        var query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: account
-        ]
-        if useDataProtectionKeychain {
-            query[kSecUseDataProtectionKeychain as String] = true
-        }
-        return query
-    }
-
-    private static func loadFromKeychain(useDataProtectionKeychain: Bool, allowAuthenticationUI: Bool) -> String? {
-        var query = baseQuery(useDataProtectionKeychain: useDataProtectionKeychain)
-        query[kSecReturnData as String] = true
-        query[kSecMatchLimit as String] = kSecMatchLimitOne
-        if !allowAuthenticationUI {
-            query[kSecUseAuthenticationContext as String] = nonInteractiveAuthContext()
-        }
-
-        var item: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &item)
-        guard status == errSecSuccess,
-              let data = item as? Data,
-              let apiKey = String(data: data, encoding: .utf8) else {
-            return nil
-        }
-        return apiKey
-    }
-
-    private static func hasItemInKeychain(useDataProtectionKeychain: Bool) -> Bool {
-        var query = baseQuery(useDataProtectionKeychain: useDataProtectionKeychain)
-        query[kSecReturnAttributes as String] = true
-        query[kSecMatchLimit as String] = kSecMatchLimitOne
-        query[kSecUseAuthenticationContext as String] = nonInteractiveAuthContext()
-
-        var item: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &item)
-        return status == errSecSuccess
-    }
-
-    private static func deleteFromKeychain(useDataProtectionKeychain: Bool) -> OSStatus {
-        let query = baseQuery(useDataProtectionKeychain: useDataProtectionKeychain)
-        return SecItemDelete(query as CFDictionary)
-    }
-
-    private static func upsert(data: Data, useDataProtectionKeychain: Bool) -> OSStatus {
-        let query = baseQuery(useDataProtectionKeychain: useDataProtectionKeychain)
-        let attributesToUpdate: [String: Any] = [
-            kSecValueData as String: data,
-            kSecAttrAccessible as String: accessibilityPolicy
-        ]
-
-        let updateStatus = SecItemUpdate(query as CFDictionary, attributesToUpdate as CFDictionary)
-        if updateStatus == errSecSuccess {
-            return errSecSuccess
-        }
-
-        if updateStatus == errSecItemNotFound {
-            var addQuery = query
-            addQuery[kSecValueData as String] = data
-            addQuery[kSecAttrAccessible as String] = accessibilityPolicy
-            return SecItemAdd(addQuery as CFDictionary, nil)
-        }
-
-        return updateStatus
-    }
-
-    private static func nonInteractiveAuthContext() -> LAContext {
-        let context = LAContext()
-        context.interactionNotAllowed = true
-        return context
+        setCachedAPIKey(nil)
     }
 
     private static func getCachedAPIKey() -> String? {
