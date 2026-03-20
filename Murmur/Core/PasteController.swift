@@ -7,8 +7,20 @@ enum PasteError: Error {
     case clipboardWriteFailed
 }
 
+enum PasteResult {
+    case directInsert      // AX set text directly
+    case clipboard         // Focused element found, AX set failed, Cmd+V used
+    case noFocusedElement  // No focused element, Cmd+V fired but uncertain
+}
+
 @MainActor
-final class PasteController {
+protocol TextPasting: AnyObject {
+    @discardableResult
+    func paste(_ text: String) throws -> PasteResult
+}
+
+@MainActor
+final class PasteController: TextPasting {
     private struct ClipboardSnapshot {
         let items: [NSPasteboardItem]
         let wasEmpty: Bool
@@ -37,15 +49,16 @@ final class PasteController {
         )
     }
 
-    func paste(_ text: String) throws {
+    @discardableResult
+    func paste(_ text: String) throws -> PasteResult {
         permissionsManager.checkAccessibility()
         guard permissionsManager.accessibilityGranted else {
             throw PasteError.accessibilityNotGranted
         }
 
-        // Prefer direct AX insertion to avoid layout-dependent Cmd+V behavior.
-        if tryInsertTextViaAccessibility(text) {
-            return
+        let axResult = tryInsertTextViaAccessibility(text)
+        if axResult == .directInsert {
+            return .directInsert
         }
 
         let clipboardSnapshot = settingsModel.restoreClipboardAfterPaste ? captureClipboardSnapshot() : nil
@@ -74,9 +87,11 @@ final class PasteController {
         if let clipboardSnapshot {
             scheduleClipboardRestore(clipboardSnapshot, expectedChangeCount: murmurClipboardChangeCount)
         }
+
+        return axResult
     }
 
-    private func tryInsertTextViaAccessibility(_ text: String) -> Bool {
+    private func tryInsertTextViaAccessibility(_ text: String) -> PasteResult {
         let systemWideElement = AXUIElementCreateSystemWide()
         _ = AXUIElementSetMessagingTimeout(systemWideElement, axMessagingTimeout)
         var focusedValue: CFTypeRef?
@@ -91,7 +106,7 @@ final class PasteController {
             let focusedValue,
             CFGetTypeID(focusedValue) == AXUIElementGetTypeID()
         else {
-            return false
+            return .noFocusedElement
         }
 
         let focusedElement = unsafeBitCast(focusedValue, to: AXUIElement.self)
@@ -116,11 +131,11 @@ final class PasteController {
                 text as CFTypeRef
             )
             if selectedTextStatus == .success {
-                return true
+                return .directInsert
             }
         }
 
-        return false
+        return .clipboard
     }
 
     private func captureClipboardSnapshot() -> ClipboardSnapshot? {

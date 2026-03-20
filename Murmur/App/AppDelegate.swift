@@ -75,7 +75,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 480, height: 340),
-            styleMask: [.titled],
+            styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
         )
@@ -339,7 +339,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
 
-        print("Core flow error: \(content.body)")
+        print("[Murmur] Error: \(error) | Notification: \(content.body)")
     }
 
     private func requestNotificationAuthorization() {
@@ -363,6 +363,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 return "Transcription failed. Check your API key in Settings."
             case .cancelled:
                 return "Transcription was cancelled. Please try again."
+            case .fileTooLarge(let sizeMB):
+                return "Recording too large (\(String(format: "%.0f", sizeMB)) MB). Max ~13 min."
             }
         }
 

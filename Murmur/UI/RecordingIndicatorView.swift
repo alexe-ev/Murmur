@@ -2,6 +2,9 @@ import SwiftUI
 
 final class IndicatorState: ObservableObject {
     @Published var menuBarState: MenuBarState = .idle
+    @Published var lastTranscript: String?
+    @Published var errorMessage: String?
+    @Published var isExpanded: Bool = false
 }
 
 struct RecordingIndicatorView: View {
@@ -17,8 +20,23 @@ struct RecordingIndicatorView: View {
     private var isProcessing: Bool { indicatorState.menuBarState == .processing }
 
     var body: some View {
-        if indicatorState.menuBarState != .idle {
+        switch indicatorState.menuBarState {
+        case .idle:
+            EmptyView()
+        case .recording, .processing:
             pill
+        case .error:
+            if indicatorState.isExpanded {
+                expandedErrorView
+            } else {
+                collapsedErrorPill
+            }
+        case .uncertain:
+            if indicatorState.isExpanded {
+                expandedUncertainView
+            } else {
+                uncertainPill
+            }
         }
     }
 
@@ -92,6 +110,229 @@ struct RecordingIndicatorView: View {
         .onDisappear {
             stopBarAnimation()
         }
+    }
+
+    private let orangeColor = Color(red: 1.0, green: 0.7, blue: 0.2)
+
+    private var uncertainPill: some View {
+        HStack(spacing: 10) {
+            RoundedRectangle(cornerRadius: 3, style: .continuous)
+                .fill(orangeColor)
+                .frame(width: 12, height: 12)
+
+            Text("Oops! Click me")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(.white.opacity(0.9))
+
+            Button {
+                onCancel()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(.white.opacity(0.5))
+            }
+            .buttonStyle(.plain)
+            .frame(width: 20, height: 20)
+            .onHover { hovering in
+                if hovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+        .background(
+            Capsule(style: .continuous)
+                .fill(Color.black.opacity(0.75))
+        )
+        .overlay(
+            Capsule(style: .continuous)
+                .strokeBorder(Color.white.opacity(0.15), lineWidth: 1)
+        )
+        .onTapGesture {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                indicatorState.isExpanded = true
+            }
+        }
+    }
+
+    private var collapsedErrorPill: some View {
+        HStack(spacing: 10) {
+            RoundedRectangle(cornerRadius: 3, style: .continuous)
+                .fill(Color(red: 0.95, green: 0.3, blue: 0.3))
+                .frame(width: 12, height: 12)
+
+            Text("Error. Show details")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(.white.opacity(0.9))
+
+            Button {
+                onCancel()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(.white.opacity(0.5))
+            }
+            .buttonStyle(.plain)
+            .frame(width: 20, height: 20)
+            .onHover { hovering in
+                if hovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+        .background(
+            Capsule(style: .continuous)
+                .fill(Color.black.opacity(0.75))
+        )
+        .overlay(
+            Capsule(style: .continuous)
+                .strokeBorder(Color.white.opacity(0.15), lineWidth: 1)
+        )
+        .onTapGesture {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                indicatorState.isExpanded = true
+            }
+        }
+    }
+
+    private var uncertainDisplayText: String {
+        indicatorState.lastTranscript ?? "(text unavailable)"
+    }
+
+    private var expandedUncertainView: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                    .fill(orangeColor)
+                    .frame(width: 12, height: 12)
+
+                Text("Could not paste the text")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(.white)
+                    .lineLimit(2)
+            }
+
+            ScrollView {
+                Text(uncertainDisplayText)
+                    .font(.system(size: 12, design: .monospaced))
+                    .foregroundStyle(.white.opacity(0.85))
+                    .textSelection(.enabled)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .frame(maxWidth: 360, minHeight: 40, maxHeight: 200)
+
+            HStack {
+                Spacer()
+
+                Button("Copy") {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(uncertainDisplayText, forType: .string)
+                }
+                .buttonStyle(.plain)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(.white.opacity(0.9))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 5)
+                .background(
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(Color.white.opacity(0.15))
+                )
+                .onHover { hovering in
+                    if hovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
+                }
+
+                Button("Close") {
+                    onCancel()
+                }
+                .buttonStyle(.plain)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(.white.opacity(0.7))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 5)
+                .onHover { hovering in
+                    if hovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
+                }
+            }
+        }
+        .padding(16)
+        .frame(width: 400)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.black.opacity(0.85))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .strokeBorder(Color.white.opacity(0.15), lineWidth: 1)
+        )
+    }
+
+    private var expandedErrorView: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                    .fill(Color(red: 0.95, green: 0.3, blue: 0.3))
+                    .frame(width: 12, height: 12)
+
+                Text(indicatorState.errorMessage ?? "Error")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(.white)
+                    .lineLimit(2)
+            }
+
+            if let displayText = indicatorState.lastTranscript ?? indicatorState.errorMessage {
+                ScrollView {
+                    Text(displayText)
+                        .font(.system(size: 12, design: .monospaced))
+                        .foregroundStyle(.white.opacity(0.85))
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .frame(maxWidth: 360, minHeight: 40, maxHeight: 200)
+            }
+
+            HStack {
+                Spacer()
+
+                Button("Copy") {
+                    let text = indicatorState.lastTranscript ?? indicatorState.errorMessage ?? ""
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(text, forType: .string)
+                }
+                .buttonStyle(.plain)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(.white.opacity(0.9))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 5)
+                .background(
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(Color.white.opacity(0.15))
+                )
+                .onHover { hovering in
+                    if hovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
+                }
+
+                Button("Close") {
+                    onCancel()
+                }
+                .buttonStyle(.plain)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(.white.opacity(0.7))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 5)
+                .onHover { hovering in
+                    if hovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
+                }
+            }
+        }
+        .padding(16)
+        .frame(width: 400)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.black.opacity(0.85))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .strokeBorder(Color.white.opacity(0.15), lineWidth: 1)
+        )
     }
 
     private func startBarAnimation() {

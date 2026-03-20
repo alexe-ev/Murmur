@@ -24,6 +24,12 @@ final class OpenAIWhisperService: TranscriptionService {
             throw TranscriptionError.audioFileNotFound
         }
 
+        let fileSize = (try? fileManager.attributesOfItem(atPath: audioURL.path)[.size] as? Int64) ?? 0
+        let fileSizeMB = Double(fileSize) / 1_048_576
+        if fileSizeMB > 25.0 {
+            throw TranscriptionError.fileTooLarge(sizeMB: fileSizeMB)
+        }
+
         do {
             let normalizedSourceLanguage = request.sourceLanguage?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
             let normalizedTargetLanguage = request.targetLanguage?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
@@ -35,6 +41,8 @@ final class OpenAIWhisperService: TranscriptionService {
                 apiKey: apiKey
             )
             let transcribedText = try await performTextRequest(transcriptionRequest)
+
+            print("[Murmur] Output mode: \(request.outputMode)")
 
             switch request.outputMode {
             case .transcription:
@@ -188,9 +196,13 @@ final class OpenAIWhisperService: TranscriptionService {
 
     private func buildTranscriptionRequest(audioURL: URL, sourceLanguage: String?, apiKey: String) throws -> URLRequest {
         let boundary = "Boundary-\(UUID().uuidString)"
+        let fileSize = (try? fileManager.attributesOfItem(atPath: audioURL.path)[.size] as? Int64) ?? 0
+        let fileSizeMB = Double(fileSize) / 1_048_576
+
         var request = URLRequest(url: transcriptionsEndpointURL)
         request.httpMethod = "POST"
-        request.timeoutInterval = 30
+        request.timeoutInterval = max(30, 30 + fileSizeMB * 2)
+        print("[Murmur] Whisper timeout: \(Int(request.timeoutInterval))s for \(String(format: "%.1f", fileSizeMB)) MB")
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         request.httpBody = try makeMultipartBody(
@@ -204,6 +216,7 @@ final class OpenAIWhisperService: TranscriptionService {
 
     private func makeMultipartBody(audioURL: URL, boundary: String, includeLanguageField: Bool, targetLanguage: String?) throws -> Data {
         let audioData = try Data(contentsOf: audioURL)
+        print("[Murmur] Uploading \(audioData.count) bytes to Whisper API")
         var body = Data()
 
         appendFormField(named: "model", value: "whisper-1", to: &body, boundary: boundary)

@@ -2,7 +2,14 @@ import AVFoundation
 import Combine
 import Foundation
 
-final class AudioRecorder {
+@MainActor
+protocol AudioRecording: AnyObject {
+    func startRecording() throws
+    func stopRecording() -> URL?
+    var hasDetectedSpeech: Bool { get }
+}
+
+final class AudioRecorder: AudioRecording {
     enum RecordingState {
         case idle
         case recording

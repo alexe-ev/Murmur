@@ -27,6 +27,9 @@
 		A1000000000000000000003C /* TranscriptionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000003D /* TranscriptionCoordinator.swift */; };
 		A10000000000000000000040 /* SettingsModelEnumMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000043 /* SettingsModelEnumMigrationTests.swift */; };
 		A10000000000000000000041 /* TranslationLanguageMapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000044 /* TranslationLanguageMapTests.swift */; };
+		A10000000000000000000050 /* RecordingFlowCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000051 /* RecordingFlowCoordinatorTests.swift */; };
+		A10000000000000000000052 /* OpenAIWhisperServiceValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000053 /* OpenAIWhisperServiceValidationTests.swift */; };
+		A10000000000000000000054 /* MenuBarStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000055 /* MenuBarStateTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +67,9 @@
 		A10000000000000000000042 /* MurmurTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MurmurTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000043 /* SettingsModelEnumMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModelEnumMigrationTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000044 /* TranslationLanguageMapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationLanguageMapTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000051 /* RecordingFlowCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingFlowCoordinatorTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000053 /* OpenAIWhisperServiceValidationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIWhisperServiceValidationTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000055 /* MenuBarStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarStateTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +113,9 @@
 			children = (
 				A10000000000000000000043 /* SettingsModelEnumMigrationTests.swift */,
 				A10000000000000000000044 /* TranslationLanguageMapTests.swift */,
+				A10000000000000000000051 /* RecordingFlowCoordinatorTests.swift */,
+				A10000000000000000000053 /* OpenAIWhisperServiceValidationTests.swift */,
+				A10000000000000000000055 /* MenuBarStateTests.swift */,
 			);
 			path = MurmurTests;
 			sourceTree = "<group>";
@@ -269,6 +278,9 @@
 			files = (
 				A10000000000000000000040 /* SettingsModelEnumMigrationTests.swift in Sources */,
 				A10000000000000000000041 /* TranslationLanguageMapTests.swift in Sources */,
+				A10000000000000000000050 /* RecordingFlowCoordinatorTests.swift in Sources */,
+				A10000000000000000000052 /* OpenAIWhisperServiceValidationTests.swift in Sources */,
+				A10000000000000000000054 /* MenuBarStateTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
