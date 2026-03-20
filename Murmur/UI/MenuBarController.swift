@@ -3,14 +3,22 @@ import Carbon.HIToolbox
 import Combine
 import SwiftUI
 
-enum MenuBarState {
+enum MenuBarState: Equatable {
     case idle
     case recording
     case processing
+    case error(String)
+    case uncertain
 }
 
 @MainActor
-final class MenuBarController: NSObject {
+protocol MenuBarControlling: AnyObject {
+    func setState(_ state: MenuBarState)
+    func setLastTranscript(_ text: String)
+}
+
+@MainActor
+final class MenuBarController: NSObject, MenuBarControlling {
     private let statusItem: NSStatusItem
     private var indicatorPanel: NSPanel?
     private var indicatorHostingView: NSHostingView<RecordingIndicatorView>?
@@ -20,6 +28,7 @@ final class MenuBarController: NSObject {
     private var toggleRecordingItem: NSMenuItem?
     private var hotkeyHintItem: NSMenuItem?
     private let settingsModel = SettingsModel.shared
+    private var copyLastResultItem: NSMenuItem?
     private var languageItem: NSMenuItem?
     private var outputModeItem: NSMenuItem?
     private var outputModeSubmenu: NSMenu?
@@ -32,6 +41,7 @@ final class MenuBarController: NSObject {
         super.init()
         configureStatusItem()
         observeSettings()
+        observeIndicatorState()
         rebuildLanguageSubmenu()
         setState(.idle)
     }
@@ -58,6 +68,13 @@ final class MenuBarController: NSObject {
         hotkeyItem.isEnabled = false
         menu.addItem(hotkeyItem)
         hotkeyHintItem = hotkeyItem
+
+        let copyItem = NSMenuItem(title: "Copy Last Result", action: #selector(copyLastResult(_:)), keyEquivalent: "")
+        copyItem.target = self
+        copyItem.image = menuSymbol("doc.on.clipboard")
+        copyItem.isHidden = true
+        menu.addItem(copyItem)
+        copyLastResultItem = copyItem
 
         menu.addItem(.separator())
 
@@ -265,6 +282,19 @@ final class MenuBarController: NSObject {
         statusSummaryItem?.image = menuStateSymbol(for: currentState)
     }
 
+    func setLastTranscript(_ text: String) {
+        indicatorState.lastTranscript = text
+        copyLastResultItem?.isHidden = false
+        print("[Murmur] setLastTranscript: \(text.count) chars, indicatorState id=\(ObjectIdentifier(indicatorState))")
+    }
+
+    @objc
+    private func copyLastResult(_ sender: NSMenuItem) {
+        guard let text = indicatorState.lastTranscript else { return }
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+    }
+
     func showIndicator(for state: MenuBarState) {
         indicatorState.menuBarState = state
         let isInteractive = (state == .recording)
@@ -304,6 +334,8 @@ final class MenuBarController: NSObject {
 
     func hideIndicator() {
         indicatorState.menuBarState = .idle
+        indicatorState.isExpanded = false
+        indicatorState.errorMessage = nil
         indicatorPanel?.orderOut(nil)
         indicatorPanel?.contentView = nil
         indicatorPanel = nil
@@ -311,6 +343,13 @@ final class MenuBarController: NSObject {
     }
 
     private func positionIndicator(_ panel: NSPanel) {
+        if let hostingView = indicatorHostingView {
+            hostingView.invalidateIntrinsicContentSize()
+            hostingView.layoutSubtreeIfNeeded()
+            let fittingSize = hostingView.fittingSize
+            panel.setContentSize(fittingSize)
+        }
+
         let margin: CGFloat = 12
         let pointerOffsetX: CGFloat = 16
         let pointerOffsetY: CGFloat = 20
@@ -360,6 +399,19 @@ final class MenuBarController: NSObject {
             fallbackSymbol = "hourglass"
             isRecording = false
             showIndicator(for: .processing)
+        case .error(let message):
+            iconName = "icon-idle"
+            fallbackSymbol = "exclamationmark.triangle"
+            isRecording = false
+            indicatorState.errorMessage = message
+            indicatorState.isExpanded = false
+            showIndicator(for: state)
+        case .uncertain:
+            iconName = "icon-idle"
+            fallbackSymbol = "waveform"
+            isRecording = false
+            indicatorState.isExpanded = false
+            showIndicator(for: state)
         }
 
         let image = NSImage(named: iconName)
@@ -380,6 +432,10 @@ final class MenuBarController: NSObject {
             return "Recording in progress"
         case .processing:
             return "Processing audio"
+        case .error:
+            return "Error occurred"
+        case .uncertain:
+            return "Ready"
         }
     }
 
@@ -391,7 +447,27 @@ final class MenuBarController: NSObject {
             return menuSymbol("record.circle.fill")
         case .processing:
             return menuSymbol("hourglass.circle.fill")
+        case .error:
+            return menuSymbol("exclamationmark.triangle.fill")
+        case .uncertain:
+            return menuSymbol("checkmark.circle.fill")
         }
+    }
+
+    private func observeIndicatorState() {
+        indicatorState.$isExpanded
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.resizeIndicatorPanel()
+            }
+            .store(in: &cancellables)
+    }
+
+    private func resizeIndicatorPanel() {
+        guard let panel = indicatorPanel, let hostingView = indicatorHostingView else { return }
+        let size = hostingView.fittingSize
+        panel.setContentSize(size)
+        positionIndicator(panel)
     }
 
     private func menuSymbol(_ name: String) -> NSImage? {

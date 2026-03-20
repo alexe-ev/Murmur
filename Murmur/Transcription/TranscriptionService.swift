@@ -22,4 +22,5 @@ enum TranscriptionError: Error {
     case audioFileNotFound
     case apiError(String)
     case cancelled
+    case fileTooLarge(sizeMB: Double)
 }
