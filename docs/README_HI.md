@@ -1,4 +1,6 @@
-# 🎙️ Murmur
+<p align="center">
+  <img src="../murmur.png" alt="Murmur" width="100%">
+</p>
 
 <p align="center">
 <a href="../README.md"><img src="https://hatscripts.github.io/circle-flags/flags/gb.svg" width="24"></a>&nbsp;
@@ -12,11 +14,7 @@
 <a href="README_UR.md"><img src="https://hatscripts.github.io/circle-flags/flags/pk.svg" width="24"></a>
 </p>
 
-**आवाज़ से मतलब निकालो, सिर्फ़ शब्द नहीं।**
-
-अपनी भाषा में बोलो। किसी भी भाषा में तैयार टेक्स्ट पाओ।
-
-बात अपनी ज़बान में कहो, टेक्स्ट दूसरी भाषा में मिलेगा। Murmur शब्द-दर-शब्द अनुवाद नहीं करता। यह समझता है कि आप कहना क्या चाहते हैं, और उसे ऐसे लिखता है जैसे उस भाषा का कोई देसी बोलने वाला लिखे।
+Murmur शब्द-दर-शब्द अनुवाद नहीं करता। यह समझता है कि आप कहना क्या चाहते हैं, और उसे ऐसे लिखता है जैसे उस भाषा का कोई देसी बोलने वाला लिखे।
 
 ## 😤 समस्या
 

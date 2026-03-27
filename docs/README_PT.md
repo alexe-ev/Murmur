@@ -1,4 +1,6 @@
-# 🎙️ Murmur
+<p align="center">
+  <img src="../murmur.png" alt="Murmur" width="100%">
+</p>
 
 <p align="center">
 <a href="../README.md"><img src="https://hatscripts.github.io/circle-flags/flags/gb.svg" width="24"></a>&nbsp;
@@ -12,11 +14,7 @@
 <a href="README_UR.md"><img src="https://hatscripts.github.io/circle-flags/flags/pk.svg" width="24"></a>
 </p>
 
-**Entende o que você quer dizer, não só o que você fala.**
-
-Fale no seu idioma. Receba o texto em qualquer outro.
-
-Fale o que está pensando e o Murmur transforma em texto natural no idioma que você precisa. Nada de tradução literal. Ele entende a ideia e escreve do jeito que um nativo escreveria.
+Murmur não faz tradução literal. Ele entende a ideia e escreve do jeito que um nativo escreveria.
 
 ## 😤 O Problema
 

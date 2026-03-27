@@ -1,4 +1,6 @@
-# 🎙️ Murmur
+<p align="center">
+  <img src="../murmur.png" alt="Murmur" width="100%">
+</p>
 
 <p align="center">
 <a href="../README.md"><img src="https://hatscripts.github.io/circle-flags/flags/gb.svg" width="24"></a>&nbsp;
@@ -12,11 +14,7 @@
 <a href="README_UR.md"><img src="https://hatscripts.github.io/circle-flags/flags/pk.svg" width="24"></a>
 </p>
 
-**听懂你的意思，而不只是听到你的声音。**
-
-用你的语言说，拿到任何语言的文字。
-
-说出你的想法，Murmur 帮你变成地道的目标语言文本。不是逐字翻译，而是真正理解你要表达什么，再用母语者的方式写出来。
+Murmur 不是逐字翻译，而是真正理解你要表达什么，再用母语者的方式写出来。
 
 ## 😤 痛点
 

@@ -1,4 +1,6 @@
-# 🎙️ Murmur
+<p align="center">
+  <img src="murmur.png" alt="Murmur – Speak in any language. Get clean text in any other." width="100%">
+</p>
 
 <p align="center">
 <a href="docs/README_RU.md"><img src="https://hatscripts.github.io/circle-flags/flags/ru.svg" width="24"></a>&nbsp;
@@ -11,10 +13,6 @@
 <a href="docs/README_PT.md"><img src="https://hatscripts.github.io/circle-flags/flags/br.svg" width="24"></a>&nbsp;
 <a href="docs/README_UR.md"><img src="https://hatscripts.github.io/circle-flags/flags/pk.svg" width="24"></a>
 </p>
-
-**Voice-to-meaning, not voice-to-text.**
-
-Speak in your language. Get text in any other.
 
 A macOS menu bar tool that captures your voice and delivers clean, natural text in the language you need. Not a word-by-word translation. Murmur understands what you mean and writes it the way a native speaker would.
 

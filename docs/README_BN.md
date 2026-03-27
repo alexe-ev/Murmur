@@ -1,4 +1,6 @@
-# 🎙️ Murmur
+<p align="center">
+  <img src="../murmur.png" alt="Murmur" width="100%">
+</p>
 
 <p align="center">
 <a href="../README.md"><img src="https://hatscripts.github.io/circle-flags/flags/gb.svg" width="24"></a>&nbsp;
@@ -12,11 +14,7 @@
 <a href="README_UR.md"><img src="https://hatscripts.github.io/circle-flags/flags/pk.svg" width="24"></a>
 </p>
 
-**কথা থেকে মানে, শুধু অক্ষর নয়।**
-
-নিজের ভাষায় বলুন। যেকোনো ভাষায় তৈরি টেক্সট পান।
-
-নিজের ভাষায় যা মনে আসে বলুন, অন্য ভাষায় পরিষ্কার টেক্সট পান। Murmur শব্দে শব্দে অনুবাদ করে না। আপনি কী বোঝাতে চাইছেন সেটা ধরে, তারপর সেই ভাষার মানুষ যেভাবে লেখে সেভাবে লিখে দেয়।
+Murmur শব্দে শব্দে অনুবাদ করে না। আপনি কী বোঝাতে চাইছেন সেটা ধরে, তারপর সেই ভাষার মানুষ যেভাবে লেখে সেভাবে লিখে দেয়।
 
 ## 😤 সমস্যা
 

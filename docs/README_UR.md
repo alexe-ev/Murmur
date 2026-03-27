@@ -1,4 +1,6 @@
-# 🎙️ Murmur
+<p align="center">
+  <img src="../murmur.png" alt="Murmur" width="100%">
+</p>
 
 <p align="center">
 <a href="../README.md"><img src="https://hatscripts.github.io/circle-flags/flags/gb.svg" width="24"></a>&nbsp;
@@ -12,11 +14,7 @@
 <a href="README_PT.md"><img src="https://hatscripts.github.io/circle-flags/flags/br.svg" width="24"></a>
 </p>
 
-**آواز سے مطلب نکالو، صرف الفاظ نہیں۔**
-
-اپنی زبان میں بولو۔ جس زبان میں چاہو، تیار متن لو۔
-
-اپنی زبان میں بات کرو، دوسری زبان میں صاف متن ملے گا۔ Murmur لفظ بہ لفظ ترجمہ نہیں کرتا۔ یہ سمجھتا ہے کہ آپ کہنا کیا چاہتے ہیں، اور اسے ایسے لکھتا ہے جیسے اس زبان کا کوئی اپنا بندہ لکھے۔
+Murmur لفظ بہ لفظ ترجمہ نہیں کرتا۔ یہ سمجھتا ہے کہ آپ کہنا کیا چاہتے ہیں، اور اسے ایسے لکھتا ہے جیسے اس زبان کا کوئی اپنا بندہ لکھے۔
 
 ## 😤 مسئلہ
 
