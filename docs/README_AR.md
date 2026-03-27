@@ -1,4 +1,6 @@
-# 🎙️ Murmur
+<p align="center">
+  <img src="../murmur.png" alt="Murmur" width="100%">
+</p>
 
 <p align="center">
 <a href="../README.md"><img src="https://hatscripts.github.io/circle-flags/flags/gb.svg" width="24"></a>&nbsp;
@@ -12,11 +14,7 @@
 <a href="README_UR.md"><img src="https://hatscripts.github.io/circle-flags/flags/pk.svg" width="24"></a>
 </p>
 
-**يفهم قصدك، لا مجرّد كلامك.**
-
-تكلّم بلغتك. واحصل على النص بأي لغة ثانية.
-
-قل فكرتك بصوتك، وMurmur يحوّلها إلى نص طبيعي باللغة اللي تحتاجها. مو ترجمة حرفية. يفهم إيش تقصد ويكتبها مثل ما يكتبها واحد لغته الأم.
+Murmur مو ترجمة حرفية. يفهم إيش تقصد ويكتبها مثل ما يكتبها واحد لغته الأم.
 
 ## 😤 المشكلة
 

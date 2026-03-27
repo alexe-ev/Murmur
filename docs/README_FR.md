@@ -1,4 +1,6 @@
-# 🎙️ Murmur
+<p align="center">
+  <img src="../murmur.png" alt="Murmur" width="100%">
+</p>
 
 <p align="center">
 <a href="../README.md"><img src="https://hatscripts.github.io/circle-flags/flags/gb.svg" width="24"></a>&nbsp;
@@ -11,10 +13,6 @@
 <a href="README_PT.md"><img src="https://hatscripts.github.io/circle-flags/flags/br.svg" width="24"></a>&nbsp;
 <a href="README_UR.md"><img src="https://hatscripts.github.io/circle-flags/flags/pk.svg" width="24"></a>
 </p>
-
-**De la voix au sens, pas de la voix au texte.**
-
-Parlez dans votre langue. Recevez du texte pret a l'emploi dans une autre.
 
 Murmur ne traduit pas mot a mot : il saisit votre pensee et l'ecrit comme le ferait un natif.
 
