@@ -1,3 +1,5 @@
+> **Status: frozen.** Murmur was the open-source predecessor of [Whisperly](https://whisperly.io), its actively developed commercial successor. Engineering notes: [ARCHITECTURE.md](ARCHITECTURE.md).
+
 <p align="center">
   <img src="murmur.png" alt="Murmur – Speak in any language. Get clean text in any other." width="100%">
 </p>
