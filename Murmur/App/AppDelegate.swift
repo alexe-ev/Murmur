@@ -321,7 +321,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let content = UNMutableNotificationContent()
         content.title = "Murmur"
         content.sound = .default
-        content.body = notificationMessage(for: error)
+        content.body = Self.notificationMessage(for: error)
 
         let identifier = "murmur.error.\(UUID().uuidString)"
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
@@ -354,13 +354,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    private func notificationMessage(for error: Error) -> String {
+    static func notificationMessage(for error: Error) -> String {
         if let transcriptionError = error as? TranscriptionError {
             switch transcriptionError {
             case .audioFileNotFound:
                 return "Recording file was missing. Please try again."
-            case .apiError:
-                return "Transcription failed. Check your API key in Settings."
+            case .failed(let failure):
+                return failure.headline
             case .cancelled:
                 return "Transcription was cancelled. Please try again."
             case .fileTooLarge(let sizeMB):

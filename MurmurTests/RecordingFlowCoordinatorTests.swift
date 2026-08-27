@@ -191,7 +191,7 @@ final class RecordingFlowCoordinatorTests: XCTestCase {
     func testTranscriptionErrorSetsErrorState() async throws {
         let url = createTempAudioFile()
         recorder.stopRecordingURL = url
-        transcriptionError = TranscriptionError.apiError("timeout")
+        transcriptionError = TranscriptionError.failed(TranscriptionFailure(kind: .timedOut, stage: nil, detail: "The request timed out."))
 
         sut.toggleRecording()
         menuBar.states.removeAll()
@@ -205,11 +205,56 @@ final class RecordingFlowCoordinatorTests: XCTestCase {
         XCTAssertTrue(paster.pastedTexts.isEmpty)
         XCTAssertTrue(menuBar.lastTranscripts.isEmpty)
 
-        guard case .error(let message) = menuBar.states.last else {
+        guard case .error(let headline, let detail) = menuBar.states.last else {
             XCTFail("Expected .error state, got \(String(describing: menuBar.states.last))")
             return
         }
-        XCTAssertTrue(message.contains("API error"), "Error message was: \(message)")
+        XCTAssertEqual(headline, "The request timed out. Try again.")
+        XCTAssertEqual(detail, "The request timed out.")
+    }
+
+    // MARK: - Failure carries headline + staged detail; the earlier success stays in lastTranscripts.
+    // (The view-level "never the previous transcript" fix is in RecordingIndicatorView and is not reachable from here.)
+
+    func testTranscriptionFailureCarriesStagedDetailAndKeepsLastTranscript() async throws {
+        recorder.stopRecordingURL = createTempAudioFile()
+        transcriptionResult = "Hello world"
+        sut.toggleRecording()
+        sut.toggleRecording()
+        try await Task.sleep(nanoseconds: 200_000_000)
+        XCTAssertEqual(menuBar.lastTranscripts, ["Hello world"])
+
+        recorder.stopRecordingURL = createTempAudioFile()
+        let failure = TranscriptionFailure(kind: .unauthorized, stage: .speechToText, detail: "Incorrect API key provided: sk-abc***xyz.")
+        transcriptionError = TranscriptionError.failed(failure)
+        menuBar.states.removeAll()
+        sut.toggleRecording()
+        sut.toggleRecording()
+        try await Task.sleep(nanoseconds: 200_000_000)
+
+        guard case .error(let headline, let detail) = menuBar.states.last else {
+            return XCTFail("Expected .error state, got \(String(describing: menuBar.states.last))")
+        }
+        XCTAssertEqual(headline, "OpenAI did not accept your API key. Check it in Settings.")
+        XCTAssertEqual(detail, "Speech-to-text: Incorrect API key provided: sk-abc***xyz.")
+        XCTAssertEqual(menuBar.lastTranscripts, ["Hello world"], "the earlier success is untouched (Copy Last Result unchanged)")
+    }
+
+    // MARK: - Notification body and pill headline are the same string
+
+    func testNotificationBodyEqualsPillHeadlineForEveryKind() {
+        let kinds: [TranscriptionFailure.Kind] = [
+            .offline, .timedOut, .unauthorized, .outOfCredit, .rateLimited, .limited,
+            .serverError(503), .unexpectedResponse, .emptyTranscript, .http(403), .other("boom"),
+        ]
+        var headlines = Set<String>()
+        for kind in kinds {
+            let failure = TranscriptionFailure(kind: kind, stage: .postProcessing, detail: "x")
+            XCTAssertEqual(AppDelegate.notificationMessage(for: TranscriptionError.failed(failure)), failure.headline, "\(kind)")
+            headlines.insert(failure.headline)
+        }
+        XCTAssertEqual(headlines.count, kinds.count, "every kind has its own headline")
+        XCTAssertEqual(AppDelegate.notificationMessage(for: TranscriptionError.fileTooLarge(sizeMB: 30)), "Recording too large (30 MB). Max ~13 min.")
     }
 
     // MARK: - Transcription returns nil
@@ -315,11 +360,12 @@ final class RecordingFlowCoordinatorTests: XCTestCase {
         XCTAssertEqual(errors.count, 1)
 
         // State is .error, not .idle
-        guard case .error(let message) = menuBar.states.last else {
+        guard case .error(let headline, let detail) = menuBar.states.last else {
             XCTFail("Expected .error state, got \(String(describing: menuBar.states.last))")
             return
         }
-        XCTAssertTrue(message.contains("Paste failed"), "Error message was: \(message)")
+        XCTAssertTrue(headline.contains("Paste failed"), "Error message was: \(headline)")
+        XCTAssertEqual(detail, "Important text that must not be lost")
     }
 
     // MARK: - File too large error
@@ -336,12 +382,13 @@ final class RecordingFlowCoordinatorTests: XCTestCase {
 
         try await Task.sleep(nanoseconds: 200_000_000)
 
-        guard case .error(let message) = menuBar.states.last else {
+        guard case .error(let headline, let detail) = menuBar.states.last else {
             XCTFail("Expected .error state")
             return
         }
-        XCTAssertTrue(message.contains("Too large"), "Error message was: \(message)")
-        XCTAssertTrue(message.contains("30"), "Should include size in message: \(message)")
+        XCTAssertTrue(headline.contains("Too large"), "Error message was: \(headline)")
+        XCTAssertTrue(headline.contains("30"), "Should include size in message: \(headline)")
+        XCTAssertNil(detail)
     }
 
     // MARK: - Cancel recording
@@ -384,7 +431,7 @@ final class RecordingFlowCoordinatorTests: XCTestCase {
     func testTempFileCleanedUpAfterError() async throws {
         let url = createTempAudioFile()
         recorder.stopRecordingURL = url
-        transcriptionError = TranscriptionError.apiError("fail")
+        transcriptionError = TranscriptionError.failed(TranscriptionFailure(kind: .other("fail"), stage: nil, detail: "fail"))
 
         sut.toggleRecording()
         sut.toggleRecording()

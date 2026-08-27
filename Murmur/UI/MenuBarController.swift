@@ -7,7 +7,7 @@ enum MenuBarState: Equatable {
     case idle
     case recording
     case processing
-    case error(String)
+    case error(headline: String, detail: String?)
     case uncertain
 }
 
@@ -336,6 +336,7 @@ final class MenuBarController: NSObject, MenuBarControlling {
         indicatorState.menuBarState = .idle
         indicatorState.isExpanded = false
         indicatorState.errorMessage = nil
+        indicatorState.errorDetail = nil
         indicatorPanel?.orderOut(nil)
         indicatorPanel?.contentView = nil
         indicatorPanel = nil
@@ -399,11 +400,12 @@ final class MenuBarController: NSObject, MenuBarControlling {
             fallbackSymbol = "hourglass"
             isRecording = false
             showIndicator(for: .processing)
-        case .error(let message):
+        case .error(let headline, let detail):
             iconName = "icon-idle"
             fallbackSymbol = "exclamationmark.triangle"
             isRecording = false
-            indicatorState.errorMessage = message
+            indicatorState.errorMessage = headline
+            indicatorState.errorDetail = detail
             indicatorState.isExpanded = false
             showIndicator(for: state)
         case .uncertain:

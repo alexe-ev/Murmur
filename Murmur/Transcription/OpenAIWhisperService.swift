@@ -17,7 +17,7 @@ final class OpenAIWhisperService: TranscriptionService {
 
     func transcribe(audioURL: URL, request: TranscriptionRequest) async throws -> String {
         guard let apiKey = APIKeyStorage.load(), !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            throw TranscriptionError.apiError("No API key")
+            throw TranscriptionError.failed(TranscriptionFailure(kind: .other("No API key"), stage: nil, detail: "No API key is stored."))
         }
 
         guard fileManager.fileExists(atPath: audioURL.path) else {
@@ -40,7 +40,8 @@ final class OpenAIWhisperService: TranscriptionService {
                 sourceLanguage: normalizedSourceLanguage,
                 apiKey: apiKey
             )
-            let transcribedText = try await performTextRequest(transcriptionRequest)
+            let sttStage: TranscriptionFailure.Stage? = request.outputMode == .transcription ? nil : .speechToText
+            let transcribedText = try await performTextRequest(transcriptionRequest, stage: sttStage)
 
             print("[Murmur] Output mode: \(request.outputMode)")
 
@@ -61,28 +62,33 @@ final class OpenAIWhisperService: TranscriptionService {
         } catch is CancellationError {
             throw TranscriptionError.cancelled
         } catch {
-            throw TranscriptionError.apiError(error.localizedDescription)
+            throw TranscriptionError.failed(Self.failure(for: error, stage: nil))
         }
     }
 
-    private func performTextRequest(_ request: URLRequest) async throws -> String {
-        let (data, response) = try await session.data(for: request)
+    private func performTextRequest(_ request: URLRequest, stage: TranscriptionFailure.Stage?) async throws -> String {
+        let data = try await send(request, stage: stage)
+        return try Self.transcript(from: data, stage: stage)
+    }
+
+    /// The one place a request is sent and its status checked, for both endpoints.
+    private func send(_ request: URLRequest, stage: TranscriptionFailure.Stage?) async throws -> Data {
+        let data: Data
+        let response: URLResponse
+        do {
+            (data, response) = try await session.data(for: request)
+        } catch is CancellationError {
+            throw TranscriptionError.cancelled
+        } catch {
+            throw TranscriptionError.failed(Self.failure(for: error, stage: stage))
+        }
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw TranscriptionError.apiError("Invalid API response.")
+            throw TranscriptionError.failed(TranscriptionFailure(kind: .unexpectedResponse, stage: stage, detail: "Not an HTTP response."))
         }
-
-        let responseText = String(data: data, encoding: .utf8) ?? ""
         guard (200...299).contains(httpResponse.statusCode) else {
-            let errorBody = responseText.isEmpty ? "HTTP \(httpResponse.statusCode)" : responseText
-            throw TranscriptionError.apiError(errorBody)
+            throw TranscriptionError.failed(Self.failure(forStatus: httpResponse.statusCode, body: data, stage: stage))
         }
-
-        let text = responseText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty else {
-            throw TranscriptionError.apiError("OpenAI API returned an empty transcription.")
-        }
-
-        return text
+        return data
     }
 
     private func chatCleanup(_ text: String, language: String, apiKey: String) async throws -> String {
@@ -165,33 +171,8 @@ final class OpenAIWhisperService: TranscriptionService {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = requestBody
 
-        let (data, response) = try await session.data(for: request)
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw TranscriptionError.apiError("Invalid API response.")
-        }
-
-        let responseText = String(data: data, encoding: .utf8) ?? ""
-        guard (200...299).contains(httpResponse.statusCode) else {
-            let errorBody = responseText.isEmpty ? "HTTP \(httpResponse.statusCode)" : responseText
-            throw TranscriptionError.apiError(errorBody)
-        }
-
-        guard
-            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-            let choices = json["choices"] as? [[String: Any]],
-            let firstChoice = choices.first,
-            let message = firstChoice["message"] as? [String: Any],
-            let content = message["content"] as? String
-        else {
-            throw TranscriptionError.apiError("Invalid Chat Completions response format.")
-        }
-
-        let resultText = content.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !resultText.isEmpty else {
-            throw TranscriptionError.apiError("Chat Completions returned empty text.")
-        }
-
-        return resultText
+        let data = try await send(request, stage: .postProcessing)
+        return try Self.chatContent(from: data)
     }
 
     private func buildTranscriptionRequest(audioURL: URL, sourceLanguage: String?, apiKey: String) throws -> URLRequest {
@@ -240,6 +221,119 @@ final class OpenAIWhisperService: TranscriptionService {
         body.append("--\(boundary)\r\n".utf8Data)
         body.append("Content-Disposition: form-data; name=\"\(name)\"\r\n\r\n".utf8Data)
         body.append("\(value)\r\n".utf8Data)
+    }
+}
+
+extension OpenAIWhisperService {
+    /// 429 bodies that mean "pay", not "wait". Provenance: `credit_balance_exhausted`, `organization_spend_limit_exceeded`,
+    /// `project_spend_limit_exceeded`, `organization_usage_limit_exceeded` from OpenAI's error guide (read 2026-08-27, spec
+    /// Research findings); `insufficient_quota` (the $0-balance code) and `billing_hard_limit_reached` (older code) remembered,
+    /// not on the vendor page. A code missing here lands in `.limited`, never in `.rateLimited`.
+    static let creditCodes: Set<String> = [
+        "insufficient_quota",
+        "credit_balance_exhausted",
+        "organization_spend_limit_exceeded",
+        "project_spend_limit_exceeded",
+        "organization_usage_limit_exceeded",
+        "billing_hard_limit_reached",
+    ]
+
+    /// Reads OpenAI's `{"error": {"message", "type", "code", ...}}` envelope (shape measured on a real 401, 2026-08-27;
+    /// served as text/plain, so never gate on Content-Type). nil when the body is not a JSON object; a field is nil when
+    /// absent or JSON null.
+    static func openAIErrorEnvelope(_ body: Data) -> (message: String?, code: String?, type: String?)? {
+        guard let json = try? JSONSerialization.jsonObject(with: body) as? [String: Any] else { return nil }
+        let error = json["error"] as? [String: Any]
+        return (error?["message"] as? String, error?["code"] as? String, error?["type"] as? String)
+    }
+
+    /// Non-2xx from either endpoint → one classified failure. Detail: `error.message` when present, else the raw JSON
+    /// body (capped), else (empty or non-JSON body such as an HTML error page) the status line.
+    static func failure(forStatus status: Int, body: Data, stage: TranscriptionFailure.Stage?) -> TranscriptionFailure {
+        let envelope = openAIErrorEnvelope(body)
+        let detail: String
+        if let message = envelope?.message, !message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            detail = TranscriptionFailure.capped(message)
+        } else if envelope != nil, let raw = String(data: body, encoding: .utf8), !raw.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            detail = TranscriptionFailure.capped(raw)
+        } else {
+            detail = "HTTP \(status)"
+        }
+
+        let kind: TranscriptionFailure.Kind
+        switch status {
+        case 401:
+            kind = .unauthorized
+        case 429:
+            kind = classify429(code: envelope?.code, type: envelope?.type, message: envelope?.message)
+        case 500...599:
+            kind = .serverError(status)
+        default:
+            kind = .http(status)
+        }
+        return TranscriptionFailure(kind: kind, stage: stage, detail: detail)
+    }
+
+    static func classify429(code: String?, type: String?, message: String?) -> TranscriptionFailure.Kind {
+        if let code, creditCodes.contains(code) { return .outOfCredit }
+        if type == "insufficient_quota" { return .outOfCredit }
+        if code == "rate_limit_exceeded" || type == "requests" || type == "tokens" { return .rateLimited }
+        if let message, message.range(of: "rate limit", options: .caseInsensitive) != nil { return .rateLimited }
+        return .limited
+    }
+
+    /// A throw from `URLSession.data(for:)` (or anything else outside the HTTP contract) → one classified failure.
+    /// A hand-built `URLError` only carries "(NSURLErrorDomain error -N.)"; the readable text comes with errors a live
+    /// session produces, so tests assert on `kind`, never on the description.
+    static func failure(for error: Error, stage: TranscriptionFailure.Stage?) -> TranscriptionFailure {
+        let description = error.localizedDescription
+        let detail = TranscriptionFailure.capped(description)
+        let shortReason = String(description.prefix(80))
+        guard let urlError = error as? URLError else {
+            return TranscriptionFailure(kind: .other(shortReason), stage: stage, detail: detail)
+        }
+        switch urlError.code {
+        case .notConnectedToInternet, .networkConnectionLost, .cannotConnectToHost, .cannotFindHost,
+             .dnsLookupFailed, .internationalRoamingOff, .dataNotAllowed:
+            return TranscriptionFailure(kind: .offline, stage: stage, detail: detail)
+        case .timedOut:
+            return TranscriptionFailure(kind: .timedOut, stage: stage, detail: detail)
+        default:
+            return TranscriptionFailure(kind: .other(shortReason), stage: stage, detail: detail)
+        }
+    }
+
+    /// 2xx from `/v1/audio/transcriptions` (`response_format=text`): the body is the transcript.
+    static func transcript(from data: Data, stage: TranscriptionFailure.Stage?) throws -> String {
+        guard let responseText = String(data: data, encoding: .utf8) else {
+            throw TranscriptionError.failed(TranscriptionFailure(kind: .unexpectedResponse, stage: stage, detail: "Response was not UTF-8 text."))
+        }
+        let text = responseText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else {
+            throw TranscriptionError.failed(TranscriptionFailure(kind: .emptyTranscript, stage: stage, detail: "The transcript came back empty."))
+        }
+        return text
+    }
+
+    /// 2xx from `/v1/chat/completions`: `choices[0].message.content`, trimmed.
+    static func chatContent(from data: Data) throws -> String {
+        let stage = TranscriptionFailure.Stage.postProcessing
+        guard
+            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+            let choices = json["choices"] as? [[String: Any]],
+            let firstChoice = choices.first,
+            let message = firstChoice["message"] as? [String: Any],
+            let content = message["content"] as? String
+        else {
+            let body = String(data: data, encoding: .utf8) ?? ""
+            let detail = body.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Empty response body." : TranscriptionFailure.capped(body)
+            throw TranscriptionError.failed(TranscriptionFailure(kind: .unexpectedResponse, stage: stage, detail: detail))
+        }
+        let resultText = content.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !resultText.isEmpty else {
+            throw TranscriptionError.failed(TranscriptionFailure(kind: .unexpectedResponse, stage: stage, detail: "The model returned empty text."))
+        }
+        return resultText
     }
 }
 

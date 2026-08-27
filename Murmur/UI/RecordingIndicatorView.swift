@@ -4,6 +4,7 @@ final class IndicatorState: ObservableObject {
     @Published var menuBarState: MenuBarState = .idle
     @Published var lastTranscript: String?
     @Published var errorMessage: String?
+    @Published var errorDetail: String?
     @Published var isExpanded: Bool = false
 }
 
@@ -278,9 +279,9 @@ struct RecordingIndicatorView: View {
                     .lineLimit(2)
             }
 
-            if let displayText = indicatorState.lastTranscript ?? indicatorState.errorMessage {
+            if let detail = indicatorState.errorDetail {
                 ScrollView {
-                    Text(displayText)
+                    Text(detail)
                         .font(.system(size: 12, design: .monospaced))
                         .foregroundStyle(.white.opacity(0.85))
                         .textSelection(.enabled)
@@ -293,7 +294,7 @@ struct RecordingIndicatorView: View {
                 Spacer()
 
                 Button("Copy") {
-                    let text = indicatorState.lastTranscript ?? indicatorState.errorMessage ?? ""
+                    let text = indicatorState.errorDetail ?? indicatorState.errorMessage ?? ""
                     NSPasteboard.general.clearContents()
                     NSPasteboard.general.setString(text, forType: .string)
                 }
