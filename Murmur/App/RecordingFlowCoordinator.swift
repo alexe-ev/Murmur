@@ -78,7 +78,7 @@ final class RecordingFlowCoordinator {
 
         guard let audioURL = audioRecorder.stopRecording() else {
             errorHandler(TranscriptionError.audioFileNotFound)
-            menuBarProvider()?.setState(.error(Self.shortErrorMessage(TranscriptionError.audioFileNotFound)))
+            menuBarProvider()?.setState(Self.errorState(TranscriptionError.audioFileNotFound))
             return
         }
 
@@ -110,7 +110,7 @@ final class RecordingFlowCoordinator {
             } catch {
                 print("[Murmur] Transcription error: \(error)")
                 errorHandler(error)
-                menuBarProvider()?.setState(.error(Self.shortErrorMessage(error)))
+                menuBarProvider()?.setState(Self.errorState(error))
                 return
             }
 
@@ -138,9 +138,18 @@ final class RecordingFlowCoordinator {
             } catch {
                 print("[Murmur] Paste error: \(error)")
                 errorHandler(error)
-                menuBarProvider()?.setState(.error(Self.shortErrorMessage(error)))
+                menuBarProvider()?.setState(Self.errorState(error, transcript: text))
             }
         }
+    }
+
+    /// The pill state for an error. A classified transcription failure carries its own headline and detail; a paste
+    /// error's detail is the transcript that failed to paste (so Copy can rescue it); anything else has no detail.
+    private static func errorState(_ error: Error, transcript: String? = nil) -> MenuBarState {
+        if let transcriptionError = error as? TranscriptionError, case .failed(let failure) = transcriptionError {
+            return .error(headline: failure.headline, detail: failure.displayDetail)
+        }
+        return .error(headline: shortErrorMessage(error), detail: transcript)
     }
 
     private static func shortErrorMessage(_ error: Error) -> String {
@@ -148,8 +157,8 @@ final class RecordingFlowCoordinator {
             switch te {
             case .audioFileNotFound:
                 return "Recording file missing"
-            case .apiError(let detail):
-                return "API error: \(String(detail.prefix(80)))"
+            case .failed(let failure):
+                return failure.headline
             case .cancelled:
                 return "Cancelled"
             case .fileTooLarge(let sizeMB):

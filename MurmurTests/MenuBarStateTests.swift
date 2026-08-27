@@ -3,16 +3,18 @@ import XCTest
 
 final class MenuBarStateTests: XCTestCase {
     func testErrorStateEquatable() {
-        let a = MenuBarState.error("API error: timeout")
-        let b = MenuBarState.error("API error: timeout")
-        let c = MenuBarState.error("Different error")
+        let a = MenuBarState.error(headline: "API error: timeout", detail: nil)
+        let b = MenuBarState.error(headline: "API error: timeout", detail: nil)
+        let c = MenuBarState.error(headline: "Different error", detail: nil)
+        let d = MenuBarState.error(headline: "API error: timeout", detail: "body")
 
         XCTAssertEqual(a, b)
         XCTAssertNotEqual(a, c)
+        XCTAssertNotEqual(a, d)
     }
 
     func testErrorStateNotEqualToIdle() {
-        XCTAssertNotEqual(MenuBarState.error("something"), MenuBarState.idle)
+        XCTAssertNotEqual(MenuBarState.error(headline: "something", detail: nil), MenuBarState.idle)
     }
 
     func testBasicStatesStillEqual() {
@@ -31,6 +33,7 @@ final class IndicatorStateTests: XCTestCase {
         XCTAssertEqual(state.menuBarState, .idle)
         XCTAssertNil(state.lastTranscript)
         XCTAssertNil(state.errorMessage)
+        XCTAssertNil(state.errorDetail)
         XCTAssertFalse(state.isExpanded)
     }
 
@@ -38,7 +41,7 @@ final class IndicatorStateTests: XCTestCase {
         let state = IndicatorState()
 
         state.lastTranscript = "Some transcribed text"
-        state.menuBarState = .error("Paste failed")
+        state.menuBarState = .error(headline: "Paste failed", detail: "Some transcribed text")
         state.errorMessage = "Paste failed"
 
         XCTAssertEqual(state.lastTranscript, "Some transcribed text")
